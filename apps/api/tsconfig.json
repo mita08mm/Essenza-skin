@@ -4,9 +4,6 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "composite": true,
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
     "types": ["node"]
   },
   "include": ["src/**/*"],

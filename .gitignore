@@ -1,5 +1,13 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# package manager files
+package-lock.json
+yarn.lock
+.yarn/
+
+.pnpm-store/
+.pnpm-debug.log
+
 # dependencies
 node_modules/
 **/node_modules/
@@ -34,7 +42,7 @@ dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
 .env*
