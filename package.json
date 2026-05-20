@@ -1,0 +1,23 @@
+{
+  "name": "clinica-system",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "dev:web": "pnpm --filter @clinica/web dev",
+    "dev:api": "pnpm --filter @clinica/api dev",
+    "build": "pnpm -r build",
+    "build:web": "pnpm --filter @clinica/web build",
+    "build:api": "pnpm --filter @clinica/api build",
+    "db:generate": "pnpm --filter @clinica/database db:generate",
+    "db:migrate": "pnpm --filter @clinica/database db:migrate",
+    "db:seed": "pnpm --filter @clinica/database db:seed",
+    "db:studio": "pnpm --filter @clinica/database db:studio",
+    "lint": "pnpm -r lint",
+    "structure": "echo '📂 Frontend: apps/web/src/' && ls apps/web/src && echo '' && echo '⚙️  Backend: apps/api/src/' && ls apps/api/src && echo '' && echo '📦 Packages:' && ls packages"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5"
+  }
+}

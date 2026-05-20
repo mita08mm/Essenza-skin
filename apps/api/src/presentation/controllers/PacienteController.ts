@@ -1,0 +1,174 @@
+import { Request, Response } from 'express';
+import { CreatePacienteUseCase } from '../../application/use-cases/paciente/CreatePacienteUseCase';
+import { GetPacientesUseCase } from '../../application/use-cases/paciente/GetPacientesUseCase';
+import { GetPacienteByIdUseCase } from '../../application/use-cases/paciente/GetPacienteByIdUseCase';
+import { UpdatePacienteUseCase } from '../../application/use-cases/paciente/UpdatePacienteUseCase';
+import { z } from 'zod';
+import { TipoDocumento } from '@clinica/database';
+
+const createPacienteSchema = z.object({
+  nombre: z.string().min(2, 'Nombre debe tener minimo 2 caracteres'),
+  apellido: z.string().min(2, 'Apellido debe tener minimo 2 caracteres'),
+  documento: z.string().min(6, 'Documento invalido'),
+  tipoDocumento: z.enum(['DNI', 'PASAPORTE', 'OTRO']),
+  fechaNacimiento: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: 'Fecha invalida',
+  }),
+  telefono: z.string().min(7, 'Telefono invalido'),
+  email: z.string().email('Email invalido').optional(),
+  direccion: z.string().optional(),
+  fotoUrl: z.string().url('URL invalida').optional(),
+});
+
+const updatePacienteSchema = z.object({
+  nombre: z.string().min(2).optional(),
+  apellido: z.string().min(2).optional(),
+  telefono: z.string().min(7).optional(),
+  email: z.string().email().optional(),
+  direccion: z.string().optional(),
+  fotoUrl: z.string().url().optional(),
+  estado: z.enum(['ACTIVO', 'INACTIVO']).optional(),
+});
+
+export class PacienteController {
+  constructor(
+    private createPacienteUseCase: CreatePacienteUseCase,
+    private getPacientesUseCase: GetPacientesUseCase,
+    private getPacienteByIdUseCase: GetPacienteByIdUseCase,
+    private updatePacienteUseCase: UpdatePacienteUseCase
+  ) {}
+
+  create = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const validatedData = createPacienteSchema.parse(req.body);
+
+      const paciente = await this.createPacienteUseCase.execute({
+        ...validatedData,
+        tipoDocumento: validatedData.tipoDocumento as TipoDocumento,
+        fechaNacimiento: new Date(validatedData.fechaNacimiento),
+      });
+
+      res.status(201).json({
+        success: true,
+        data: paciente,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          success: false,
+          error: 'Datos invalidos',
+          details: error.errors,
+        });
+        return;
+      }
+
+      if (error instanceof Error) {
+        res.status(400).json({
+          success: false,
+          error: error.message,
+        });
+        return;
+      }
+
+      res.status(500).json({
+        success: false,
+        error: 'Error interno del servidor',
+      });
+    }
+  };
+
+  getAll = async (_req: Request, res: Response): Promise<void> => {
+    try {
+      const pacientes = await this.getPacientesUseCase.execute();
+
+      res.status(200).json({
+        success: true,
+        data: pacientes,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Error al obtener pacientes',
+      });
+    }
+  };
+
+  getById = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      
+      if (typeof id !== 'string') {
+        res.status(400).json({
+          success: false,
+          error: 'ID invalido',
+        });
+        return;
+      }
+
+      const paciente = await this.getPacienteByIdUseCase.execute(id);
+
+      res.status(200).json({
+        success: true,
+        data: paciente,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(404).json({
+          success: false,
+          error: error.message,
+        });
+        return;
+      }
+
+      res.status(500).json({
+        success: false,
+        error: 'Error interno del servidor',
+      });
+    }
+  };
+
+  update = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      
+      if (typeof id !== 'string') {
+        res.status(400).json({
+          success: false,
+          error: 'ID invalido',
+        });
+        return;
+      }
+
+      const validatedData = updatePacienteSchema.parse(req.body);
+
+      const paciente = await this.updatePacienteUseCase.execute(id, validatedData);
+
+      res.status(200).json({
+        success: true,
+        data: paciente,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          success: false,
+          error: 'Datos invalidos',
+          details: error.errors,
+        });
+        return;
+      }
+
+      if (error instanceof Error) {
+        res.status(404).json({
+          success: false,
+          error: error.message,
+        });
+        return;
+      }
+
+      res.status(500).json({
+        success: false,
+        error: 'Error interno del servidor',
+      });
+    }
+  };
+}

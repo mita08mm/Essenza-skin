@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Paleta oficial de la clínica */
+    --color-piel: #ccaf7d;
+    --color-morena: #754c24;
+    --color-marengo: #666666;
+    --color-concreto: #333333;
+    
+    /* Fondos */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 20%;
+    
+    /* Card */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
+    
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+    
+    /* Primary - usando color morena (#754c24) */
+    --primary: 24 52% 31%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary - usando color piel (#ccaf7d) */
+    --secondary: 37 45% 65%;
+    --secondary-foreground: 0 0% 20%;
+    
+    /* Muted */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+    
+    /* Accent - usando color piel (#ccaf7d) */
+    --accent: 37 45% 65%;
+    --accent-foreground: 0 0% 20%;
+    
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Border, Input, Ring */
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 24 52% 31%;
+    
+    /* Charts */
+    --chart-1: 24 52% 31%;
+    --chart-2: 37 45% 65%;
+    --chart-3: 0 0% 40%;
+    --chart-4: 0 0% 20%;
+    --chart-5: 0 0% 60%;
+    
+    /* Border radius */
+    --radius: 0.5rem;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    background: white;
+    color: #333333;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Tipografía para títulos */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Playfair Display", serif;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--color-concreto);
+  }
+}
