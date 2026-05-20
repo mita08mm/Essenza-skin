@@ -49,6 +49,13 @@ model Paciente {
   telefono        String
   email           String?
   direccion       String?
+  sexo            String?
+  grupoSanguineo  String?
+  peso            Decimal?  @db.Decimal(5, 2)
+  altura          Decimal?  @db.Decimal(5, 2)
+  alergias        String?
+  contactoEmergenciaNombre    String?
+  contactoEmergenciaTelefono  String?
   fotoUrl         String?
   estado          EstadoPaciente @default(ACTIVO)
   createdAt       DateTime       @default(now())

@@ -9,6 +9,13 @@ export interface CreatePacienteInput {
   telefono: string;
   email?: string;
   direccion?: string;
+  sexo?: string;
+  grupoSanguineo?: string;
+  peso?: number;
+  altura?: number;
+  alergias?: string;
+  contactoEmergenciaNombre?: string;
+  contactoEmergenciaTelefono?: string;
   fotoUrl?: string;
 }
 
@@ -18,6 +25,13 @@ export interface UpdatePacienteInput {
   telefono?: string;
   email?: string;
   direccion?: string;
+  sexo?: string;
+  grupoSanguineo?: string;
+  peso?: number;
+  altura?: number;
+  alergias?: string;
+  contactoEmergenciaNombre?: string;
+  contactoEmergenciaTelefono?: string;
   fotoUrl?: string;
   estado?: EstadoPaciente;
 }

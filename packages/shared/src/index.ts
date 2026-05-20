@@ -20,6 +20,13 @@ export interface Paciente {
   email?: string;
   direccion?: string;
   estado: 'ACTIVO' | 'INACTIVO';
+  sexo?: string;
+  grupoSanguineo?: string;
+  peso?: number;
+  altura?: number;
+  alergias?: string;
+  contactoEmergenciaNombre?: string;
+  contactoEmergenciaTelefono?: string;
 }
 
 export interface ApiResponse<T = any> {

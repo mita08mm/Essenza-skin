@@ -1,9 +1,9 @@
-import { PacienteRepository, CreatePacienteInput } from '../../infrastructure/repositories/PacienteRepository';
+import { PacienteRepository, CreatePacienteInput } from '../../../infrastructure/repositories/PacienteRepository';
 
 export class CreatePacienteUseCase {
   constructor(private pacienteRepository: PacienteRepository) {}
 
-  async execute(input: CreatePacienteInput) {
+  async execute(input: CreatePacienteInput): Promise<any> {
     const existente = await this.pacienteRepository.findByDocumento(
       input.documento,
       input.tipoDocumento

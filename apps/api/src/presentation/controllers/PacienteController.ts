@@ -17,6 +17,13 @@ const createPacienteSchema = z.object({
   telefono: z.string().min(7, 'Telefono invalido'),
   email: z.string().email('Email invalido').optional(),
   direccion: z.string().optional(),
+  sexo: z.string().optional(),
+  grupoSanguineo: z.string().optional(),
+  peso: z.number().positive().optional(),
+  altura: z.number().positive().optional(),
+  alergias: z.string().optional(),
+  contactoEmergenciaNombre: z.string().optional(),
+  contactoEmergenciaTelefono: z.string().optional(),
   fotoUrl: z.string().url('URL invalida').optional(),
 });
 
@@ -26,6 +33,13 @@ const updatePacienteSchema = z.object({
   telefono: z.string().min(7).optional(),
   email: z.string().email().optional(),
   direccion: z.string().optional(),
+  sexo: z.string().optional(),
+  grupoSanguineo: z.string().optional(),
+  peso: z.number().positive().optional(),
+  altura: z.number().positive().optional(),
+  alergias: z.string().optional(),
+  contactoEmergenciaNombre: z.string().optional(),
+  contactoEmergenciaTelefono: z.string().optional(),
   fotoUrl: z.string().url().optional(),
   estado: z.enum(['ACTIVO', 'INACTIVO']).optional(),
 });
