@@ -16,7 +16,7 @@ export default function EmptyState({ pacienteId }: EmptyStateProps) {
       </p>
       <Link
         href={`/pacientes/${pacienteId}/consulta/nueva`}
-        className="inline-block px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors"
+        className="btn-primary"
       >
         + Nueva Consulta
       </Link>

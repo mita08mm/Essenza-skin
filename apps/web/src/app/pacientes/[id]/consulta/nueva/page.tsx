@@ -262,14 +262,14 @@ function NuevaConsultaContent() {
         <div className="flex gap-4 justify-end">
           <Link
             href={`/pacientes/${pacienteId}/historia`}
-            className="px-6 py-3 border border-gray-300 text-marengo rounded-lg hover:bg-gray-50 transition-colors"
+            className="btn-secondary"
           >
             Cancelar
           </Link>
           <button
             type="submit"
             disabled={isSaving}
-            className="px-6 py-3 bg-morena text-white rounded-lg hover:bg-morena/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary"
           >
             {isSaving ? 'Guardando...' : 'Guardar Consulta'}
           </button>

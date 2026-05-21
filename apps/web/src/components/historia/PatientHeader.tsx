@@ -51,13 +51,13 @@ export default function PatientHeader({ historia, pacienteId }: PatientHeaderPro
           <div className="flex gap-3">
             <Link 
               href={`/pacientes/${pacienteId}/editar`} 
-              className="px-4 py-2 border border-gray-300 text-marengo rounded-lg hover:bg-gray-50 transition-colors"
+              className="btn-secondary"
             >
               Editar Perfil
             </Link>
             <Link 
               href={`/pacientes/${pacienteId}/consulta/nueva`} 
-              className="px-4 py-2 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors"
+              className="btn-primary"
             >
               Nueva Consulta
             </Link>

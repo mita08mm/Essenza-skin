@@ -14,7 +14,7 @@ export function ConsultasTab({ consultas, pacienteId }: ConsultasTabProps) {
         <p className="text-marengo mb-4">No hay consultas registradas</p>
         <Link
           href={`/pacientes/${pacienteId}/consulta/nueva`}
-          className="inline-block px-6 py-3 bg-piel text-morena rounded-lg hover:bg-piel/90"
+          className="btn-primary"
         >
           Crear primera consulta
         </Link>
