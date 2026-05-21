@@ -22,7 +22,6 @@ async function main() {
   // ============================
   // USUARIOS
   // ============================
-  console.log('👤 Creando usuarios...');
 
   const adminPassword = await bcrypt.hash('admin123', 10);
   const admin = await prisma.usuario.upsert({
@@ -136,7 +135,6 @@ async function main() {
   // ============================
   // EVOLUCIONES
   // ============================
-  console.log('\n📝 Creando evoluciones...');
 
   const evolucion1 = await prisma.evolucion.create({
     data: {
@@ -156,7 +154,6 @@ async function main() {
   // ============================
   // CITAS
   // ============================
-  console.log('\n📅 Creando citas...');
 
   const cita1 = await prisma.cita.create({
     data: {

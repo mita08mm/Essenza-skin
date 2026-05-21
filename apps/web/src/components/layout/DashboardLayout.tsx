@@ -3,13 +3,15 @@
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import PersonIcon from '../icons/PersonIcon'
+import AppointmentIcon from '../icons/AppointmentIcon'
 
 const menuItems = [
-  { href: '/pacientes', label: 'Pacientes', icon: '' },
-  { href: '/citas', label: 'Citas', icon: '' },
-  { href: '/cobros', label: 'Cobros', icon: '' },
-  { href: '/recetas', label: 'Recetas', icon: '' },
-  { href: '/inventario', label: 'Inventario', icon: '' },
+  { href: '/pacientes', label: 'Pacientes', icon: <PersonIcon className="w-7 h-7" /> },
+  { href: '/citas', label: 'Citas', icon: <AppointmentIcon className="w-7 h-7" /> },
+  { href: '/cobros', label: 'Cobros', icon: '💰' },
+  { href: '/recetas', label: 'Recetas', icon: '💊' },
+  { href: '/inventario', label: 'Inventario', icon: '📦' },
 ];
 
 export default function DashboardLayout({
