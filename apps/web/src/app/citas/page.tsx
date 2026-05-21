@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Link from 'next/link';
 import { apiEndpoint } from '@/lib/config';
+import AppointmentIcon from '@/components/icons/AppointmentIcon'
 
 interface Paciente {
   id: string;
@@ -129,7 +130,7 @@ export default function CitasPage() {
 
           {citas.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-              <div className="text-6xl mb-4">📅</div>
+              <div className="text-6xl mb-4"> <AppointmentIcon className="w-7 h-7" /></div>
               <h3 className="text-xl font-heading font-semibold text-concreto mb-2">
                 No hay citas programadas
               </h3>
