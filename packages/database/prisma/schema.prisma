@@ -1,9 +1,9 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
 }
 
 // ========================================
@@ -21,8 +21,8 @@ model Usuario {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  evoluciones Evolucion[]
-  recetas     Receta[]
+  consultas Consulta[]
+  recetas   Receta[]
 
   @@index([email])
   @@map("usuarios")
@@ -64,7 +64,7 @@ model Paciente {
   citas           Cita[]
   cobros          Cobro[]
   recetas         Receta[]
-  archivos        Archivo[]
+  documentos      Documento[]
 
   @@unique([documento, tipoDocumento])
   @@index([nombre, apellido])
@@ -91,44 +91,64 @@ enum EstadoPaciente {
 model HistoriaClinica {
   id                   String   @id @default(uuid())
   pacienteId           String   @unique
+  
+  // Datos generales
+  tipoSangre           String?  // A+, O-, etc
   diagnosticoPrincipal String?
-  antecedentes         String?
-  alergias             String?
+  alergias             String?  // CRÍTICO: alertas médicas
   medicacionHabitual   String?
+  
+  // Antecedentes
+  antecedentesPersonales String?  // Enfermedades previas
+  antecedentesFamiliares String?  // Historia familiar
+  antecedentesQuirurgicos String? // Cirugías previas
+  
   notasGenerales       String?
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
-  paciente    Paciente    @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  evoluciones Evolucion[]
+  paciente  Paciente   @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  consultas Consulta[]
 
   @@index([pacienteId])
   @@map("historias_clinicas")
 }
 
-model Evolucion {
+model Consulta {
   id                String    @id @default(uuid())
   pacienteId        String
   historiaClinicaId String
   usuarioId         String
+  citaId            String?
   fecha             DateTime  @default(now())
+  
+  // Datos de consulta
   motivoConsulta    String
+  examenFisico      String?
   diagnostico       String
+  codigoCIE         String?   // Código CIE-10 opcional
   tratamiento       String?
   observaciones     String?
   proximaConsulta   DateTime?
+  
+  // Signos vitales (JSON para flexibilidad)
+  signosVitales     Json?     // { pa_sistolica, pa_diastolica, fc, temp, peso, talla, imc, spo2 }
+  
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
   historiaClinica HistoriaClinica @relation(fields: [historiaClinicaId], references: [id], onDelete: Cascade)
   usuario         Usuario         @relation(fields: [usuarioId], references: [id])
+  cita            Cita?              @relation(fields: [citaId], references: [id])
   recetas         Receta[]
   cobros          Cobro[]
+  documentos      Documento[]
 
   @@index([pacienteId])
   @@index([historiaClinicaId])
   @@index([fecha])
-  @@map("evoluciones")
+  @@index([citaId])
+  @@map("consultas")
 }
 
 // ========================================
@@ -147,7 +167,8 @@ model Cita {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 
-  paciente Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  paciente  Paciente   @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  consultas Consulta[]
 
   @@index([pacienteId])
   @@index([fecha])
@@ -227,22 +248,22 @@ model Insumo {
 // ========================================
 
 model Cobro {
-  id          String      @id @default(uuid())
-  pacienteId  String
-  evolucionId String?
-  fecha       DateTime    @default(now())
-  subtotal    Decimal     @default(0) @db.Decimal(10, 2)
-  descuento   Decimal     @default(0) @db.Decimal(10, 2)
-  total       Decimal     @default(0) @db.Decimal(10, 2)
-  estado      EstadoCobro @default(PENDIENTE)
-  notas       String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id         String      @id @default(uuid())
+  pacienteId String
+  consultaId String?
+  fecha      DateTime    @default(now())
+  subtotal   Decimal     @default(0) @db.Decimal(10, 2)
+  descuento  Decimal     @default(0) @db.Decimal(10, 2)
+  total      Decimal     @default(0) @db.Decimal(10, 2)
+  estado     EstadoCobro @default(PENDIENTE)
+  notas      String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
-  paciente  Paciente   @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  evolucion Evolucion? @relation(fields: [evolucionId], references: [id])
-  items     ItemCobro[]
-  pagos     Pago[]
+  paciente Paciente  @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  consulta Consulta? @relation(fields: [consultaId], references: [id])
+  items    ItemCobro[]
+  pagos    Pago[]
 
   @@index([pacienteId])
   @@index([estado])
@@ -314,14 +335,14 @@ enum MetodoPago {
 model Receta {
   id           String       @id @default(uuid())
   pacienteId   String
-  evolucionId  String?
+  consultaId   String?
   usuarioId    String
   fecha        DateTime     @default(now())
   indicaciones String?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   paciente     Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  evolucion    Evolucion?   @relation(fields: [evolucionId], references: [id])
+  consulta     Consulta?    @relation(fields: [consultaId], references: [id])
   usuario      Usuario      @relation(fields: [usuarioId], references: [id])
   items        ItemReceta[]
 
@@ -366,28 +387,36 @@ enum EstadoItemReceta {
 }
 
 // ========================================
-// MÓDULO: ARCHIVOS
+// MÓDULO: DOCUMENTOS Y ARCHIVOS
 // ========================================
 
-model Archivo {
-  id         String      @id @default(uuid())
-  pacienteId String
-  nombre     String
-  tipo       TipoArchivo
-  url        String
-  tamaño     Int
-  mimeType   String
-  createdAt  DateTime    @default(now())
-  paciente   Paciente    @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+model Documento {
+  id          String            @id @default(uuid())
+  pacienteId  String
+  consultaId  String?
+  nombre      String
+  descripcion String?
+  tipo        TipoArchivoMedico
+  url         String
+  tamaño      Int               // en bytes
+  mimeType    String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  paciente Paciente  @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  consulta Consulta? @relation(fields: [consultaId], references: [id])
 
   @@index([pacienteId])
+  @@index([consultaId])
   @@index([tipo])
-  @@map("archivos")
+  @@map("documentos")
 }
 
-enum TipoArchivo {
+enum TipoArchivoMedico {
+  LABORATORIO
+  IMAGEN_RADIOLOGICA
   ESTUDIO
-  IMAGEN
-  DOCUMENTO
+  RECETA_ESCANEADA
+  CONSENTIMIENTO
   OTRO
 }
