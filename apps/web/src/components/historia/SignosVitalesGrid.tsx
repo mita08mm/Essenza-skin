@@ -1,39 +1,29 @@
-import { SignosVitales } from '@/types/historia';
+import { Medidas } from '@/types/historia';
 
 interface SignosVitalesGridProps {
-  signosVitales: SignosVitales;
+  signosVitales?: Medidas;
+  medidas?: Medidas;
 }
 
-export function SignosVitalesGrid({ signosVitales }: SignosVitalesGridProps) {
+export function SignosVitalesGrid({ signosVitales, medidas }: SignosVitalesGridProps) {
+  const data = signosVitales || medidas;
+  
+  if (!data) return null;
+
   return (
     <div>
       <h4 className="text-xs font-medium text-concreto uppercase tracking-wider mb-3">
-        Signos Vitales
+        Medidas
       </h4>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {signosVitales.pa_sistolica && (
-          <SignoVitalCard
-            label="Presión Arterial"
-            value={`${signosVitales.pa_sistolica}/${signosVitales.pa_diastolica} mmHg`}
-          />
+        {data.peso && (
+          <SignoVitalCard label="Peso" value={`${data.peso} kg`} />
         )}
-        {signosVitales.fc && (
-          <SignoVitalCard label="Frecuencia Cardíaca" value={`${signosVitales.fc} bpm`} />
+        {data.talla && (
+          <SignoVitalCard label="Talla" value={`${data.talla} cm`} />
         )}
-        {signosVitales.temp && (
-          <SignoVitalCard label="Temperatura" value={`${signosVitales.temp}°C`} />
-        )}
-        {signosVitales.peso && (
-          <SignoVitalCard label="Peso" value={`${signosVitales.peso} kg`} />
-        )}
-        {signosVitales.talla && (
-          <SignoVitalCard label="Talla" value={`${signosVitales.talla} cm`} />
-        )}
-        {signosVitales.imc && (
-          <SignoVitalCard label="IMC" value={`${signosVitales.imc}`} />
-        )}
-        {signosVitales.spo2 && (
-          <SignoVitalCard label="SpO2" value={`${signosVitales.spo2}%`} />
+        {data.imc && (
+          <SignoVitalCard label="IMC" value={`${data.imc}`} />
         )}
       </div>
     </div>

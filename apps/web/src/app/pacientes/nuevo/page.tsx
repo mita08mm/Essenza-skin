@@ -17,30 +17,31 @@ export default function NuevoPacientePage() {
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
-    tipoDocumento: 'DNI',
+    tipoDocumento: 'CI',
     documento: '',
     fechaNacimiento: '',
     telefono: '',
     email: '',
     direccion: '',
     sexo: '',
-    grupoSanguineo: '',
-    peso: '',
-    altura: '',
+    objetivoEstetico: '',
     alergias: '',
-    obraSocial: '',
+    condicionesMedicas: '',
+    medicacionActual: '',
+    embarazoLactancia: false,
     contactoEmergenciaNombre: '',
     contactoEmergenciaTelefono: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, max } = e.target;
-    if (max && parseFloat(value) > parseFloat(max)) return;
-    setFormData({ ...formData, [name]: value });
+    const { name, value } = e.target;
+    
+    // Si cambia el sexo y no es femenino, limpiar embarazoLactancia
+    if (name === 'sexo' && value !== 'FEMENINO') {
+      setFormData({ ...formData, [name]: value, embarazoLactancia: false });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const calcularEdad = () => {
@@ -50,13 +51,6 @@ export default function NuevoPacientePage() {
     const edad = hoy.getFullYear() - nac.getFullYear();
     const m = hoy.getMonth() - nac.getMonth();
     return m < 0 || (m === 0 && hoy.getDate() < nac.getDate()) ? `${edad - 1} años` : `${edad} años`;
-  };
-
-  const calcularIMC = () => {
-    const peso = parseFloat(formData.peso);
-    const altura = parseFloat(formData.altura) / 100;
-    if (!peso || !altura) return '--';
-    return (peso / (altura * altura)).toFixed(1);
   };
 
   const inputClass = "w-full px-4 py-3 rounded-lg border border-[#D7C5B9] focus:border-morena focus:ring-2 focus:ring-piel/20 transition-all outline-none bg-white";
@@ -74,11 +68,7 @@ export default function NuevoPacientePage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          ...formData,
-          peso: formData.peso ? parseFloat(formData.peso) : undefined,
-          altura: formData.altura ? parseFloat(formData.altura) : undefined,
-        }),
+        body: JSON.stringify(formData),
       });
       if (!response.ok) {
         const data = await response.json();
@@ -134,9 +124,8 @@ export default function NuevoPacientePage() {
                   <label className={labelClass}>Tipo de Documento *</label>
                   <select name="tipoDocumento" value={formData.tipoDocumento} onChange={handleChange}
                     className={inputClass} required disabled={isLoading}>
-                    <option value="DNI">DNI</option>
-                    <option value="PASAPORTE">Pasaporte</option>
-                    <option value="OTRO">Otro</option>
+                    <option value="CI">CI (Cédula de Identidad)</option>
+                    <option value="PASAPORTE">Pasaporte (Extranjero)</option>
                   </select>
                 </div>
               </div>
@@ -178,18 +167,19 @@ export default function NuevoPacientePage() {
               </div>
             </div>
 
-            {/* DATOS CLÍNICOS */}
+            {/* DATOS CLÍNICOS ESTÉTICOS */}
             <div className="bg-white rounded-xl shadow-sm p-8 space-y-6">
               <div>
                 <h2 className="text-2xl font-heading text-morena">Datos Clínicos</h2>
+                <p className="text-sm text-marengo mt-1">Información relevante para tratamientos estéticos</p>
                 <hr className="mt-2 border-[#D7C5B9]" />
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className={labelClass}>Sexo/Género *</label>
                   <select name="sexo" value={formData.sexo} onChange={handleChange}
-                    className={inputClass} disabled={isLoading}>
+                    className={inputClass} required disabled={isLoading}>
                     <option value="">Seleccionar</option>
                     <option value="MASCULINO">Masculino</option>
                     <option value="FEMENINO">Femenino</option>
@@ -197,45 +187,52 @@ export default function NuevoPacientePage() {
                   </select>
                 </div>
                 <div>
-                  <label className={labelClass}>Grupo Sanguíneo</label>
-                  <select name="grupoSanguineo" value={formData.grupoSanguineo} onChange={handleChange}
-                    className={inputClass} disabled={isLoading}>
-                    <option value="">--</option>
-                    {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(g => (
-                      <option key={g} value={g}>{g}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass}>Peso (kg)</label>
-                  <input type="number" name="peso" min={1} max={300} value={formData.peso} onChange={handleNumberChange}
-                    placeholder="70" className={inputClass} disabled={isLoading} />
-                </div>
-                <div>
-                  <label className={labelClass}>Altura (cm)</label>
-                  <input type="number" name="altura" min={1} max={250} value={formData.altura} onChange={handleNumberChange}
-                    placeholder="170" className={inputClass} disabled={isLoading} />
+                  <label className={labelClass}>Objetivo Estético Principal</label>
+                  <input type="text" name="objetivoEstetico" value={formData.objetivoEstetico} onChange={handleChange}
+                    placeholder="Ej: Rejuvenecimiento facial, reducción corporal..."
+                    className={inputClass} disabled={isLoading} />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="space-y-4">
                 <div>
-                  <label className={labelClass}>IMC (Auto)</label>
-                  <input type="text" value={calcularIMC()} className={disabledClass} disabled readOnly />
-                </div>
-                <div className="col-span-3">
                   <label className={labelClass}>Alergias Conocidas</label>
                   <textarea name="alergias" value={formData.alergias} onChange={handleChange}
-                    placeholder="Describa alergias o escriba 'Ninguna'"
-                    className={inputClass + " resize-none"} rows={3} disabled={isLoading} />
+                    placeholder="Alergias a productos, sustancias o medicamentos (escriba 'Ninguna' si no aplica)"
+                    className={inputClass + " resize-none"} rows={2} disabled={isLoading} />
                 </div>
+                <div>
+                  <label className={labelClass}>Condiciones Médicas Relevantes</label>
+                  <textarea name="condicionesMedicas" value={formData.condicionesMedicas} onChange={handleChange}
+                    placeholder="Diabetes, hipertensión, problemas circulatorios, etc."
+                    className={inputClass + " resize-none"} rows={2} disabled={isLoading} />
+                </div>
+                <div>
+                  <label className={labelClass}>Medicación Actual</label>
+                  <textarea name="medicacionActual" value={formData.medicacionActual} onChange={handleChange}
+                    placeholder="Medicamentos que toma regularmente"
+                    className={inputClass + " resize-none"} rows={2} disabled={isLoading} />
+                </div>
+                {/* Solo mostrar para pacientes femeninos */}
+                {formData.sexo === 'FEMENINO' && (
+                  <div>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input type="checkbox" name="embarazoLactancia" 
+                        checked={formData.embarazoLactancia} 
+                        onChange={(e) => setFormData({ ...formData, embarazoLactancia: e.target.checked })}
+                        className="w-5 h-5 rounded border-gray-300 text-morena focus:ring-morena"
+                        disabled={isLoading} />
+                      <span className={labelClass + " mb-0"}>¿Embarazo o Lactancia?</span>
+                    </label>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* SEGURO Y EMERGENCIA */}
+            {/* CONTACTO DE EMERGENCIA */}
             <div className="bg-white rounded-xl shadow-sm p-8 space-y-6">
               <div>
-                <h2 className="text-2xl font-heading text-morena">Seguro y Emergencia</h2>
+                <h2 className="text-2xl font-heading text-morena">Contacto de Emergencia</h2>
                 <hr className="mt-2 border-[#D7C5B9]" />
               </div>
 

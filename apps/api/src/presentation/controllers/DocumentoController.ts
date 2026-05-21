@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient, TipoArchivoMedico } from '@clinica/database';
+import { PrismaClient, TipoDocumento } from '@clinica/database';
 import { DocumentoRepository } from '../../infrastructure/repositories/DocumentoRepository';
 import { CreateDocumentoUseCase } from '../../application/use-cases/documento/CreateDocumentoUseCase';
 import { GetDocumentosByPacienteUseCase } from '../../application/use-cases/documento/GetDocumentosByPacienteUseCase';
@@ -13,14 +13,15 @@ const documentoRepository = new DocumentoRepository(prisma);
 
 const createDocumentoSchema = z.object({
   pacienteId: z.string().uuid(),
-  consultaId: z.string().uuid().optional(),
+  tratamientoId: z.string().uuid().optional(),
   descripcion: z.string().optional(),
   tipo: z.enum([
+    'FOTO_FACIAL',
+    'FOTO_CORPORAL',
+    'FOTO_CAPILAR',
     'ANALISIS',
-    'IMAGEN',
-    'RECETA',
-    'INFORME',
     'CONSENTIMIENTO',
+    'INFORME',
     'OTRO',
   ]),
 });
@@ -43,7 +44,7 @@ export class DocumentoController {
       const documento = await useCase.execute({
         ...validatedData,
         nombre: req.file.originalname,
-        tipo: validatedData.tipo as TipoArchivoMedico,
+        tipo: validatedData.tipo as TipoDocumento,
         url: `/uploads/${req.file.filename}`,
         tamaño: req.file.size,
         mimeType: req.file.mimetype,

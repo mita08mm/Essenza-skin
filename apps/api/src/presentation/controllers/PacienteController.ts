@@ -4,13 +4,13 @@ import { GetPacientesUseCase } from '../../application/use-cases/paciente/GetPac
 import { GetPacienteByIdUseCase } from '../../application/use-cases/paciente/GetPacienteByIdUseCase';
 import { UpdatePacienteUseCase } from '../../application/use-cases/paciente/UpdatePacienteUseCase';
 import { z } from 'zod';
-import { TipoDocumento } from '@clinica/database';
+import { TipoDocumentoIdentidad } from '@clinica/database';
 
 const createPacienteSchema = z.object({
   nombre: z.string().min(2, 'Nombre debe tener minimo 2 caracteres'),
   apellido: z.string().min(2, 'Apellido debe tener minimo 2 caracteres'),
   documento: z.string().min(6, 'Documento invalido'),
-  tipoDocumento: z.enum(['DNI', 'PASAPORTE', 'OTRO']),
+  tipoDocumento: z.enum(['CI', 'PASAPORTE']),
   fechaNacimiento: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: 'Fecha invalida',
   }),
@@ -18,10 +18,11 @@ const createPacienteSchema = z.object({
   email: z.string().email('Email invalido').optional(),
   direccion: z.string().optional(),
   sexo: z.string().optional(),
-  grupoSanguineo: z.string().optional(),
-  peso: z.number().positive().optional(),
-  altura: z.number().positive().optional(),
+  objetivoEstetico: z.string().optional(),
   alergias: z.string().optional(),
+  condicionesMedicas: z.string().optional(),
+  medicacionActual: z.string().optional(),
+  embarazoLactancia: z.boolean().optional(),
   contactoEmergenciaNombre: z.string().optional(),
   contactoEmergenciaTelefono: z.string().optional(),
   fotoUrl: z.string().url('URL invalida').optional(),
@@ -34,10 +35,11 @@ const updatePacienteSchema = z.object({
   email: z.string().email().optional(),
   direccion: z.string().optional(),
   sexo: z.string().optional(),
-  grupoSanguineo: z.string().optional(),
-  peso: z.number().positive().optional(),
-  altura: z.number().positive().optional(),
+  objetivoEstetico: z.string().optional(),
   alergias: z.string().optional(),
+  condicionesMedicas: z.string().optional(),
+  medicacionActual: z.string().optional(),
+  embarazoLactancia: z.boolean().optional(),
   contactoEmergenciaNombre: z.string().optional(),
   contactoEmergenciaTelefono: z.string().optional(),
   fotoUrl: z.string().url().optional(),
@@ -58,7 +60,7 @@ export class PacienteController {
 
       const paciente = await this.createPacienteUseCase.execute({
         ...validatedData,
-        tipoDocumento: validatedData.tipoDocumento as TipoDocumento,
+        tipoDocumento: validatedData.tipoDocumento as TipoDocumentoIdentidad,
         fechaNacimiento: new Date(validatedData.fechaNacimiento),
       });
 

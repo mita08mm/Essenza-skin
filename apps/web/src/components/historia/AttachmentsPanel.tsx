@@ -16,24 +16,30 @@ export default function AttachmentsPanel({
   onUploadSuccess 
 }: AttachmentsPanelProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'fotos' | 'documentos'>('fotos');
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
+  // Categorización al subir
+  const [categoria, setCategoria] = useState<'FOTO_EVOLUCION' | 'DOCUMENTO_CLINICO'>('FOTO_EVOLUCION');
+  const [momento, setMomento] = useState<'ANTES' | 'DURANTE' | 'DESPUES'>('ANTES');
+  const [tipoFoto, setTipoFoto] = useState<'FACIAL' | 'CORPORAL' | 'CAPILAR'>('FACIAL');
+  const [tipoDoc, setTipoDoc] = useState<'CONSENTIMIENTO' | 'LABORATORIO' | 'RAYOS_X' | 'OTRO'>('CONSENTIMIENTO');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  }, []);
+  const uploadFile = async () => {
+    if (!selectedFile) return;
 
-  const uploadFile = async (file: File) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', selectedFile);
     formData.append('pacienteId', pacienteId);
-    formData.append('tipo', 'OTRO'); // Por defecto, se puede mejorar con un selector
+    
+    if (categoria === 'FOTO_EVOLUCION') {
+      formData.append('tipo', `FOTO_${tipoFoto}`);
+      formData.append('momento', momento);
+    } else {
+      formData.append('tipo', tipoDoc === 'CONSENTIMIENTO' ? 'CONSENTIMIENTO_INFORMADO' : tipoDoc);
+    }
 
     const token = localStorage.getItem('token');
     const response = await fetch(apiEndpoint('/documentos/upload'), {
@@ -52,210 +58,282 @@ export default function AttachmentsPanel({
     return response.json();
   };
 
-  const handleDrop = useCallback(async (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    setError(null);
-
-    const files = Array.from(e.dataTransfer.files);
-    
-    if (files.length === 0) return;
-
-    // Validar tamaño total
-    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-    const maxSize = 50 * 1024 * 1024; // 50MB
-
-    if (totalSize > maxSize) {
-      setError('Los archivos exceden el tamaño máximo de 50MB');
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      setError('Seleccione un archivo');
       return;
     }
 
     setIsUploading(true);
-
-    try {
-      for (const file of files) {
-        await uploadFile(file);
-      }
-      onUploadSuccess?.();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al subir archivos');
-    } finally {
-      setIsUploading(false);
-    }
-  }, [pacienteId, onUploadSuccess]);
-
-  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-
-    setIsUploading(true);
     setError(null);
 
     try {
-      for (const file of files) {
-        await uploadFile(file);
-      }
+      await uploadFile();
+      setShowUploadModal(false);
+      setSelectedFile(null);
       onUploadSuccess?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al subir archivos');
+      setError(err instanceof Error ? err.message : 'Error al subir archivo');
     } finally {
       setIsUploading(false);
-    }
-  };
-
-  const handleDownload = async (documentoId: string, nombre: string) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(apiEndpoint(`/documentos/${documentoId}/download`), {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error('Error al descargar');
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = nombre;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (err) {
-      setError('Error al descargar el archivo');
     }
   };
 
   const handleDelete = async (documentoId: string) => {
-    if (!confirm('¿Estás seguro de eliminar este documento?')) return;
+    if (!confirm('¿Eliminar este archivo?')) return;
 
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(apiEndpoint(`/documentos/${documentoId}`), {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Error al eliminar');
-
       onUploadSuccess?.();
     } catch (err) {
       setError('Error al eliminar el archivo');
     }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  // Filtrar documentos
+  const fotosEvolucion = documentos.filter(d => 
+    d.tipo === 'FOTO_FACIAL' || d.tipo === 'FOTO_CORPORAL' || d.tipo === 'FOTO_CAPILAR'
+  );
+  const documentosClinicos = documentos.filter(d => 
+    d.tipo === 'CONSENTIMIENTO_INFORMADO' || d.tipo === 'ESTUDIO_DERMATOLOGICO' || d.tipo === 'OTRO'
+  );
+
+  const formatDate = (date: Date | string) => {
+    return new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
-  const getFileIcon = (tipo: string, mimeType: string) => {
-    if (mimeType.includes('pdf')) return '📄';
-    if (mimeType.includes('image')) return '🖼️';
-    if (mimeType.includes('word')) return '📝';
-    return '📎';
+  const getMomentoLabel = (momento: string | null) => {
+    switch(momento) {
+      case 'ANTES': return 'Antes';
+      case 'DURANTE': return 'Durante';
+      case 'DESPUES': return 'Después';
+      default: return '';
+    }
   };
+
+  const renderFotos = () => (
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {fotosEvolucion.length === 0 ? (
+        <div className="col-span-full text-center py-8">
+          <p className="text-sm text-gray-400">Sin fotos de evolución</p>
+        </div>
+      ) : (
+        fotosEvolucion.map((foto) => (
+          <div key={foto.id} className="relative group">
+            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+              <img 
+                src={foto.url} 
+                alt={foto.nombre}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <p className="text-xs text-white font-medium">{getMomentoLabel(foto.momento)}</p>
+                  <p className="text-xs text-gray-200">{formatDate(foto.createdAt)}</p>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => handleDelete(foto.id)}
+              className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        ))
+      )}
+    </div>
+  );
+
+  const renderDocumentos = () => (
+    <div className="space-y-2">
+      {documentosClinicos.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-sm text-gray-400">Sin documentos clínicos</p>
+        </div>
+      ) : (
+        documentosClinicos.map((doc) => (
+          <div key={doc.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 group">
+            <svg className="w-10 h-10 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-medium text-gray-900 truncate">{doc.nombre}</h4>
+              <p className="text-xs text-gray-500">{formatDate(doc.createdAt)}</p>
+            </div>
+            <button
+              onClick={() => handleDelete(doc.id)}
+              className="p-2 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-50 rounded transition-opacity"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        ))
+      )}
+    </div>
+  );
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
-      <h2 className="text-lg font-semibold text-concreto mb-4">Documentos Adjuntos</h2>
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
-          {error}
+    <>
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-serif font-light text-gray-900">Galería de Archivos</h2>
+          <button 
+            onClick={() => setShowUploadModal(true)}
+            className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+            title="Subir archivo"
+          >
+            <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
         </div>
-      )}
 
-      <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={`
-          border-2 border-dashed rounded-lg p-8 text-center transition-colors mb-4
-          ${isDragging ? 'border-morena bg-morena/5' : 'border-gray-300'}
-          ${isUploading ? 'opacity-50 cursor-wait' : 'cursor-pointer'}
-        `}
-      >
-        {isUploading ? (
-          <>
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-morena mx-auto mb-2"></div>
-            <p className="text-sm text-marengo/60">Subiendo archivos...</p>
-          </>
-        ) : (
-          <>
-            <div className="text-4xl text-marengo/30 mb-2">📎</div>
-            <p className="text-sm text-marengo/60 mb-1">Arrastra archivos aquí</p>
-            <p className="text-xs text-marengo/40 mb-3">
-              PDF, imágenes, documentos Word (máx. 50MB)
-            </p>
-            <label className="inline-block">
-              <input
-                type="file"
-                multiple
-                onChange={handleFileInput}
-                className="hidden"
-                accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
-                disabled={isUploading}
-              />
-              <span className="px-4 py-2 bg-morena text-white text-sm rounded-lg hover:bg-morena/90 cursor-pointer">
-                Seleccionar archivos
-              </span>
-            </label>
-          </>
-        )}
+        {/* Tabs */}
+        <div className="flex gap-1 mb-6 border-b border-gray-200">
+          <button
+            onClick={() => setActiveTab('fotos')}
+            className={`px-4 py-2 text-sm font-medium transition-colors relative ${
+              activeTab === 'fotos' 
+                ? 'text-morena border-b-2 border-morena' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Fotos Evolución ({fotosEvolucion.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('documentos')}
+            className={`px-4 py-2 text-sm font-medium transition-colors relative ${
+              activeTab === 'documentos' 
+                ? 'text-morena border-b-2 border-morena' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Documentos Clínicos ({documentosClinicos.length})
+          </button>
+        </div>
+
+        {/* Contenido según tab activo */}
+        {activeTab === 'fotos' ? renderFotos() : renderDocumentos()}
       </div>
 
-      <div className="space-y-3">
-        {documentos.length === 0 ? (
-          <p className="text-sm text-marengo/60 text-center py-4">
-            No hay documentos adjuntos
-          </p>
-        ) : (
-          documentos.map((doc) => (
-            <div 
-              key={doc.id} 
-              className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors group"
-            >
-              <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                <span className="text-xs font-medium text-marengo">
-                  {getFileIcon(doc.tipo, doc.mimeType)}
-                </span>
+      {/* Modal de carga con selector */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full">
+            <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+              <h3 className="text-lg font-medium text-gray-900">Subir Archivo</h3>
+              <button onClick={() => setShowUploadModal(false)} className="text-gray-400 hover:text-gray-600">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+                  {error}
+                </div>
+              )}
+
+              {/* Seleccionar archivo */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Archivo</label>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-concreto truncate">{doc.nombre}</p>
-                <p className="text-xs text-marengo/60">
-                  {formatFileSize(doc.tamaño)} • {new Date(doc.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={() => handleDownload(doc.id, doc.nombre)}
-                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                  title="Descargar"
+
+              {/* Categoría */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+                <select
+                  value={categoria}
+                  onChange={(e) => setCategoria(e.target.value as any)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
-                  <svg className="w-4 h-4 text-marengo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
+                  <option value="FOTO_EVOLUCION">Foto de Evolución</option>
+                  <option value="DOCUMENTO_CLINICO">Documento Clínico</option>
+                </select>
+              </div>
+
+              {/* Opciones según categoría */}
+              {categoria === 'FOTO_EVOLUCION' ? (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Momento</label>
+                    <select
+                      value={momento}
+                      onChange={(e) => setMomento(e.target.value as any)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    >
+                      <option value="ANTES">Antes</option>
+                      <option value="DURANTE">Durante</option>
+                      <option value="DESPUES">Después</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Zona</label>
+                    <select
+                      value={tipoFoto}
+                      onChange={(e) => setTipoFoto(e.target.value as any)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    >
+                      <option value="FACIAL">Facial</option>
+                      <option value="CORPORAL">Corporal</option>
+                      <option value="CAPILAR">Capilar</option>
+                    </select>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Documento</label>
+                  <select
+                    value={tipoDoc}
+                    onChange={(e) => setTipoDoc(e.target.value as any)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  >
+                    <option value="CONSENTIMIENTO">Consentimiento Informado</option>
+                    <option value="LABORATORIO">Resultados de Laboratorio</option>
+                    <option value="RAYOS_X">Rayos X / Estudios</option>
+                    <option value="OTRO">Otro</option>
+                  </select>
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => setShowUploadModal(false)}
+                  className="btn-secondary"
+                >
+                  Cancelar
                 </button>
                 <button
-                  onClick={() => handleDelete(doc.id)}
-                  className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                  title="Eliminar"
+                  onClick={handleUpload}
+                  disabled={isUploading || !selectedFile}
+                  className="btn-primary"
                 >
-                  <svg className="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  {isUploading ? 'Subiendo...' : 'Subir'}
                 </button>
               </div>
             </div>
-          ))
-        )}
-      </div>
-    </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

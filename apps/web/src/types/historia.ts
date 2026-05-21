@@ -7,67 +7,86 @@ export interface Paciente {
   sexo?: string;
 }
 
-export interface SignosVitales {
-  pa_sistolica?: number;
-  pa_diastolica?: number;
-  fc?: number;
-  temp?: number;
+export interface Medidas {
   peso?: number;
   talla?: number;
   imc?: number;
-  spo2?: number;
+  circunferencias?: Record<string, number>; // ej: { cintura: 80, cadera: 95 }
+  plieguesCutaneos?: Record<string, number>;
+  otros?: Record<string, string | number>;
 }
 
-export interface Receta {
+export interface ItemProtocolo {
+  id: string;
+  producto: {
+    id: string;
+    nombre: string;
+    tipo: 'COSMECEUTICO' | 'DERMOCOSMETICO' | 'EQUIPO' | 'INSUMO';
+  };
+  cantidad: number;
+  aplicacion?: string;
+  frecuencia?: string;
+  estado: 'INDICADO' | 'ADQUIRIDO' | 'EN_USO' | 'COMPLETADO';
+}
+
+export interface Protocolo {
   id: string;
   fecha: string;
-  items: Array<{
-    nombre: string;
-    cantidad: number;
-  }>;
+  indicaciones?: string;
+  items: ItemProtocolo[];
 }
 
 export interface Documento {
   id: string;
   nombre: string;
-  tipo: string;
+  tipo: 'FOTO_FACIAL' | 'FOTO_CORPORAL' | 'FOTO_CAPILAR' | 'ANALISIS' | 'CONSENTIMIENTO' | 'INFORME' | 'OTRO';
   url: string;
   mimeType: string;
   tamaño: number;
+  categoria?: 'FRONTAL' | 'PERFIL_DERECHO' | 'PERFIL_IZQUIERDO' | 'LATERAL' | 'DETALLE' | 'COMPLETO';
+  momento?: 'ANTES' | 'DURANTE' | 'DESPUES' | 'CONTROL_1_SEMANA' | 'CONTROL_1_MES' | 'CONTROL_3_MESES' | 'CONTROL_6_MESES' | 'CONTROL_1_ANO';
   createdAt: string;
   descripcion?: string;
 }
 
-export interface Consulta {
+export interface Tratamiento {
   id: string;
   fecha: string;
-  motivoConsulta: string;
-  diagnostico: string;
-  codigoCIE?: string;
-  tratamiento?: string;
-  examenFisico?: string;
+  tipoTratamiento: 'FACIAL' | 'CORPORAL' | 'CAPILAR' | 'COMBINADO';
+  nombreTratamiento: string;
+  zonaTratada?: string;
+  objetivo?: string;
+  evaluacionInicial?: string;
+  protocolo?: string;
+  parametros?: string;
+  reaccionesInmediatas?: string;
   observaciones?: string;
-  proximaConsulta?: string;
-  signosVitales?: SignosVitales;
+  sesionNumero?: number;
+  totalSesiones?: number;
+  proximaSesion?: string;
+  medidas?: Medidas;
   usuario: {
     nombre: string;
     apellido?: string;
+    rol: 'ADMIN' | 'TERAPEUTA' | 'RECEPCIONISTA';
   };
-  recetas?: Receta[];
+  protocolos?: Protocolo[];
   documentos?: Documento[];
 }
 
 export interface HistoriaClinica {
   id: string;
   tipoSangre?: string;
-  diagnosticoPrincipal?: string;
+  objetivoEstetico?: string;
+  condicionesMedicas?: string;
+  medicacionActual?: string;
   alergias?: string;
-  medicacionHabitual?: string;
+  embarazoLactancia?: boolean;
   antecedentesPersonales?: string;
   antecedentesFamiliares?: string;
   antecedentesQuirurgicos?: string;
   paciente: Paciente;
-  consultas: Consulta[];
+  tratamientos: Tratamiento[];
 }
 
-export type TabType = 'consultas' | 'recetas' | 'documentos' | 'resumen';
+export type TabType = 'tratamientos' | 'protocolos' | 'documentos' | 'resumen';

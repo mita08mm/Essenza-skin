@@ -60,14 +60,17 @@ app.get('/health', async (_req, res) => {
 // API routes
 app.get('/api', (_req, res) => {
   res.json({
-    name: 'Clinica System API',
-    version: '0.1.0',
+    name: 'Sistema Clínica de Medicina Estética',
+    version: '0.2.0',
     endpoints: {
       health: '/health',
       auth: '/api/auth',
       patients: '/api/pacientes',
       appointments: '/api/citas',
       medicalRecords: '/api/historias-clinicas',
+      treatments: '/api/tratamientos',
+      protocols: '/api/protocolos',
+      products: '/api/productos',
     },
   });
 });
@@ -88,21 +91,17 @@ app.use('/api/citas', citaRoutes);
 import cobroRoutes from './presentation/routes/cobro.routes';
 app.use('/api/cobros', cobroRoutes);
 
-// Rutas de recetas
-import recetaRoutes from './presentation/routes/receta.routes';
-app.use('/api/recetas', recetaRoutes);
+// Rutas de protocolos de cuidados
+import protocoloRoutes from './presentation/routes/protocolo.routes';
+app.use('/api/protocolos', protocoloRoutes);
 
-// Rutas de medicamentos
-import medicamentoRoutes from './presentation/routes/medicamento.routes';
-app.use('/api/medicamentos', medicamentoRoutes);
+// Rutas de productos (cosméticos, equipos, insumos)
+import productoRoutes from './presentation/routes/producto.routes';
+app.use('/api/productos', productoRoutes);
 
-// Rutas de insumos
-import insumoRoutes from './presentation/routes/insumo.routes';
-app.use('/api/insumos', insumoRoutes);
-
-// Rutas de consultas médicas  
-import consultaRoutes from './presentation/routes/consulta.routes';
-app.use('/api/consultas', consultaRoutes);
+// Rutas de tratamientos estéticos
+import tratamientoRoutes from './presentation/routes/tratamiento.routes';
+app.use('/api/tratamientos', tratamientoRoutes);
 
 // Rutas de historia clínica (montadas sobre pacientes)
 import pacienteHistoriaRoutes from './presentation/routes/paciente-historia.routes';

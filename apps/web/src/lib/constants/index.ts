@@ -47,34 +47,67 @@ export const TIPOS_DOCUMENTO = {
   OTRO: 'Otro',
 } as const;
 
-// Tipos de archivo
+// Tipos de documento/archivo
 export const TIPOS_ARCHIVO = {
-  FOTO: 'Foto',
-  PDF: 'PDF',
-  IMAGEN_MEDICA: 'Imagen Médica',
-  ESTUDIO: 'Estudio',
+  FOTO_FACIAL: 'Foto Facial',
+  FOTO_CORPORAL: 'Foto Corporal',
+  FOTO_CAPILAR: 'Foto Capilar',
+  ANALISIS: 'Análisis',
+  CONSENTIMIENTO: 'Consentimiento Informado',
+  INFORME: 'Informe Médico',
   OTRO: 'Otro',
 } as const;
 
-// Categorías de archivo
-export const CATEGORIAS_ARCHIVO = {
-  ANTES: 'Antes',
-  DESPUES: 'Después',
-  DURANTE: 'Durante',
-  ESTUDIO: 'Estudio',
-  DOCUMENTO: 'Documento',
+// Categorías de foto
+export const CATEGORIAS_FOTO = {
+  FRONTAL: 'Frontal',
+  PERFIL_DERECHO: 'Perfil Derecho',
+  PERFIL_IZQUIERDO: 'Perfil Izquierdo',
+  LATERAL: 'Lateral',
+  DETALLE: 'Detalle',
+  COMPLETO: 'Cuerpo Completo',
 } as const;
 
-// Estados de receta
-export const ESTADOS_RECETA = {
-  PRESCRITO: 'Solo Prescrito',
-  ENTREGADO: 'Entregado',
+// Momentos de captura de foto
+export const MOMENTOS_FOTO = {
+  ANTES: 'Antes del Tratamiento',
+  DURANTE: 'Durante el Tratamiento',
+  DESPUES: 'Después del Tratamiento',
+  CONTROL_1_SEMANA: 'Control 1 Semana',
+  CONTROL_1_MES: 'Control 1 Mes',
+  CONTROL_3_MESES: 'Control 3 Meses',
+  CONTROL_6_MESES: 'Control 6 Meses',
+  CONTROL_1_ANO: 'Control 1 Año',
+} as const;
+
+// Estados de protocolo/item
+export const ESTADOS_PROTOCOLO = {
+  INDICADO: 'Indicado',
+  ADQUIRIDO: 'Adquirido',
+  EN_USO: 'En Uso',
+  COMPLETADO: 'Completado',
+} as const;
+
+// Tipos de tratamiento
+export const TIPOS_TRATAMIENTO = {
+  FACIAL: 'Facial',
+  CORPORAL: 'Corporal',
+  CAPILAR: 'Capilar',
+  COMBINADO: 'Combinado',
+} as const;
+
+// Tipos de producto
+export const TIPOS_PRODUCTO = {
+  COSMECEUTICO: 'Cosmecéutico (Profesional)',
+  DERMOCOSMETICO: 'Dermocosmétic o',
+  EQUIPO: 'Equipo',
+  INSUMO: 'Insumo',
 } as const;
 
 // Roles de usuario
 export const ROLES_USUARIO = {
   ADMIN: 'Administrador',
-  MEDICO: 'Médico',
+  TERAPEUTA: 'Terapeuta',
   RECEPCIONISTA: 'Recepcionista',
 } as const;
 

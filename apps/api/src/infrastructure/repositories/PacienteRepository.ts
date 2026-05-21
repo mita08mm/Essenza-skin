@@ -1,10 +1,10 @@
-import { PrismaClient, Paciente, TipoDocumento, EstadoPaciente } from '@clinica/database';
+import { PrismaClient, Paciente, TipoDocumentoIdentidad, EstadoPaciente } from '@clinica/database';
 
 export interface CreatePacienteInput {
   nombre: string;
   apellido: string;
   documento: string;
-  tipoDocumento: TipoDocumento;
+  tipoDocumento: TipoDocumentoIdentidad;
   fechaNacimiento: Date;
   telefono: string;
   email?: string;
@@ -14,6 +14,10 @@ export interface CreatePacienteInput {
   peso?: number;
   altura?: number;
   alergias?: string;
+  objetivoEstetico?: string;
+  condicionesMedicas?: string;
+  medicacionActual?: string;
+  embarazoLactancia?: boolean;
   contactoEmergenciaNombre?: string;
   contactoEmergenciaTelefono?: string;
   fotoUrl?: string;
@@ -70,7 +74,7 @@ export class PacienteRepository {
     });
   }
 
-  async findByDocumento(documento: string, tipoDocumento: TipoDocumento): Promise<Paciente | null> {
+  async findByDocumento(documento: string, tipoDocumento: TipoDocumentoIdentidad): Promise<Paciente | null> {
     return this.prisma.paciente.findUnique({
       where: {
         documento_tipoDocumento: {

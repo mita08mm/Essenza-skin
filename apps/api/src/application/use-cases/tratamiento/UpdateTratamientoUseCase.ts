@@ -1,0 +1,31 @@
+import { TratamientoRepository } from '../../../infrastructure/repositories/TratamientoRepository';
+
+interface UpdateTratamientoDTO {
+  tipoTratamiento?: 'FACIAL' | 'CORPORAL' | 'CAPILAR' | 'COMBINADO';
+  zonaTratada?: string;
+  objetivo?: string;
+  evaluacionInicial?: string;
+  protocolo?: string;
+  parametros?: any;
+  reaccionesInmediatas?: string;
+  sesionNumero?: number;
+  totalSesiones?: number;
+  observaciones?: string;
+  proximaSesion?: Date;
+  medidas?: any;
+}
+
+export class UpdateTratamientoUseCase {
+  constructor(private tratamientoRepository: TratamientoRepository) {}
+
+  async execute(id: string, data: UpdateTratamientoDTO) {
+    // Verificar que existe
+    const tratamientoExistente = await this.tratamientoRepository.findById(id);
+    if (!tratamientoExistente) {
+      throw new Error('Tratamiento no encontrado');
+    }
+
+    // Actualizar
+    return this.tratamientoRepository.update(id, data);
+  }
+}

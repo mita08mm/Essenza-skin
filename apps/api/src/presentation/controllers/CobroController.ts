@@ -8,7 +8,7 @@ import { RegistrarPagoUseCase } from '../../application/use-cases/cobro/Registra
 import { GetCobrosByPacienteUseCase } from '../../application/use-cases/cobro/GetCobrosByPacienteUseCase';
 
 const itemCobroSchema = z.object({
-  tipo: z.enum(['SERVICIO', 'MEDICAMENTO', 'INSUMO']),
+  tipo: z.enum(['SERVICIO', 'PRODUCTO', 'PAQUETE']),
   itemId: z.string().uuid('ID de item invalido').optional(),
   nombre: z.string().min(1, 'El nombre del item es requerido'),
   cantidad: z.number().int().positive('La cantidad debe ser mayor a 0'),

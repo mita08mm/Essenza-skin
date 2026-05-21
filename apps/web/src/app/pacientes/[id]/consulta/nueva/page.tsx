@@ -7,17 +7,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { apiEndpoint } from '@/lib/config';
-import { SignosVitalesInputs } from '@/components/consulta/SignosVitalesInputs';
-interface SignosVitales {
-  pa_sistolica?: number;
-  pa_diastolica?: number;
-  fc?: number;
-  temp?: number;
-  peso?: number;
-  talla?: number;
-  imc?: number;
-  spo2?: number;
-}
 
 interface Paciente {
   id: string;
@@ -37,15 +26,14 @@ function NuevaConsultaContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
 
-  // Datos del formulario
-  const [motivoConsulta, setMotivoConsulta] = useState('');
-  const [examenFisico, setExamenFisico] = useState('');
-  const [diagnostico, setDiagnostico] = useState('');
-  const [codigoCIE, setCodigoCIE] = useState('');
-  const [tratamiento, setTratamiento] = useState('');
+  // Formulario simplificado
+  const [tipoTratamiento, setTipoTratamiento] = useState<'FACIAL' | 'CORPORAL' | 'CAPILAR'>('FACIAL');
+  const [zonaTratada, setZonaTratada] = useState('');
+  const [evaluacionInicial, setEvaluacionInicial] = useState('');
+  const [objetivoSesion, setObjetivoSesion] = useState('');
+  const [procedimiento, setProcedimiento] = useState('');
   const [observaciones, setObservaciones] = useState('');
-  const [proximaConsulta, setProximaConsulta] = useState('');
-  const [signosVitales, setSignosVitales] = useState<SignosVitales>({});
+  const [proximaSesion, setProximaSesion] = useState('');
 
   useEffect(() => {
     if (!token) return;
@@ -73,8 +61,8 @@ function NuevaConsultaContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!motivoConsulta.trim() || !diagnostico.trim()) {
-      setError('El motivo de consulta y el diagnóstico son obligatorios');
+    if (!zonaTratada.trim() || !objetivoSesion.trim()) {
+      setError('La zona tratada y el objetivo son obligatorios');
       return;
     }
 
@@ -84,14 +72,13 @@ function NuevaConsultaContent() {
     try {
       const payload = {
         pacienteId,
-        motivoConsulta: motivoConsulta.trim(),
-        examenFisico: examenFisico.trim() || undefined,
-        diagnostico: diagnostico.trim(),
-        codigoCIE: codigoCIE.trim() || undefined,
-        tratamiento: tratamiento.trim() || undefined,
+        tipoTratamiento,
+        motivoConsulta: objetivoSesion.trim(),
+        examenFisico: evaluacionInicial.trim() || undefined,
+        diagnostico: `${tipoTratamiento} - ${zonaTratada}`,
+        tratamiento: procedimiento.trim() || undefined,
         observaciones: observaciones.trim() || undefined,
-        proximaConsulta: proximaConsulta || undefined,
-        signosVitales: Object.keys(signosVitales).length > 0 ? signosVitales : undefined,
+        proximaConsulta: proximaSesion || undefined,
       };
 
       const response = await fetch(apiEndpoint('/consultas'), {
@@ -105,13 +92,13 @@ function NuevaConsultaContent() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al crear consulta');
+        throw new Error(errorData.message || 'Error al crear tratamiento');
       }
 
       // Redirigir a la historia clínica
       router.push(`/pacientes/${pacienteId}/historia`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al guardar consulta');
+      setError(err instanceof Error ? err.message : 'Error al guardar tratamiento');
     } finally {
       setIsSaving(false);
     }
@@ -133,133 +120,132 @@ function NuevaConsultaContent() {
     );
   }
 
+  const inputClass = "w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-morena focus:border-transparent transition-all";
+  const labelClass = "block text-sm font-medium text-gray-700 mb-2";
+
   return (
-    <div className="max-w-5xl space-y-6">
-      {/* Header */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <div className="flex items-center gap-4 mb-2">
-          <Link
-            href={`/pacientes/${pacienteId}/historia`}
-            className="text-marengo hover:text-concreto"
-          >
-            ← Volver
-          </Link>
-          <h1 className="text-3xl font-heading font-bold text-concreto">Nueva Consulta</h1>
-        </div>
-        <p className="text-marengo">
-          Paciente: <span className="font-medium text-concreto">
+    <div className="max-w-4xl space-y-6">
+      {/* Header minimalista */}
+      <div className="flex items-center gap-4">
+        <Link
+          href={`/pacientes/${pacienteId}/historia`}
+          className="text-marengo hover:text-concreto transition-colors"
+        >
+          ← Volver
+        </Link>
+        <div>
+          <h1 className="text-2xl font-heading font-bold text-concreto">Nueva Sesión</h1>
+          <p className="text-sm text-marengo mt-1">
             {paciente.nombre} {paciente.apellido}
-          </span>
-        </p>
+          </p>
+        </div>
       </div>
 
-      {/* Formulario */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Formulario compacto */}
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6 space-y-6">
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-600 text-sm">{error}</p>
           </div>
         )}
 
-        {/* Motivo de Consulta */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-concreto mb-4">
-            Motivo de Consulta <span className="text-red-500">*</span>
-          </h2>
-          <textarea
-            value={motivoConsulta}
-            onChange={(e) => setMotivoConsulta(e.target.value)}
-            placeholder="Describa el motivo principal de la consulta..."
-            rows={3}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-morena focus:border-transparent"
-            required
-          />
+        {/* Fila 1: Tipo y Zona */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className={labelClass}>
+              Tipo de Tratamiento <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={tipoTratamiento}
+              onChange={(e) => setTipoTratamiento(e.target.value as any)}
+              className={inputClass}
+            >
+              <option value="FACIAL">Facial</option>
+              <option value="CORPORAL">Corporal</option>
+              <option value="CAPILAR">Capilar</option>
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>
+              Zona Tratada <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={zonaTratada}
+              onChange={(e) => setZonaTratada(e.target.value)}
+              placeholder="Ej: Rostro completo, Abdomen, Cuero cabelludo"
+              className={inputClass}
+              required
+            />
+          </div>
         </div>
 
-        {/* Signos Vitales */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-concreto mb-4">Signos Vitales</h2>
-          <SignosVitalesInputs
-            signosVitales={signosVitales}
-            onChange={setSignosVitales}
-          />
-        </div>
-
-        {/* Examen Físico */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-concreto mb-4">Examen Físico</h2>
-          <textarea
-            value={examenFisico}
-            onChange={(e) => setExamenFisico(e.target.value)}
-            placeholder="Hallazgos del examen físico..."
-            rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-morena focus:border-transparent"
-          />
-        </div>
-
-        {/* Diagnóstico */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-concreto mb-4">
-            Diagnóstico <span className="text-red-500">*</span>
-          </h2>
-          <textarea
-            value={diagnostico}
-            onChange={(e) => setDiagnostico(e.target.value)}
-            placeholder="Diagnóstico clínico..."
-            rows={3}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-morena focus:border-transparent mb-3"
-            required
-          />
-          
-          <label className="block text-sm font-medium text-marengo mb-2">
-            Código CIE-10 (opcional)
+        {/* Fila 2: Objetivo */}
+        <div>
+          <label className={labelClass}>
+            Objetivo de la Sesión <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
-            value={codigoCIE}
-            onChange={(e) => setCodigoCIE(e.target.value)}
-            placeholder="Ej: J06.9, K21.0"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-morena focus:border-transparent"
+            value={objetivoSesion}
+            onChange={(e) => setObjetivoSesion(e.target.value)}
+            placeholder="Ej: Reducir líneas de expresión, Mejorar textura de piel, Hidratación profunda"
+            className={inputClass}
+            required
           />
         </div>
 
-        {/* Tratamiento */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-concreto mb-4">Tratamiento</h2>
+        {/* Fila 3: Evaluación */}
+        <div>
+          <label className={labelClass}>Evaluación Inicial</label>
           <textarea
-            value={tratamiento}
-            onChange={(e) => setTratamiento(e.target.value)}
-            placeholder="Indicaciones médicas, medicamentos, dosificación..."
-            rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-morena focus:border-transparent"
-          />
-        </div>
-
-        {/* Observaciones */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-concreto mb-4">Observaciones</h2>
-          <textarea
-            value={observaciones}
-            onChange={(e) => setObservaciones(e.target.value)}
-            placeholder="Notas adicionales, recomendaciones..."
+            value={evaluacionInicial}
+            onChange={(e) => setEvaluacionInicial(e.target.value)}
+            placeholder="Estado de la piel/zona, medidas base, condiciones relevantes..."
             rows={3}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-morena focus:border-transparent"
+            className={inputClass}
           />
         </div>
 
-        {/* Próxima Consulta */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-concreto mb-4">Próxima Consulta</h2>
-          <input
-            type="date"
-            value={proximaConsulta}
-            onChange={(e) => setProximaConsulta(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-morena focus:border-transparent"
+        {/* Fila 4: Procedimiento */}
+        <div>
+          <label className={labelClass}>Procedimiento Realizado</label>
+          <textarea
+            value={procedimiento}
+            onChange={(e) => setProcedimiento(e.target.value)}
+            placeholder="Técnicas aplicadas, productos usados, parámetros del equipo..."
+            rows={3}
+            className={inputClass}
           />
         </div>
 
-        {/* Botones de Acción */}
-        <div className="flex gap-4 justify-end">
+        {/* Fila 5: Observaciones + Próxima sesión */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className={labelClass}>Observaciones</label>
+            <textarea
+              value={observaciones}
+              onChange={(e) => setObservaciones(e.target.value)}
+              placeholder="Reacciones, recomendaciones, cuidados..."
+              rows={2}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>Próxima Sesión</label>
+            <input
+              type="date"
+              value={proximaSesion}
+              onChange={(e) => setProximaSesion(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        {/* Botones */}
+        <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
           <Link
             href={`/pacientes/${pacienteId}/historia`}
             className="btn-secondary"
@@ -271,7 +257,7 @@ function NuevaConsultaContent() {
             disabled={isSaving}
             className="btn-primary"
           >
-            {isSaving ? 'Guardando...' : 'Guardar Consulta'}
+            {isSaving ? 'Guardando...' : 'Guardar Sesión'}
           </button>
         </div>
       </form>

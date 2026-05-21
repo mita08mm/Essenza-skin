@@ -1,14 +1,16 @@
-import { PrismaClient, Documento, TipoArchivoMedico } from '@clinica/database';
+import { PrismaClient, Documento, TipoDocumento, CategoriaFoto, MomentoFoto } from '@clinica/database';
 
 export interface CreateDocumentoData {
   pacienteId: string;
-  consultaId?: string;
+  tratamientoId?: string;
   nombre: string;
   descripcion?: string;
-  tipo: TipoArchivoMedico;
+  tipo: TipoDocumento;
   url: string;
   tamaño: number;
   mimeType: string;
+  categoria?: CategoriaFoto;
+  momento?: MomentoFoto;
 }
 
 export class DocumentoRepository {
@@ -25,10 +27,11 @@ export class DocumentoRepository {
             apellido: true,
           },
         },
-        consulta: {
+        tratamiento: {
           select: {
             id: true,
             fecha: true,
+            tipoTratamiento: true,
           },
         },
       },
@@ -40,7 +43,7 @@ export class DocumentoRepository {
       where: { id },
       include: {
         paciente: true,
-        consulta: true,
+        tratamiento: true,
       },
     });
   }
@@ -49,11 +52,11 @@ export class DocumentoRepository {
     return this.prisma.documento.findMany({
       where: { pacienteId },
       include: {
-        consulta: {
+        tratamiento: {
           select: {
             id: true,
             fecha: true,
-            motivoConsulta: true,
+            tipoTratamiento: true,
           },
         },
       },
@@ -63,16 +66,16 @@ export class DocumentoRepository {
     });
   }
 
-  async findByConsulta(consultaId: string): Promise<Documento[]> {
+  async findByTratamiento(tratamientoId: string): Promise<Documento[]> {
     return this.prisma.documento.findMany({
-      where: { consultaId },
+      where: { tratamientoId },
       orderBy: {
         createdAt: 'desc',
       },
     });
   }
 
-  async findByTipo(tipo: TipoArchivoMedico, pacienteId?: string): Promise<Documento[]> {
+  async findByTipo(tipo: TipoDocumento, pacienteId?: string): Promise<Documento[]> {
     return this.prisma.documento.findMany({
       where: {
         tipo,
@@ -99,7 +102,7 @@ export class DocumentoRepository {
       data,
       include: {
         paciente: true,
-        consulta: true,
+        tratamiento: true,
       },
     });
   }

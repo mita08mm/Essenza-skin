@@ -8,8 +8,10 @@ interface ResumenTabProps {
 
 export function ResumenTab({ historia, pacienteId }: ResumenTabProps) {
   const hasData =
-    historia.diagnosticoPrincipal ||
-    historia.medicacionHabitual ||
+    historia.objetivoEstetico ||
+    historia.condicionesMedicas ||
+    historia.medicacionActual ||
+    historia.alergias ||
     historia.antecedentesPersonales ||
     historia.antecedentesFamiliares ||
     historia.antecedentesQuirurgicos;
@@ -30,15 +32,30 @@ export function ResumenTab({ historia, pacienteId }: ResumenTabProps) {
 
   return (
     <div className="space-y-6">
-      {historia.diagnosticoPrincipal && (
+      {historia.objetivoEstetico && (
         <ResumenSection
-          title="Diagnóstico Principal"
-          content={historia.diagnosticoPrincipal}
+          title="Objetivo Estético"
+          content={historia.objetivoEstetico}
         />
       )}
 
-      {historia.medicacionHabitual && (
-        <ResumenSection title="Medicación Habitual" content={historia.medicacionHabitual} />
+      {historia.condicionesMedicas && (
+        <ResumenSection title="Condiciones Médicas" content={historia.condicionesMedicas} />
+      )}
+
+      {historia.medicacionActual && (
+        <ResumenSection title="Medicación Actual" content={historia.medicacionActual} />
+      )}
+
+      {historia.alergias && (
+        <ResumenSection title="Alergias" content={historia.alergias} />
+      )}
+
+      {historia.embarazoLactancia && (
+        <ResumenSection 
+          title="Embarazo/Lactancia" 
+          content="Sí" 
+        />
       )}
 
       {historia.antecedentesPersonales && (

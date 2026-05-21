@@ -45,13 +45,13 @@ async function main() {
     create: {
       email: 'medico@clinica.com',
       password: medicoPassword,
-      rol: 'MEDICO',
-      nombre: 'Dr. Juan',
+      rol: 'TERAPEUTA',
+      nombre: 'Dra. Juan',
       apellido: 'Pérez',
       activo: true,
     },
   });
-  console.log('✅ Médico creado:', medico.email);
+  console.log('✅ Terapeuta creado:', medico.email);
 
   const recepPassword = await bcrypt.hash('recep123', 10);
   const recepcionista = await prisma.usuario.upsert({
@@ -108,77 +108,25 @@ async function main() {
   // ============================
   console.log('\n📋 Creando historias clínicas...');
 
-  const historia1 = await prisma.historiaClinica.create({
+  await prisma.historiaClinica.create({
     data: {
       pacienteId: paciente1.id,
-      diagnosticoPrincipal: 'Hipertensión arterial',
-      antecedentes: 'Padre con diabetes tipo 2',
-      alergias: 'Penicilina',
-      medicacionHabitual: 'Enalapril 10mg 1 vez al día',
-      notasGenerales: 'Paciente colaboradora, buena adherencia al tratamiento',
+      condicionesMedicas: 'Ninguna',
+      tipoPiel: 'Mixta',
+      preocupacionPrincipal: 'Arrugas de expresión',
     },
   });
   console.log('✅ Historia clínica creada para:', paciente1.nombre);
 
-  const historia2 = await prisma.historiaClinica.create({
+  await prisma.historiaClinica.create({
     data: {
       pacienteId: paciente2.id,
-      diagnosticoPrincipal: 'Asma bronquial',
-      antecedentes: 'Sin antecedentes familiares relevantes',
-      alergias: 'Polen',
-      medicacionHabitual: 'Salbutamol inhalador según necesidad',
-      notasGenerales: 'Paciente deportista, no fumador',
+      condicionesMedicas: 'Ninguna',
+      tipoPiel: 'Grasa',
+      preocupacionPrincipal: 'Acné',
     },
   });
   console.log('✅ Historia clínica creada para:', paciente2.nombre);
-
-  // ============================
-  // EVOLUCIONES
-  // ============================
-
-  const evolucion1 = await prisma.evolucion.create({
-    data: {
-      pacienteId: paciente1.id,
-      historiaClinicaId: historia1.id,
-      usuarioId: medico.id,
-      fecha: new Date('2026-05-01'),
-      motivoConsulta: 'Control de presión arterial',
-      diagnostico: 'Hipertensión arterial controlada',
-      tratamiento: 'Continuar con Enalapril 10mg',
-      observaciones: 'Presión arterial 120/80. Peso estable.',
-      proximaConsulta: new Date('2026-06-01'),
-    },
-  });
-  console.log('✅ Evolución creada para:', paciente1.nombre);
-
-  // ============================
-  // CITAS
-  // ============================
-
-  const cita1 = await prisma.cita.create({
-    data: {
-      pacienteId: paciente1.id,
-      fecha: new Date('2026-05-25'),
-      horaInicio: '10:00',
-      horaFin: '10:30',
-      motivo: 'Control de presión arterial',
-      estado: 'PROGRAMADA',
-      notas: 'Traer estudios de laboratorio',
-    },
-  });
-  console.log('✅ Cita creada para:', paciente1.nombre);
-
-  const cita2 = await prisma.cita.create({
-    data: {
-      pacienteId: paciente2.id,
-      fecha: new Date('2026-05-26'),
-      horaInicio: '14:00',
-      horaFin: '14:30',
-      motivo: 'Control de asma',
-      estado: 'PROGRAMADA',
-    },
-  });
-  console.log('✅ Cita creada para:', paciente2.nombre);
 
   // ============================
   // SERVICIOS
@@ -208,45 +156,47 @@ async function main() {
   console.log('✅ Servicio creado:', electrocardiograma.nombre);
 
   // ============================
-  // MEDICAMENTOS
+  // PRODUCTOS
   // ============================
-  console.log('\n💊 Creando medicamentos...');
+  console.log('\n🧴 Creando productos...');
 
-  const enalapril = await prisma.medicamento.create({
+  await prisma.producto.create({
     data: {
-      codigo: 'MED-001',
-      nombre: 'Enalapril 10mg',
-      descripcion: 'Antihipertensivo - Comprimidos x 30',
-      precio: 1200,
-      stock: 50,
-      stockMinimo: 10,
-      activo: true,
-    },
-  });
-  console.log('✅ Medicamento creado:', enalapril.nombre);
-
-  const salbutamol = await prisma.medicamento.create({
-    data: {
-      codigo: 'MED-002',
-      nombre: 'Salbutamol Inhalador',
-      descripcion: 'Broncodilatador - 200 dosis',
-      precio: 2500,
+      codigo: 'PROD-001',
+      nombre: 'Sérum Vitamina C 20%',
+      tipo: 'COSMECEUTICO',
+      categoria: 'Sérum',
+      descripcion: 'Sérum antioxidante y despigmentante',
+      precio: 8500,
       stock: 30,
       stockMinimo: 5,
       activo: true,
     },
   });
-  console.log('✅ Medicamento creado:', salbutamol.nombre);
+  console.log('✅ Producto creado: Sérum Vitamina C');
+
+  await prisma.producto.create({
+    data: {
+      codigo: 'PROD-002',
+      nombre: 'Retinol 0.5% Noche',
+      tipo: 'DERMOCOSMETICO',
+      categoria: 'Crema',
+      descripcion: 'Crema antiedad con retinol',
+      precio: 6500,
+      stock: 20,
+      stockMinimo: 5,
+      activo: true,
+    },
+  });
+  console.log('✅ Producto creado: Retinol Noche');
 
   console.log('\n✅ ¡Seed completado exitosamente!\n');
   console.log('📊 Resumen:');
-  console.log('  - 3 usuarios (Admin, Médico, Recepcionista)');
+  console.log('  - 3 usuarios (Admin, Terapeuta, Recepcionista)');
   console.log('  - 2 pacientes');
   console.log('  - 2 historias clínicas');
-  console.log('  - 1 evolución');
-  console.log('  - 2 citas');
   console.log('  - 2 servicios');
-  console.log('  - 2 medicamentos');
+  console.log('  - 2 productos cosmé uticos');
   console.log('\n🔑 Credenciales:');
   console.log('  Admin: admin@clinica.com / admin123');
   console.log('  Médico: medico@clinica.com / medico123');

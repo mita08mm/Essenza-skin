@@ -22,8 +22,8 @@ model Usuario {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  consultas Consulta[]
-  recetas   Receta[]
+  tratamientos Tratamiento[]
+  protocolos   Protocolo[]
 
   @@index([email])
   @@map("usuarios")
@@ -31,7 +31,7 @@ model Usuario {
 
 enum Rol {
   ADMIN
-  MEDICO
+  TERAPEUTA // Especialista en medicina estética
   RECEPCIONISTA
 }
 
@@ -40,20 +40,27 @@ enum Rol {
 // ========================================
 
 model Paciente {
-  id                         String         @id @default(uuid())
-  nombre                     String
-  apellido                   String
-  documento                  String
-  tipoDocumento              TipoDocumento
-  fechaNacimiento            DateTime
-  telefono                   String
-  email                      String?
-  direccion                  String?
-  sexo                       String?
-  grupoSanguineo             String?
-  peso                       Decimal?       @db.Decimal(5, 2)
-  altura                     Decimal?       @db.Decimal(5, 2)
-  alergias                   String?
+  id              String                 @id @default(uuid())
+  nombre          String
+  apellido        String
+  documento       String
+  tipoDocumento   TipoDocumentoIdentidad
+  fechaNacimiento DateTime
+  telefono        String
+  email           String?
+  direccion       String?
+  sexo            String?
+  grupoSanguineo  String?
+  peso            Decimal?               @db.Decimal(5, 2)
+  altura          Decimal?               @db.Decimal(5, 2)
+
+  // Campos específicos de medicina estética
+  objetivoEstetico   String? // Objetivo principal del paciente
+  alergias           String? // Alergias a productos/sustancias
+  condicionesMedicas String? // Condiciones médicas relevantes
+  medicacionActual   String? // Medicamentos que toma actualmente
+  embarazoLactancia  Boolean? @default(false)
+
   contactoEmergenciaNombre   String?
   contactoEmergenciaTelefono String?
   fotoUrl                    String?
@@ -64,7 +71,8 @@ model Paciente {
   historiaClinica HistoriaClinica?
   citas           Cita[]
   cobros          Cobro[]
-  recetas         Receta[]
+  tratamientos    Tratamiento[]
+  protocolos      Protocolo[]
   documentos      Documento[]
 
   @@unique([documento, tipoDocumento])
@@ -74,10 +82,9 @@ model Paciente {
   @@map("pacientes")
 }
 
-enum TipoDocumento {
-  DNI
-  PASAPORTE
-  OTRO
+enum TipoDocumentoIdentidad {
+  CI // Cédula de Identidad (Boliviano)
+  PASAPORTE // Extranjero
 }
 
 enum EstadoPaciente {
@@ -86,36 +93,47 @@ enum EstadoPaciente {
 }
 
 // ========================================
-// MÓDULO: HISTORIA CLÍNICA
+// MÓDULO: HISTORIA CLÍNICA ESTÉTICA
 // ========================================
 
 model HistoriaClinica {
   id         String @id @default(uuid())
   pacienteId String @unique
 
-  // Datos generales
-  tipoSangre           String? // A+, O-, etc
-  diagnosticoPrincipal String?
-  alergias             String? // CRÍTICO: alertas médicas
-  medicacionHabitual   String?
+  // Datos generales de salud
+  tipoSangre         String?
+  condicionesMedicas String? // Enfermedades, alergias relevantes
+  medicacionHabitual String?
+  cirugiasEsteticas  String? // Procedimientos estéticos previos
+  cirugiasGenerales  String? // Cirugías generales previas
 
-  // Antecedentes
-  antecedentesPersonales  String? // Enfermedades previas
-  antecedentesFamiliares  String? // Historia familiar
-  antecedentesQuirurgicos String? // Cirugías previas
+  // Historial estético
+  tratamientosPrevios String? // Tratamientos estéticos anteriores
+  productosCosmeticos String? // Rutina de cuidado actual
+  exposicionSolar     String? // Hábitos de exposición solar
+  habitosVida         String? // Alcohol, tabaco, ejercicio, dieta
+
+  // Evaluación inicial
+  tipoPiel              String? // Grasa, seca, mixta, sensible
+  fototipoFitzpatrick   String? // I-VI escala Fitzpatrick
+  preocupacionPrincipal String? // Arrugas, manchas, acné, etc.
 
   notasGenerales String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  paciente  Paciente   @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  consultas Consulta[]
+  paciente     Paciente      @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  tratamientos Tratamiento[]
 
   @@index([pacienteId])
   @@map("historias_clinicas")
 }
 
-model Consulta {
+// ========================================
+// MÓDULO: TRATAMIENTOS ESTÉTICOS
+// ========================================
+
+model Tratamiento {
   id                String   @id @default(uuid())
   pacienteId        String
   historiaClinicaId String
@@ -123,25 +141,39 @@ model Consulta {
   citaId            String?
   fecha             DateTime @default(now())
 
-  // Datos de consulta
-  motivoConsulta  String
-  examenFisico    String?
-  diagnostico     String
-  codigoCIE       String? // Código CIE-10 opcional
-  tratamiento     String?
-  observaciones   String?
-  proximaConsulta DateTime?
+  // Información del tratamiento
+  tipoTratamiento   TipoTratamiento // Facial, Corporal, Capilar
+  nombreTratamiento String // Nombre específico del procedimiento
+  zonaTratada       String // Área específica del cuerpo
+  objetivo          String // Objetivo del tratamiento
 
-  // Signos vitales (JSON para flexibilidad)
-  signosVitales Json? // { pa_sistolica, pa_diastolica, fc, temp, peso, talla, imc, spo2 }
+  // Evaluación y protocolo
+  evaluacionInicial String? // Estado inicial de la piel/área
+  protocolo         String? // Protocolo aplicado
+  productosUsados   String? // Productos/equipos utilizados
+  parametros        Json? // Parámetros técnicos (intensidad, tiempo, etc.)
+
+  // Seguimiento
+  reaccionesInmediatas           String? // Eritema, edema, etc.
+  recomendacionesPostTratamiento String? // Cuidados posteriores
+  observaciones                  String?
+  proximaSesion                  DateTime?
+
+  // Datos de sesión/paquete
+  sesionNumero  Int? // Ej: "Sesión 3 de 6"
+  totalSesiones Int?
+
+  // Medidas corporales/faciales (JSON para flexibilidad)
+  medidas Json? // { peso, contornos, pliegues, etc. según tipo de tratamiento }
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   historiaClinica HistoriaClinica @relation(fields: [historiaClinicaId], references: [id], onDelete: Cascade)
+  paciente        Paciente        @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
   usuario         Usuario         @relation(fields: [usuarioId], references: [id])
   cita            Cita?           @relation(fields: [citaId], references: [id])
-  recetas         Receta[]
+  protocolos      Protocolo[]
   cobros          Cobro[]
   documentos      Documento[]
 
@@ -149,27 +181,37 @@ model Consulta {
   @@index([historiaClinicaId])
   @@index([fecha])
   @@index([citaId])
-  @@map("consultas")
+  @@index([tipoTratamiento])
+  @@map("tratamientos")
+}
+
+enum TipoTratamiento {
+  FACIAL
+  CORPORAL
+  CAPILAR
+  COMBINADO
 }
 
 // ========================================
-// MÓDULO: CITAS
+// MÓDULO: CITAS Y AGENDA
 // ========================================
 
 model Cita {
-  id         String     @id @default(uuid())
-  pacienteId String
-  fecha      DateTime
-  horaInicio String
-  horaFin    String
-  motivo     String
-  estado     EstadoCita @default(PROGRAMADA)
-  notas      String?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id                  String           @id @default(uuid())
+  pacienteId          String
+  fecha               DateTime
+  horaInicio          String
+  horaFin             String
+  tipoTratamiento     TipoTratamiento? // Facial, Corporal, Capilar
+  motivo              String
+  estado              EstadoCita       @default(PROGRAMADA)
+  notas               String?
+  recordatorioEnviado Boolean          @default(false)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 
-  paciente  Paciente   @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  consultas Consulta[]
+  paciente     Paciente      @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  tratamientos Tratamiento[]
 
   @@index([pacienteId])
   @@index([fecha])
@@ -187,84 +229,88 @@ enum EstadoCita {
 }
 
 // ========================================
-// MÓDULO: SERVICIOS Y PRODUCTOS
+// MÓDULO: SERVICIOS Y PRODUCTOS ESTÉTICOS
 // ========================================
 
 model Servicio {
-  id          String      @id @default(uuid())
-  codigo      String      @unique
+  id          String             @id @default(uuid())
+  codigo      String             @unique
   nombre      String
+  categoria   CategoriaServicio? // Facial, Corporal, Capilar
   descripcion String?
-  precio      Decimal     @db.Decimal(10, 2)
-  activo      Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  duracion    Int? // Duración estimada en minutos
+  precio      Decimal            @db.Decimal(10, 2)
+  activo      Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
   itemsCobro  ItemCobro[]
 
   @@index([codigo])
   @@index([activo])
+  @@index([categoria])
   @@map("servicios")
 }
 
-model Medicamento {
-  id          String       @id @default(uuid())
-  codigo      String       @unique
-  nombre      String
-  descripcion String?
-  precio      Decimal      @db.Decimal(10, 2)
-  stock       Int          @default(0)
-  stockMinimo Int          @default(10)
-  activo      Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  itemsCobro  ItemCobro[]
-  itemsReceta ItemReceta[]
-
-  @@index([codigo])
-  @@index([activo])
-  @@map("medicamentos")
+enum CategoriaServicio {
+  FACIAL
+  CORPORAL
+  CAPILAR
+  PAQUETE
+  CONSULTA
 }
 
-model Insumo {
-  id          String       @id @default(uuid())
-  codigo      String       @unique
-  nombre      String
-  descripcion String?
-  precio      Decimal      @db.Decimal(10, 2)
-  stock       Int          @default(0)
-  stockMinimo Int          @default(10)
-  activo      Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  itemsCobro  ItemCobro[]
-  itemsReceta ItemReceta[]
+model Producto {
+  id              String          @id @default(uuid())
+  codigo          String          @unique
+  nombre          String
+  tipo            TipoProducto
+  categoria       String? // Ej: Sérum, Crema, Ampolla, etc.
+  descripcion     String?
+  marca           String? // Marca comercial del producto
+  principioActivo String? // Ingrediente activo principal
+  precio          Decimal         @db.Decimal(10, 2)
+  stock           Int             @default(0)
+  stockMinimo     Int             @default(10)
+  activo          Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  itemsCobro      ItemCobro[]
+  itemsProtocolo  ItemProtocolo[]
 
   @@index([codigo])
   @@index([activo])
-  @@map("insumos")
+  @@index([tipo])
+  @@map("productos")
+}
+
+enum TipoProducto {
+  COSMECEUTICO // Productos de uso profesional
+  DERMOCOSMETICO // Productos de venta al paciente
+  EQUIPO // Equipos/dispositivos
+  INSUMO // Material fungible
 }
 
 // ========================================
-// MÓDULO: COBROS
+// MÓDULO: COBROS Y FACTURACIÓN
 // ========================================
 
 model Cobro {
-  id         String      @id @default(uuid())
-  pacienteId String
-  consultaId String?
-  fecha      DateTime    @default(now())
-  subtotal   Decimal     @default(0) @db.Decimal(10, 2)
-  descuento  Decimal     @default(0) @db.Decimal(10, 2)
-  total      Decimal     @default(0) @db.Decimal(10, 2)
-  estado     EstadoCobro @default(PENDIENTE)
-  notas      String?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id            String      @id @default(uuid())
+  pacienteId    String
+  tratamientoId String?
+  fecha         DateTime    @default(now())
+  subtotal      Decimal     @default(0) @db.Decimal(10, 2)
+  descuento     Decimal     @default(0) @db.Decimal(10, 2)
+  total         Decimal     @default(0) @db.Decimal(10, 2)
+  estado        EstadoCobro @default(PENDIENTE)
+  notas         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
-  paciente Paciente    @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  consulta Consulta?   @relation(fields: [consultaId], references: [id])
-  items    ItemCobro[]
-  pagos    Pago[]
+  paciente    Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  tratamiento Tratamiento? @relation(fields: [tratamientoId], references: [id])
+  items       ItemCobro[]
+  pagos       Pago[]
 
   @@index([pacienteId])
   @@index([estado])
@@ -283,10 +329,9 @@ model ItemCobro {
   subtotal       Decimal       @db.Decimal(10, 2)
   createdAt      DateTime      @default(now())
 
-  cobro       Cobro        @relation(fields: [cobroId], references: [id], onDelete: Cascade)
-  servicio    Servicio?    @relation(fields: [itemId], references: [id], map: "ItemCobro_servicio_fkey")
-  medicamento Medicamento? @relation(fields: [itemId], references: [id], map: "ItemCobro_medicamento_fkey")
-  insumo      Insumo?      @relation(fields: [itemId], references: [id], map: "ItemCobro_insumo_fkey")
+  cobro    Cobro     @relation(fields: [cobroId], references: [id], onDelete: Cascade)
+  servicio Servicio? @relation(fields: [itemId], references: [id], map: "ItemCobro_servicio_fkey")
+  producto Producto? @relation(fields: [itemId], references: [id], map: "ItemCobro_producto_fkey")
 
   @@index([cobroId])
   @@map("items_cobro")
@@ -294,8 +339,8 @@ model ItemCobro {
 
 enum TipoItemCobro {
   SERVICIO
-  MEDICAMENTO
-  INSUMO
+  PRODUCTO
+  PAQUETE
 }
 
 enum EstadoCobro {
@@ -330,94 +375,123 @@ enum MetodoPago {
 }
 
 // ========================================
-// MÓDULO: RECETAS
+// MÓDULO: PROTOCOLOS DE CUIDADO EN CASA
 // ========================================
 
-model Receta {
-  id           String       @id @default(uuid())
-  pacienteId   String
-  consultaId   String?
-  usuarioId    String
-  fecha        DateTime     @default(now())
-  indicaciones String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  paciente     Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  consulta     Consulta?    @relation(fields: [consultaId], references: [id])
-  usuario      Usuario      @relation(fields: [usuarioId], references: [id])
-  items        ItemReceta[]
+model Protocolo {
+  id            String   @id @default(uuid())
+  pacienteId    String
+  tratamientoId String?
+  usuarioId     String
+  fecha         DateTime @default(now())
+  nombre        String // Ej: "Protocolo post-peeling", "Rutina facial diaria"
+  indicaciones  String? // Instrucciones generales
+  duracion      String? // Ej: "14 días", "uso continuo"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  paciente    Paciente        @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  tratamiento Tratamiento?    @relation(fields: [tratamientoId], references: [id])
+  usuario     Usuario         @relation(fields: [usuarioId], references: [id])
+  items       ItemProtocolo[]
 
   @@index([pacienteId])
   @@index([fecha])
-  @@map("recetas")
+  @@map("protocolos")
 }
 
-model ItemReceta {
-  id            String           @id @default(uuid())
-  recetaId      String
-  tipo          TipoItemReceta
-  itemId        String
-  nombre        String
-  cantidad      Int
-  dosis         String?
-  frecuencia    String?
-  duracion      String?
-  estado        EstadoItemReceta @default(PRESCRITO)
-  precio        Decimal?         @db.Decimal(10, 2)
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  receta        Receta           @relation(fields: [recetaId], references: [id], onDelete: Cascade)
-  medicamentoId String?
-  insumoId      String?
-  medicamento   Medicamento?     @relation(fields: [medicamentoId], references: [id])
-  insumo        Insumo?          @relation(fields: [insumoId], references: [id])
+model ItemProtocolo {
+  id          String              @id @default(uuid())
+  protocoloId String
+  tipo        TipoItemProtocolo
+  itemId      String
+  nombre      String
+  cantidad    Int
+  aplicacion  String? // Ej: "Aplicar por la noche", "Mañana y noche"
+  frecuencia  String?
+  duracion    String?
+  estado      EstadoItemProtocolo @default(INDICADO)
+  precio      Decimal?            @db.Decimal(10, 2)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
 
-  @@index([recetaId])
+  protocolo  Protocolo @relation(fields: [protocoloId], references: [id], onDelete: Cascade)
+  productoId String?
+  producto   Producto? @relation(fields: [productoId], references: [id])
+
+  @@index([protocoloId])
   @@index([estado])
-  @@map("items_receta")
+  @@map("items_protocolo")
 }
 
-enum TipoItemReceta {
-  MEDICAMENTO
-  INSUMO
+enum TipoItemProtocolo {
+  PRODUCTO
+  RECOMENDACION // Ej: "Usar bloqueador solar"
 }
 
-enum EstadoItemReceta {
-  PRESCRITO
-  ENTREGADO
+enum EstadoItemProtocolo {
+  INDICADO
+  ADQUIRIDO
+  EN_USO
+  COMPLETADO
 }
 
 // ========================================
-// MÓDULO: DOCUMENTOS Y ARCHIVOS
+// MÓDULO: DOCUMENTOS Y SEGUIMIENTO FOTOGRÁFICO
 // ========================================
 
 model Documento {
-  id          String            @id @default(uuid())
-  pacienteId  String
-  consultaId  String?
-  nombre      String
-  descripcion String?
-  tipo        TipoArchivoMedico
-  url         String
-  tamaño     Int // en bytes
-  mimeType    String
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id            String         @id @default(uuid())
+  pacienteId    String
+  tratamientoId String?
+  nombre        String
+  descripcion   String?
+  tipo          TipoDocumento
+  categoria     CategoriaFoto? // Para fotos: ángulo/zona
+  momento       MomentoFoto? // ANTES, DESPUES, DURANTE, CONTROL
+  url           String
+  tamaño       Int // en bytes
+  mimeType      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
-  paciente Paciente  @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  consulta Consulta? @relation(fields: [consultaId], references: [id])
+  paciente    Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  tratamiento Tratamiento? @relation(fields: [tratamientoId], references: [id])
 
   @@index([pacienteId])
-  @@index([consultaId])
+  @@index([tratamientoId])
   @@index([tipo])
+  @@index([momento])
   @@map("documentos")
 }
 
-enum TipoArchivoMedico {
-  LABORATORIO
-  IMAGEN_RADIOLOGICA
-  ESTUDIO
-  RECETA_ESCANEADA
-  CONSENTIMIENTO
+enum TipoDocumento {
+  FOTO_FACIAL
+  FOTO_CORPORAL
+  FOTO_CAPILAR
+  ESTUDIO_DERMATOLOGICO
+  CONSENTIMIENTO_INFORMADO
+  FORMULARIO_EVALUACION
   OTRO
+}
+
+enum CategoriaFoto {
+  FRONTAL
+  PERFIL_DERECHO
+  PERFIL_IZQUIERDO
+  LATERAL_DERECHO
+  LATERAL_IZQUIERDO
+  SUPERIOR
+  INFERIOR
+  DETALLE
+}
+
+enum MomentoFoto {
+  ANTES
+  DURANTE
+  DESPUES
+  CONTROL_1_SEMANA
+  CONTROL_1_MES
+  CONTROL_3_MESES
+  CONTROL_6_MESES
 }
