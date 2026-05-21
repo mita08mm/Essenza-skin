@@ -14,7 +14,7 @@ function HistoriaContent() {
   const params = useParams();
   const pacienteId = params.id as string;
   
-  const { historia, isLoading, error } = useHistoriaClinica(pacienteId);
+  const { historia, isLoading, error, refresh } = useHistoriaClinica(pacienteId);
 
   if (isLoading) {
     return (
@@ -55,7 +55,11 @@ function HistoriaContent() {
           {/* Columna Derecha: Prescripciones y Documentos (25%) */}
           <div className="col-span-1 space-y-6">
             <PrescriptionsPanel recetas={todasRecetas} />
-            <AttachmentsPanel documentos={todosDocumentos} />
+            <AttachmentsPanel 
+              documentos={todosDocumentos} 
+              pacienteId={pacienteId}
+              onUploadSuccess={refresh}
+            />
           </div>
 
         </div>

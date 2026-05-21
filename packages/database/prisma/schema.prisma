@@ -1,5 +1,6 @@
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -39,26 +40,26 @@ enum Rol {
 // ========================================
 
 model Paciente {
-  id              String         @id @default(uuid())
-  nombre          String
-  apellido        String
-  documento       String
-  tipoDocumento   TipoDocumento
-  fechaNacimiento DateTime
-  telefono        String
-  email           String?
-  direccion       String?
-  sexo            String?
-  grupoSanguineo  String?
-  peso            Decimal?  @db.Decimal(5, 2)
-  altura          Decimal?  @db.Decimal(5, 2)
-  alergias        String?
-  contactoEmergenciaNombre    String?
-  contactoEmergenciaTelefono  String?
-  fotoUrl         String?
-  estado          EstadoPaciente @default(ACTIVO)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id                         String         @id @default(uuid())
+  nombre                     String
+  apellido                   String
+  documento                  String
+  tipoDocumento              TipoDocumento
+  fechaNacimiento            DateTime
+  telefono                   String
+  email                      String?
+  direccion                  String?
+  sexo                       String?
+  grupoSanguineo             String?
+  peso                       Decimal?       @db.Decimal(5, 2)
+  altura                     Decimal?       @db.Decimal(5, 2)
+  alergias                   String?
+  contactoEmergenciaNombre   String?
+  contactoEmergenciaTelefono String?
+  fotoUrl                    String?
+  estado                     EstadoPaciente @default(ACTIVO)
+  createdAt                  DateTime       @default(now())
+  updatedAt                  DateTime       @updatedAt
 
   historiaClinica HistoriaClinica?
   citas           Cita[]
@@ -89,23 +90,23 @@ enum EstadoPaciente {
 // ========================================
 
 model HistoriaClinica {
-  id                   String   @id @default(uuid())
-  pacienteId           String   @unique
-  
+  id         String @id @default(uuid())
+  pacienteId String @unique
+
   // Datos generales
-  tipoSangre           String?  // A+, O-, etc
+  tipoSangre           String? // A+, O-, etc
   diagnosticoPrincipal String?
-  alergias             String?  // CRÍTICO: alertas médicas
+  alergias             String? // CRÍTICO: alertas médicas
   medicacionHabitual   String?
-  
+
   // Antecedentes
-  antecedentesPersonales String?  // Enfermedades previas
-  antecedentesFamiliares String?  // Historia familiar
+  antecedentesPersonales  String? // Enfermedades previas
+  antecedentesFamiliares  String? // Historia familiar
   antecedentesQuirurgicos String? // Cirugías previas
-  
-  notasGenerales       String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+
+  notasGenerales String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   paciente  Paciente   @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
   consultas Consulta[]
@@ -115,31 +116,31 @@ model HistoriaClinica {
 }
 
 model Consulta {
-  id                String    @id @default(uuid())
+  id                String   @id @default(uuid())
   pacienteId        String
   historiaClinicaId String
   usuarioId         String
   citaId            String?
-  fecha             DateTime  @default(now())
-  
+  fecha             DateTime @default(now())
+
   // Datos de consulta
-  motivoConsulta    String
-  examenFisico      String?
-  diagnostico       String
-  codigoCIE         String?   // Código CIE-10 opcional
-  tratamiento       String?
-  observaciones     String?
-  proximaConsulta   DateTime?
-  
+  motivoConsulta  String
+  examenFisico    String?
+  diagnostico     String
+  codigoCIE       String? // Código CIE-10 opcional
+  tratamiento     String?
+  observaciones   String?
+  proximaConsulta DateTime?
+
   // Signos vitales (JSON para flexibilidad)
-  signosVitales     Json?     // { pa_sistolica, pa_diastolica, fc, temp, peso, talla, imc, spo2 }
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  signosVitales Json? // { pa_sistolica, pa_diastolica, fc, temp, peso, talla, imc, spo2 }
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   historiaClinica HistoriaClinica @relation(fields: [historiaClinicaId], references: [id], onDelete: Cascade)
   usuario         Usuario         @relation(fields: [usuarioId], references: [id])
-  cita            Cita?              @relation(fields: [citaId], references: [id])
+  cita            Cita?           @relation(fields: [citaId], references: [id])
   recetas         Receta[]
   cobros          Cobro[]
   documentos      Documento[]
@@ -206,16 +207,16 @@ model Servicio {
 }
 
 model Medicamento {
-  id          String        @id @default(uuid())
-  codigo      String        @unique
+  id          String       @id @default(uuid())
+  codigo      String       @unique
   nombre      String
   descripcion String?
-  precio      Decimal       @db.Decimal(10, 2)
-  stock       Int           @default(0)
-  stockMinimo Int           @default(10)
-  activo      Boolean       @default(true)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  precio      Decimal      @db.Decimal(10, 2)
+  stock       Int          @default(0)
+  stockMinimo Int          @default(10)
+  activo      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   itemsCobro  ItemCobro[]
   itemsReceta ItemReceta[]
 
@@ -225,16 +226,16 @@ model Medicamento {
 }
 
 model Insumo {
-  id          String        @id @default(uuid())
-  codigo      String        @unique
+  id          String       @id @default(uuid())
+  codigo      String       @unique
   nombre      String
   descripcion String?
-  precio      Decimal       @db.Decimal(10, 2)
-  stock       Int           @default(0)
-  stockMinimo Int           @default(10)
-  activo      Boolean       @default(true)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  precio      Decimal      @db.Decimal(10, 2)
+  stock       Int          @default(0)
+  stockMinimo Int          @default(10)
+  activo      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   itemsCobro  ItemCobro[]
   itemsReceta ItemReceta[]
 
@@ -260,8 +261,8 @@ model Cobro {
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
-  paciente Paciente  @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  consulta Consulta? @relation(fields: [consultaId], references: [id])
+  paciente Paciente    @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  consulta Consulta?   @relation(fields: [consultaId], references: [id])
   items    ItemCobro[]
   pagos    Pago[]
 
@@ -352,24 +353,24 @@ model Receta {
 }
 
 model ItemReceta {
-  id           String           @id @default(uuid())
-  recetaId     String
-  tipo         TipoItemReceta
-  itemId       String
-  nombre       String
-  cantidad     Int
-  dosis        String?
-  frecuencia   String?
-  duracion     String?
-  estado       EstadoItemReceta @default(PRESCRITO)
-  precio       Decimal?         @db.Decimal(10, 2)
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  receta       Receta           @relation(fields: [recetaId], references: [id], onDelete: Cascade)
+  id            String           @id @default(uuid())
+  recetaId      String
+  tipo          TipoItemReceta
+  itemId        String
+  nombre        String
+  cantidad      Int
+  dosis         String?
+  frecuencia    String?
+  duracion      String?
+  estado        EstadoItemReceta @default(PRESCRITO)
+  precio        Decimal?         @db.Decimal(10, 2)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  receta        Receta           @relation(fields: [recetaId], references: [id], onDelete: Cascade)
   medicamentoId String?
   insumoId      String?
-  medicamento  Medicamento?     @relation(fields: [medicamentoId], references: [id])
-  insumo       Insumo?          @relation(fields: [insumoId], references: [id])
+  medicamento   Medicamento?     @relation(fields: [medicamentoId], references: [id])
+  insumo        Insumo?          @relation(fields: [insumoId], references: [id])
 
   @@index([recetaId])
   @@index([estado])
@@ -398,7 +399,7 @@ model Documento {
   descripcion String?
   tipo        TipoArchivoMedico
   url         String
-  tamaño      Int               // en bytes
+  tamaño     Int // en bytes
   mimeType    String
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt

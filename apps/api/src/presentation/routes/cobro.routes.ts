@@ -10,7 +10,7 @@ import { GetCobrosByPacienteUseCase } from '../../application/use-cases/cobro/Ge
 import { CobroController } from '../controllers/CobroController';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
-const router = Router();
+export const router: Router = Router();
 const prisma = new PrismaClient();
 
 // Dependency Injection

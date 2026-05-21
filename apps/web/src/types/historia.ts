@@ -32,6 +32,10 @@ export interface Documento {
   nombre: string;
   tipo: string;
   url: string;
+  mimeType: string;
+  tamaño: number;
+  createdAt: string;
+  descripcion?: string;
 }
 
 export interface Consulta {

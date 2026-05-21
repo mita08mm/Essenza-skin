@@ -54,10 +54,15 @@ pnpm dev:api      # Solo backend
 
 ### Base de Datos
 ```bash
-pnpm db:migrate   # Migraciones
-pnpm db:seed      # Datos de prueba
-pnpm db:studio    # GUI de BD
+pnpm db:migrate          # Crear y aplicar migración
+pnpm db:migrate:status   # Ver estado de migraciones
+pnpm db:migrate:deploy   # Aplicar en producción
+pnpm db:validate         # Validar schema
+pnpm db:seed             # Datos de prueba
+pnpm db:studio           # GUI de BD
 ```
+
+**📚 Guía completa:** Ver [`packages/database/MIGRATIONS.md`](packages/database/MIGRATIONS.md)
 
 ### Docker
 ```bash

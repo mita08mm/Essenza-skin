@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { ConsultaController } from '../controllers/ConsultaController';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
-const router = Router();
+export const router: Router = Router();
 
 // Todas las rutas requieren autenticación
 router.use(authMiddleware);

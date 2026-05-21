@@ -9,24 +9,78 @@ interface ConsultasListProps {
 
 export default function ConsultasList({ consultas }: ConsultasListProps) {
   const [expandedId, setExpandedId] = useState<string | null>(consultas[0]?.id || null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterDiagnostico, setFilterDiagnostico] = useState('');
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
   };
 
+  // Filtrar consultas
+  const filteredConsultas = consultas.filter((consulta) => {
+    const matchSearch = searchTerm === '' || 
+      consulta.motivoConsulta.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      consulta.diagnostico.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      consulta.tratamiento?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchDiagnostico = filterDiagnostico === '' ||
+      consulta.diagnostico.toLowerCase().includes(filterDiagnostico.toLowerCase());
+
+    return matchSearch && matchDiagnostico;
+  });
+
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-concreto mb-4">
-        Consultas Médicas ({consultas.length})
+      {/* Barra de búsqueda y filtros */}
+      <div className="bg-white rounded-lg shadow-sm p-4 flex gap-4 print:hidden">
+        <div className="flex-1">
+          <input
+            type="text"
+            placeholder="Buscar en consultas (motivo, diagnóstico, tratamiento)..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-morena/50 text-sm"
+          />
+        </div>
+        <div className="w-64">
+          <input
+            type="text"
+            placeholder="Filtrar por diagnóstico"
+            value={filterDiagnostico}
+            onChange={(e) => setFilterDiagnostico(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-morena/50 text-sm"
+          />
+        </div>
+        {(searchTerm || filterDiagnostico) && (
+          <button
+            onClick={() => {
+              setSearchTerm('');
+              setFilterDiagnostico('');
+            }}
+            className="px-4 py-2 text-sm text-marengo hover:text-concreto transition-colors"
+          >
+            Limpiar
+          </button>
+        )}
+      </div>
+
+      <h2 className="text-xl font-semibold text-concreto">
+        Consultas Médicas ({filteredConsultas.length})
       </h2>
 
-      {consultas.map((consulta) => {
+      {filteredConsultas.length === 0 && (
+        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+          <p className="text-marengo/60">No se encontraron consultas que coincidan con los filtros</p>
+        </div>
+      )}
+
+      {filteredConsultas.map((consulta) => {
         const isExpanded = expandedId === consulta.id;
 
         return (
           <div
             key={consulta.id}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all"
+            className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all consulta-card"
           >
             {/* Header de la consulta (siempre visible) */}
             <button

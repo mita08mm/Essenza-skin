@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiEndpoint } from '@/lib/config';
 import { HistoriaClinica } from '@/types/historia';
@@ -9,35 +9,37 @@ export function useHistoriaClinica(pacienteId: string) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  const fetchHistoria = useCallback(async () => {
     if (!token || !pacienteId) return;
 
-    const fetchHistoria = async () => {
-      try {
-        const response = await fetch(
-          apiEndpoint(`/pacientes/${pacienteId}/historia-clinica`),
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Error al cargar historia clínica');
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        apiEndpoint(`/pacientes/${pacienteId}/historia-clinica`),
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
         }
+      );
 
-        const data = await response.json();
-        setHistoria(data.data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error desconocido');
-      } finally {
-        setIsLoading(false);
+      if (!response.ok) {
+        throw new Error('Error al cargar historia clínica');
       }
-    };
 
-    fetchHistoria();
+      const data = await response.json();
+      setHistoria(data.data);
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+    } finally {
+      setIsLoading(false);
+    }
   }, [pacienteId, token]);
 
-  return { historia, isLoading, error };
+  useEffect(() => {
+    fetchHistoria();
+  }, [fetchHistoria]);
+
+  return { historia, isLoading, error, refresh: fetchHistoria };
 }

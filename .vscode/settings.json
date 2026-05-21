@@ -1,0 +1,10 @@
+{
+  "prisma.showPrismaDataPlatformNotification": false,
+  "prisma.trace.server": "off",
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma",
+    "editor.formatOnSave": true
+  },
+  "prisma.previewFeatures": [],
+  "js/ts.tsdk.path": "node_modules/typescript/lib"
+}

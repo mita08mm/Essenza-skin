@@ -108,6 +108,10 @@ app.use('/api/consultas', consultaRoutes);
 import pacienteHistoriaRoutes from './presentation/routes/paciente-historia.routes';
 app.use('/api/pacientes', pacienteHistoriaRoutes);
 
+// Rutas de documentos médicos
+import documentoRoutes from './presentation/routes/documento.routes';
+app.use('/api/documentos', documentoRoutes);
+
 // 404 handler
 app.use((_req, res) => {
   res.status(404).json({

@@ -42,8 +42,8 @@ export default function PatientHeader({ historia, pacienteId }: PatientHeaderPro
               </div>
               
               <div>
-                <span className="text-marengo/60 uppercase text-xs font-medium">Próxima Visita</span>
-                <p className="text-concreto font-medium">Por programar</p>
+                <span className="text-marengo/60 uppercase text-xs font-medium">Documento</span>
+                <p className="text-concreto font-medium">{paciente.documento}</p>
               </div>
             </div>
           </div>
