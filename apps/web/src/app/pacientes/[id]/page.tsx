@@ -8,6 +8,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Link from 'next/link';
 import { apiEndpoint } from '@/lib/config';
 import ArrowIcon from '@/components/icons/ArrowIcon';
+import DatePicker from '@/components/ui/DatePicker';
 
 export default function EditarPacientePage() {
   const router = useRouter();
@@ -192,9 +193,15 @@ export default function EditarPacientePage() {
                     className={inputClass} required disabled={isLoading} />
                 </div>
                 <div>
-                  <label className={labelClass}>Fecha de Nacimiento *</label>
-                  <input type="date" name="fechaNacimiento" value={formData.fechaNacimiento} onChange={handleChange}
-                    className={inputClass} required disabled={isLoading} />
+                  <DatePicker
+                    label="Fecha de Nacimiento"
+                    name="fechaNacimiento"
+                    value={formData.fechaNacimiento}
+                    onChange={handleChange}
+                    required
+                    disabled={isLoading}
+                    maxDate={new Date()}
+                  />
                 </div>
                 <div>
                   <label className={labelClass}>Edad (Auto)</label>

@@ -14,3 +14,6 @@ export type { BadgeProps } from './badge';
 
 export { Select } from './select';
 export type { SelectProps } from './select';
+
+export { default as DatePicker } from './DatePicker';
+export type { DatePickerProps } from './DatePicker';
