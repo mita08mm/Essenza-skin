@@ -10,7 +10,7 @@ const createPacienteSchema = z.object({
   nombre: z.string().min(2, 'Nombre debe tener minimo 2 caracteres'),
   apellido: z.string().min(2, 'Apellido debe tener minimo 2 caracteres'),
   documento: z.string().min(6, 'Documento invalido'),
-  tipoDocumento: z.enum(['CI', 'PASAPORTE']),
+  tipoDocumento: z.enum(['DNI', 'PASAPORTE']),
   fechaNacimiento: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: 'Fecha invalida',
   }),

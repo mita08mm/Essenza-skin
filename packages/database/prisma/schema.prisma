@@ -83,7 +83,7 @@ model Paciente {
 }
 
 enum TipoDocumentoIdentidad {
-  CI // Cédula de Identidad (Boliviano)
+  DNI
   PASAPORTE // Extranjero
 }
 

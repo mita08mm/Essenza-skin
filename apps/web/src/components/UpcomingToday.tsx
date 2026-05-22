@@ -149,14 +149,14 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-[#60412B]/8">
           <div>
-            <h3 className="text-base sm:text-lg font-serif font-medium text-[#60412B]">Upcoming Today</h3>
+            <h3 className="text-base sm:text-lg font-serif font-medium text-[#60412B]">Citas de Hoy</h3>
             <p className="text-[11px] text-[#60412B]/50 mt-0.5">
               {new Date().toLocaleDateString('es-BO', { weekday: 'long', day: 'numeric', month: 'long' })}
             </p>
           </div>
           {citasPendientes.length > 0 ? (
             <span className="px-2.5 py-1 rounded-lg bg-[#60412B] text-white text-[11px] font-semibold">
-              {citasPendientes.length} left
+              {citasPendientes.length} pendiente
             </span>
           ) : citasHoy.length > 0 ? (
             <span className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 text-[11px] font-semibold">
@@ -235,7 +235,7 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
             onClick={() => setModalTodas(true)}
             className="block w-full text-center py-2.5 rounded-xl border border-[#60412B]/20 text-[#60412B] text-xs font-medium hover:bg-[#60412B] hover:text-white transition-all"
           >
-            View All Schedule
+            Ver agenda completa
           </button>
         </div>
       </div>

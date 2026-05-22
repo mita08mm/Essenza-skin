@@ -53,7 +53,7 @@ export default function InventarioPage() {
       if (!response.ok) throw new Error('Error al cargar productos');
 
       const data = await response.json();
-      setProductos(data.data || []);
+      setProductos((data.data || []).map((p: any) => ({ ...p, precio: Number(p.precio) })));
     } catch (err) {
       console.error('Error cargando productos:', err);
     } finally {

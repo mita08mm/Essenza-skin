@@ -18,7 +18,7 @@ export default function NuevoPacientePage() {
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
-    tipoDocumento: 'CI',
+    tipoDocumento: 'DNI',
     documento: '',
     fechaNacimiento: '',
     telefono: '',
@@ -127,7 +127,7 @@ export default function NuevoPacientePage() {
                   <label className={labelClass}>Tipo de Documento *</label>
                   <select name="tipoDocumento" value={formData.tipoDocumento} onChange={handleChange}
                     className={inputClass} required disabled={isLoading}>
-                    <option value="CI">CI (Cédula de Identidad)</option>
+                    <option value="DNI">CI (Cédula de Identidad)</option>
                     <option value="PASAPORTE">Pasaporte (Extranjero)</option>
                   </select>
                 </div>
