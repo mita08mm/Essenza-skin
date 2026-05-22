@@ -66,9 +66,14 @@
     color: #333333;
     font-family: "Poppins", sans-serif;
     font-weight: 400;
-    line-height: 1.6;
+    line-height: 1.5; /* Reducido de 1.6 para dashboards */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Line-height más compacto para tablas y listas */
+  table, .table-dense {
+    line-height: 1.4;
   }
   
   /* Tipografía para títulos */
@@ -80,24 +85,55 @@
   }
 }
 @layer components {
+  /* Botón principal con border-radius consistente */
   .btn-primary {
     background-color: #754c24;
     color: #FEFEFE;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem; /* rounded-lg - consistente */
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    font-size: 0.875rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
     border: none;
     cursor: pointer;
+    font-weight: 500;
   }
 
   .btn-primary:hover {
-    opacity: 0.9;
+    background-color: #654120;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(117, 76, 36, 0.3); /* Sombra más prominente */
+  }
+
+  /* Botón principal destacado (para acciones importantes) */
+  .btn-primary-prominent {
+    background-color: #754c24;
+    color: #FEFEFE;
+    padding: 0.75rem 1.5rem; /* Un poco más grande */
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    font-weight: 600; /* Más peso */
+    box-shadow: 0 2px 8px rgba(117, 76, 36, 0.2); /* Sombra desde el inicio */
+  }
+
+  .btn-primary-prominent:hover {
+    background-color: #654120;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(117, 76, 36, 0.4); /* Sombra muy prominente */
   }
 
   .btn-primary:disabled {
@@ -108,22 +144,105 @@
   .btn-secondary {
     background-color: transparent;
     color: #754c24;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem; /* rounded-lg - consistente */
     border: 2px solid #754c24;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    font-size: 0.875rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     transition: all 0.2s;
     cursor: pointer;
+    font-weight: 500;
   }
 
   .btn-secondary:hover {
     background-color: #754c24;
     color: #FEFEFE;
+    transform: translateY(-1px);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background-color: #F8F6F3;
+    border-right: 1px solid #e7e5e4; /* stone-200 */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  }
+
+  .sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    color: var(--color-concreto);
+    font-size: 1.125rem;
+    border-left: 3px solid transparent; /* Espacio para borde activo */
+    margin-left: -3px; /* Compensar el borde */
+  }
+
+  .sidebar-nav-item:hover {
+    background-color: rgba(204, 175, 125, 0.1); /* Más sutil */
+    color: var(--color-morena);
+  }
+
+  .sidebar-nav-item.active {
+    background-color: rgba(117, 76, 36, 0.08); /* Fondo muy sutil */
+    color: var(--color-morena);
+    font-weight: 600; /* Más peso en texto */
+    border-left-color: var(--color-morena); /* Borde activo prominente */
+  }
+
+  .sidebar-nav-item.active svg {
+    stroke-width: 2; /* Iconos más gruesos cuando activo */
+  }
+
+  /* Clase para tarjetas con borde sutil */
+  .card {
+    background: white;
+    border-radius: 0.75rem; /* rounded-xl */
+    border: 1px solid rgba(215, 197, 185, 0.3); /* color arena sutil */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* sombra muy suave */
+    padding: 1.5rem; /* Más padding para dar aire */
+    transition: box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Card sin padding extra (para tablas) */
+  .card-no-padding {
+    padding: 0;
+  }
+
+  /* Contenedor de formulario con ancho máximo */
+  .form-container {
+    max-width: 56rem; /* 896px - ancho óptimo para lectura */
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Input fields con ancho máximo */
+  .form-field-limited {
+    max-width: 32rem; /* 512px - evita campos muy anchos */
+  }
+
+  /* Grid de 2 columnas para formularios */
+  .form-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .form-grid-2 {
+      grid-template-columns: 1fr; /* Una columna en móvil */
+    }
   }
 }
 
@@ -139,6 +258,13 @@
     background-repeat: no-repeat;
     background-position: right 12px center;
     padding-right: 40px;
+    cursor: pointer;
+  }
+
+  select:focus {
+    border-color: var(--color-morena) !important;
+    outline: 2px solid rgba(117, 76, 36, 0.2);
+    outline-offset: 0px;
   }
 }
 @layer base {

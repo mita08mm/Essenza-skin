@@ -26,11 +26,17 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting
+// Rate limiting (más permisivo en desarrollo)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // límite de 100 requests por IP
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 1000 en dev, 100 en producción
   message: 'Demasiadas solicitudes desde esta IP, intente nuevamente más tarde.',
+  standardHeaders: true, // Retorna info de rate limit en headers `RateLimit-*`
+  legacyHeaders: false, // Deshabilita headers `X-RateLimit-*`
+  skip: (req) => {
+    // En desarrollo, puedes opcionalmente saltear ciertas rutas
+    return process.env.NODE_ENV === 'development' && req.path === '/api/auth/login';
+  },
 });
 app.use('/api/', limiter);
 

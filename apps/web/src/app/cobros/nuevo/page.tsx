@@ -181,7 +181,7 @@ export default function NuevoCobroPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Selección de paciente */}
-            <div className="bg-white rounded-xl shadow-sm p-8">
+            <div className="card p-8">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
                 Paciente
               </h2>
@@ -208,7 +208,7 @@ export default function NuevoCobroPage() {
             </div>
 
             {/* Items del cobro */}
-            <div className="bg-white rounded-xl shadow-sm p-8">
+            <div className="card p-8">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
                 Items del Cobro
               </h2>
@@ -329,7 +329,7 @@ export default function NuevoCobroPage() {
             </div>
 
             {/* Resumen y totales */}
-            <div className="bg-white rounded-xl shadow-sm p-8">
+            <div className="card p-8">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
                 Totales
               </h2>

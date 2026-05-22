@@ -94,7 +94,7 @@ export default function RecetasPage() {
         <DashboardLayout>
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-morena mx-auto mb-4"></div>
+              <div className="animate-spin rounded-lg h-12 w-12 border-b-2 border-morena mx-auto mb-4"></div>
               <p className="text-marengo">Cargando recetas...</p>
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function RecetasPage() {
           )}
 
           {recetas.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+            <div className="card p-12 text-center">
               <p className="text-marengo mb-4">
                 No hay recetas registradas
               </p>
@@ -143,7 +143,7 @@ export default function RecetasPage() {
               </Link>
             </div>
           ) : (
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="card card-no-padding overflow-hidden">
               <table className="min-w-full divide-y divide-marengo/20">
                 <thead className="bg-marengo/10">
                   <tr>
@@ -193,12 +193,12 @@ export default function RecetasPage() {
                           {receta.items.length}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
+                          <span className="px-2 py-1 text-xs font-medium rounded-lg bg-yellow-100 text-yellow-800">
                             {prescritos}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                          <span className="px-2 py-1 text-xs font-medium rounded-lg bg-green-100 text-green-800">
                             {entregados}
                           </span>
                         </td>

@@ -58,7 +58,7 @@ export default function CitasPage() {
       <ProtectedRoute>
         <DashboardLayout>
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-morena" />
+            <div className="animate-spin rounded-lg h-12 w-12 border-b-2 border-morena" />
             <span className="ml-3 text-marengo">Cargando citas...</span>
           </div>
         </DashboardLayout>

@@ -88,7 +88,7 @@ export default function NuevoPacientePage() {
       <DashboardLayout>
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="relative flex items-center justify-center mb-2">
-            <Link href="/pacientes" className="absolute left-0 p-2 rounded-full hover:bg-piel/20 transition-colors">
+            <Link href="/pacientes" className="absolute left-0 p-2 rounded-lg hover:bg-piel/20 transition-colors">
               <ArrowIcon className="w-7 h-7" />
             </Link>
             <div className="text-center">
@@ -106,7 +106,7 @@ export default function NuevoPacientePage() {
           <form onSubmit={handleSubmit} className="space-y-8">
 
             {/* DATOS PERSONALES */}
-            <div className="bg-white rounded-xl shadow-sm p-8 space-y-6">
+            <div className="card p-8 space-y-6">
               <div>
                 <h2 className="text-2xl font-heading text-morena">Datos Personales</h2>
                 <hr className="mt-2 border-[#D7C5B9]" />
@@ -171,7 +171,7 @@ export default function NuevoPacientePage() {
             </div>
 
             {/* DATOS CLÍNICOS ESTÉTICOS */}
-            <div className="bg-white rounded-xl shadow-sm p-8 space-y-6">
+            <div className="card p-8 space-y-6">
               <div>
                 <h2 className="text-2xl font-heading text-morena">Datos Clínicos</h2>
                 <p className="text-sm text-marengo mt-1">Información relevante para tratamientos estéticos</p>
@@ -233,7 +233,7 @@ export default function NuevoPacientePage() {
             </div>
 
             {/* CONTACTO DE EMERGENCIA */}
-            <div className="bg-white rounded-xl shadow-sm p-8 space-y-6">
+            <div className="card p-8 space-y-6">
               <div>
                 <h2 className="text-2xl font-heading text-morena">Contacto de Emergencia</h2>
                 <hr className="mt-2 border-[#D7C5B9]" />

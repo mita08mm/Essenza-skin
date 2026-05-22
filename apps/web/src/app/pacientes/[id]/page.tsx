@@ -134,7 +134,7 @@ export default function PacienteDetailPage() {
       <ProtectedRoute>
         <DashboardLayout>
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-morena"></div>
+            <div className="animate-spin rounded-lg h-12 w-12 border-b-2 border-morena"></div>
           </div>
         </DashboardLayout>
       </ProtectedRoute>
@@ -198,7 +198,7 @@ export default function PacienteDetailPage() {
           )}
 
           {isEditMode ? (
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-8 space-y-6">
+            <form onSubmit={handleSubmit} className="card p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-concreto">
@@ -370,7 +370,7 @@ export default function PacienteDetailPage() {
               </div>
             </form>
           ) : (
-            <div className="bg-white rounded-xl shadow-sm p-8 space-y-6">
+            <div className="card p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <p className="text-sm text-marengo font-medium mb-1">Nombre Completo</p>
@@ -415,7 +415,7 @@ export default function PacienteDetailPage() {
 
                 <div>
                   <p className="text-sm text-marengo font-medium mb-1">Estado</p>
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium
+                  <span className={`inline-block px-3 py-1 rounded-lg text-sm font-medium
                     ${paciente.estado === 'ACTIVO' 
                       ? 'bg-green-100 text-green-800' 
                       : 'bg-red-100 text-red-800'
@@ -439,7 +439,7 @@ export default function PacienteDetailPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-xl shadow-sm p-8">
+          <div className="card p-8">
             <h2 className="text-xl font-heading font-bold text-concreto mb-4">
               Historia Clinica
             </h2>

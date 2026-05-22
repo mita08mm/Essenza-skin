@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -63,18 +63,9 @@ function FormularioNuevaCita() {
   const [loadingCitas, setLoadingCitas] = useState(false);
   const [conflicto, setConflicto] = useState<CitaDelDia | null>(null);
 
-  const [formData, setFormData] = useState({
-    pacienteId: '',
-    fecha: '',
-    horaInicio: '',
-    horaFin: '',
-    motivo: '',
-    notas: '',
-  });
-
-  // Cargar parámetros de URL
-  useEffect(() => {
-    const fechaParam = searchParams.get('fecha');
+  const initialized = useRef(false);
+  const [formData, setFormData] = useState(() => {
+    const fechaParam = searchParams.get('fecha') || '';
     const horaParam = searchParams.get('hora');
 
     let inicialHoraInicio = '';
@@ -86,15 +77,15 @@ function FormularioNuevaCita() {
       inicialHoraFin = `${String((h + 1) % 24).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      fecha: fechaParam || prev.fecha,
-      horaInicio: inicialHoraInicio || prev.horaInicio,
-      horaFin: inicialHoraFin || prev.horaFin,
-    }));
-
-    if (fechaParam) actualizarFechaLabel(fechaParam);
-  }, [searchParams]);
+    return {
+      pacienteId: '',
+      fecha: fechaParam,
+      horaInicio: inicialHoraInicio,
+      horaFin: inicialHoraFin,
+      motivo: '',
+      notas: '',
+    };
+  });
 
   // Cargar pacientes
   useEffect(() => {
@@ -119,7 +110,6 @@ function FormularioNuevaCita() {
   // Cargar citas del día cuando cambia la fecha
   useEffect(() => {
     if (!token || !formData.fecha) {
-      setCitasDelDia([]);
       return;
     }
     const fetchCitasDelDia = async () => {
@@ -145,25 +135,33 @@ function FormularioNuevaCita() {
     fetchCitasDelDia();
   }, [token, formData.fecha]);
 
-  // Detectar conflicto en tiempo real
-  useEffect(() => {
-    if (!formData.horaInicio || !formData.horaFin || citasDelDia.length === 0) {
-      setConflicto(null);
-      return;
-    }
-    const citaConflicto = citasDelDia.find((c) =>
-      hayConflicto(formData.horaInicio, formData.horaFin, c.horaInicio, c.horaFin)
-    );
-    setConflicto(citaConflicto || null);
-  }, [formData.horaInicio, formData.horaFin, citasDelDia]);
-
-  const actualizarFechaLabel = (fechaString: string) => {
+  const actualizarFechaLabel = useCallback((fechaString: string) => {
     if (!fechaString) { setFechaLabel(''); return; }
     const [year, month, day] = fechaString.split('-').map(Number);
     const dateObj = new Date(year, month - 1, day);
     if (!isNaN(dateObj.getTime())) setFechaLabel(DIAS_SEMANA[dateObj.getDay()]);
     else setFechaLabel('');
-  };
+  }, []);
+
+  // Actualizar label de fecha inicial
+  useEffect(() => {
+    if (!initialized.current && formData.fecha) {
+      actualizarFechaLabel(formData.fecha);
+      initialized.current = true;
+    }
+  }, [formData.fecha, actualizarFechaLabel]);
+
+  // Detectar conflicto en tiempo real
+  useEffect(() => {
+    if (!formData.horaInicio || !formData.horaFin || citasDelDia.length === 0) {
+      return;
+    }
+    const citaConflicto = citasDelDia.find((c) =>
+      hayConflicto(formData.horaInicio, formData.horaFin, c.horaInicio, c.horaFin)
+    );
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setConflicto(citaConflicto || null);
+  }, [formData.horaInicio, formData.horaFin, citasDelDia]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setError('');
@@ -216,7 +214,6 @@ function FormularioNuevaCita() {
     return Math.max(0, Math.min(100, ((minutos - TIMELINE_START) / TIMELINE_TOTAL) * 100));
   }
 
-  const mostrarTimeline = formData.fecha && citasDelDia.length > 0;
   const nuevaInicioMin = toMinutes(formData.horaInicio);
   const nuevaFinMin = toMinutes(formData.horaFin);
   const nuevaValida = formData.horaInicio && formData.horaFin && nuevaFinMin > nuevaInicioMin;
@@ -262,7 +259,7 @@ function FormularioNuevaCita() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-8 space-y-6">
+      <form onSubmit={handleSubmit} className="card p-8 space-y-6">
 
         {/* Paciente */}
         <div className="space-y-2">
@@ -430,7 +427,7 @@ function FormularioNuevaCita() {
                     key={cita.id}
                     className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50 border border-gray-100 text-xs"
                   >
-                    <span className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
+                    <span className="w-2 h-2 rounded-lg bg-red-400 flex-shrink-0" />
                     <span className="font-mono font-semibold text-gray-700">
                       {cita.horaInicio} – {cita.horaFin}
                     </span>

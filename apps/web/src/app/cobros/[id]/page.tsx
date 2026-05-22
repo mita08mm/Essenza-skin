@@ -204,7 +204,7 @@ export default function CobroDetailPage() {
         <DashboardLayout>
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-morena mx-auto mb-4"></div>
+              <div className="animate-spin rounded-lg h-12 w-12 border-b-2 border-morena mx-auto mb-4"></div>
               <p className="text-marengo">Cargando cobro...</p>
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function CobroDetailPage() {
                 </p>
               </div>
             </div>
-            <span className={`px-4 py-2 rounded-full text-sm font-medium border ${getEstadoColor(cobro.estado)}`}>
+            <span className={`px-4 py-2 rounded-lg text-sm font-medium border ${getEstadoColor(cobro.estado)}`}>
               {cobro.estado}
             </span>
           </div>
@@ -260,7 +260,7 @@ export default function CobroDetailPage() {
           )}
 
           {/* Información del paciente */}
-          <div className="bg-white rounded-xl shadow-sm p-8">
+          <div className="card p-8">
             <h2 className="text-xl font-heading font-bold text-concreto mb-4">
               Paciente
             </h2>
@@ -281,7 +281,7 @@ export default function CobroDetailPage() {
           </div>
 
           {/* Items del cobro */}
-          <div className="bg-white rounded-xl shadow-sm p-8">
+          <div className="card p-8">
             <h2 className="text-xl font-heading font-bold text-concreto mb-4">
               Items del Cobro
             </h2>
@@ -341,7 +341,7 @@ export default function CobroDetailPage() {
           </div>
 
           {/* Historial de pagos */}
-          <div className="bg-white rounded-xl shadow-sm p-8">
+          <div className="card p-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-heading font-bold text-concreto">
                 Historial de Pagos

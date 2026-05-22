@@ -1,46 +1,14 @@
-import { useState } from 'react';
 import { Tratamiento } from '@/types/historia';
-import { formatFecha } from '@/lib/utils/date';
-import { MedidasGrid } from './MedidasGrid';
+
 
 interface TratamientosListProps {
   tratamientos: Tratamiento[];
 }
 
-const TIPO_TRATAMIENTO_COLORES = {
-  FACIAL: 'bg-pink-100 text-pink-700',
-  CORPORAL: 'bg-blue-100 text-blue-700',
-  CAPILAR: 'bg-purple-100 text-purple-700',
-  COMBINADO: 'bg-amber-100 text-amber-700',
-};
-
-const TIPO_TRATAMIENTO_LABELS = {
-  FACIAL: 'Facial',
-  CORPORAL: 'Corporal',
-  CAPILAR: 'Capilar',
-  COMBINADO: 'Combinado',
-};
-
 export default function TratamientosList({ tratamientos }: TratamientosListProps) {
-  const [expandedId, setExpandedId] = useState<string | null>(tratamientos[0]?.id || null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterTipo, setFilterTipo] = useState<string>('');
 
-  const toggleExpand = (id: string) => {
-    setExpandedId(expandedId === id ? null : id);
-  };
-
-  // Filtrar tratamientos
-  const filteredTratamientos = tratamientos.filter((tratamiento) => {
-    const matchSearch = searchTerm === '' || 
-      tratamiento.nombreTratamiento.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tratamiento.zonaTratada?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tratamiento.objetivo?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchTipo = filterTipo === '' || tratamiento.tipoTratamiento === filterTipo;
-
-    return matchSearch && matchTipo;
-  });
+  // Mostrar todos los tratamientos sin filtros
+  const filteredTratamientos = tratamientos;
 
   return (
     <div className="space-y-6">
@@ -81,13 +49,10 @@ export default function TratamientosList({ tratamientos }: TratamientosListProps
         
         <div className="space-y-8">
           {filteredTratamientos.map((tratamiento, index) => {
-            const isExpanded = expandedId === tratamiento.id;
-            const tipoColor = TIPO_TRATAMIENTO_COLORES[tratamiento.tipoTratamiento];
-
             return (
               <div key={tratamiento.id} className="relative">
                 {/* Timeline dot */}
-                <div className={`absolute left-0 w-5 h-5 rounded-full border-4 border-white z-10 ${
+                <div className={`absolute left-0 w-5 h-5 rounded-lg border-4 border-white z-10 ${
                   index === 0 ? 'bg-amber-600' : 'bg-gray-300'
                 }`}></div>
 
@@ -125,7 +90,7 @@ export default function TratamientosList({ tratamientos }: TratamientosListProps
                         )}
                       </div>
 
-                      <span className="ml-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                      <span className="ml-4 inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium bg-green-100 text-green-700">
                         In-Person
                       </span>
                     </div>

@@ -119,7 +119,7 @@ function NuevaRecetaConsultaContent() {
 
   return (
     <div className="max-w-5xl space-y-6">
-      <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="card p-6">
         <div className="flex items-center gap-4 mb-2">
           <Link
             href={`/pacientes/${pacienteId}/historia`}
@@ -142,7 +142,7 @@ function NuevaRecetaConsultaContent() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Items de la receta */}
-        <div className="bg-white rounded-xl shadow-sm p-8">
+        <div className="card p-8">
           <h2 className="text-xl font-heading font-bold text-concreto mb-4">
             Medicamentos e Insumos
           </h2>
@@ -327,7 +327,7 @@ function NuevaRecetaConsultaContent() {
         </div>
 
         {/* Indicaciones generales */}
-        <div className="bg-white rounded-xl shadow-sm p-8">
+        <div className="card p-8">
           <h2 className="text-xl font-heading font-bold text-concreto mb-4">
             Indicaciones Generales
           </h2>

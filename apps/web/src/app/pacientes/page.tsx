@@ -78,7 +78,7 @@ export default function PacientesPage() {
             </div>
             <Link
               href="/pacientes/nuevo"
-              className="btn-primary"
+              className="btn-primary-prominent"
             >
               Nuevo Paciente
             </Link>
@@ -91,12 +91,12 @@ export default function PacientesPage() {
           )}
 
           {isLoading ? (
-            <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-              <div className="w-16 h-16 border-4 border-piel border-t-morena rounded-full animate-spin mx-auto"></div>
+            <div className="card p-8 text-center">
+              <div className="w-16 h-16 border-4 border-piel border-t-morena rounded-lg animate-spin mx-auto"></div>
               <p className="text-marengo mt-4">Cargando pacientes...</p>
             </div>
           ) : pacientes.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+            <div className="card p-8 text-center">
               <p className="text-marengo">No hay pacientes registrados</p>
               <Link
                 href="/pacientes/nuevo"
@@ -107,7 +107,7 @@ export default function PacientesPage() {
               </Link>
             </div>
           ) : (
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="card card-no-padding overflow-hidden">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
@@ -136,7 +136,7 @@ export default function PacientesPage() {
                     <tr key={paciente.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 rounded-full bg-piel/20 flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-lg bg-piel/20 flex items-center justify-center">
                             <span className="text-morena font-medium">
                               {paciente.nombre[0]}{paciente.apellido[0]}
                             </span>
@@ -165,7 +165,7 @@ export default function PacientesPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-3 py-1 rounded-full text-sm ${
+                          className={`px-3 py-1 rounded-lg text-sm ${
                             paciente.estado === 'ACTIVO'
                               ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'

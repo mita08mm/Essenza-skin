@@ -94,7 +94,7 @@ export default function CobrosPage() {
       <ProtectedRoute>
         <DashboardLayout>
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-morena"></div>
+            <div className="animate-spin rounded-lg h-12 w-12 border-b-2 border-morena"></div>
             <span className="ml-3 text-marengo">Cargando cobros...</span>
           </div>
         </DashboardLayout>
@@ -136,7 +136,7 @@ export default function CobrosPage() {
           </div>
 
           {cobros.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+            <div className="card p-12 text-center">
               <div className="text-6xl mb-4">💰</div>
               <h3 className="text-xl font-heading font-semibold text-concreto mb-2">
                 No hay cobros registrados
@@ -153,7 +153,7 @@ export default function CobrosPage() {
               </Link>
             </div>
           ) : (
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="card card-no-padding overflow-hidden">
               <table className="min-w-full divide-y divide-marengo/20">
                 <thead className="bg-piel/20">
                   <tr>
@@ -208,7 +208,7 @@ export default function CobrosPage() {
                           {formatMonto(saldo)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getEstadoColor(cobro.estado)}`}>
+                          <span className={`inline-block px-3 py-1 rounded-lg text-xs font-medium ${getEstadoColor(cobro.estado)}`}>
                             {cobro.estado}
                           </span>
                         </td>

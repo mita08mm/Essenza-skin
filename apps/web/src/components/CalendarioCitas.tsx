@@ -169,14 +169,14 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
               >
                 <div className="flex items-start justify-between">
                   <span className={`
-                    text-xs sm:text-sm font-normal rounded-full transition-all w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center
+                    text-xs sm:text-sm font-normal rounded-lg transition-all w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center
                     ${esHoy ? 'bg-[#60412B] text-white font-semibold' : otroMes ? 'text-gray-300' : 'text-[#5F5955]'}
                   `}>
                     {dia.getDate()}
                   </span>
                   {/* Punto indicador en móvil */}
                   {citasDia.length > 0 && (
-                    <span className="sm:hidden w-1.5 h-1.5 rounded-full bg-[#60412B] mt-1 mr-0.5 flex-shrink-0" />
+                    <span className="sm:hidden w-1.5 h-1.5 rounded-lg bg-[#60412B] mt-1 mr-0.5 flex-shrink-0" />
                   )}
                 </div>
 
@@ -227,7 +227,7 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
               <div className="text-[9px] sm:text-[11px] font-medium text-gray-400 uppercase">{DIAS_CORTO[i]}</div>
               <div
                 onClick={() => { setCursor(dia); setVista('day'); }}
-                className={`mt-0.5 sm:mt-1 text-xs sm:text-sm font-medium cursor-pointer rounded-full w-6 h-6 flex items-center justify-center mx-auto transition-colors
+                className={`mt-0.5 sm:mt-1 text-xs sm:text-sm font-medium cursor-pointer rounded-lg w-6 h-6 flex items-center justify-center mx-auto transition-colors
                   ${dateKey(dia) === hoyKey ? 'bg-[#60412B] text-white' : 'text-gray-700 hover:bg-[#FBF7F4]'}`}
               >
                 {dia.getDate()}
@@ -392,7 +392,7 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
             onClick={e => e.stopPropagation()}
           >
             {/* Handle bar móvil */}
-            <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto sm:hidden" />
+            <div className="w-10 h-1 bg-gray-200 rounded-lg mx-auto sm:hidden" />
             <div className="flex justify-between items-start">
               <h3 className="text-base sm:text-lg font-semibold text-[#60412B]">{citaSeleccionada.motivo}</h3>
               <button onClick={() => setCitaSeleccionada(null)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
@@ -418,7 +418,7 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
             onClick={e => e.stopPropagation()}
           >
             {/* Handle bar móvil */}
-            <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto sm:hidden" />
+            <div className="w-10 h-1 bg-gray-200 rounded-lg mx-auto sm:hidden" />
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-base font-semibold text-[#60412B]">Citas del Día</h3>

@@ -107,7 +107,7 @@ function NuevaConsultaContent() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-morena"></div>
+        <div className="animate-spin rounded-lg h-12 w-12 border-b-2 border-morena"></div>
       </div>
     );
   }
@@ -124,7 +124,7 @@ function NuevaConsultaContent() {
   const labelClass = "block text-sm font-medium text-gray-700 mb-2";
 
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="form-container space-y-6">
       {/* Header minimalista */}
       <div className="flex items-center gap-4">
         <Link
@@ -141,8 +141,8 @@ function NuevaConsultaContent() {
         </div>
       </div>
 
-      {/* Formulario compacto */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6 space-y-6">
+      {/* Formulario compacto con ancho limitado */}
+      <form onSubmit={handleSubmit} className="card p-8 space-y-6">
         {error && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-600 text-sm">{error}</p>
@@ -157,7 +157,7 @@ function NuevaConsultaContent() {
             </label>
             <select
               value={tipoTratamiento}
-              onChange={(e) => setTipoTratamiento(e.target.value as any)}
+              onChange={(e) => setTipoTratamiento(e.target.value as 'FACIAL' | 'CORPORAL' | 'CAPILAR')}
               className={inputClass}
             >
               <option value="FACIAL">Facial</option>

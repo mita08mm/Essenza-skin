@@ -111,6 +111,7 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
   const diasOrdenados = Object.keys(agrupadasPorDia).sort();
 
   // Componente de tarjeta de cita (reutilizable)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function CitaCard({ cita, compact = false }: { cita: Cita; compact?: boolean }) {
     const cfg = ESTADO_CONFIG[cita.estado] || ESTADO_CONFIG.PROGRAMADA;
     return (
@@ -118,7 +119,7 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
         onClick={() => setCitaSeleccionada(cita)}
         className={`flex items-start gap-3 ${compact ? 'px-4 py-3' : 'px-5 py-3.5'} hover:bg-[#60412B]/[0.03] cursor-pointer transition-colors group rounded-xl`}
       >
-        <div className={`w-2 h-2 rounded-full ${cfg.dot} ring-2 ring-white mt-1.5 flex-shrink-0`} />
+        <div className={`w-2 h-2 rounded-lg ${cfg.dot} ring-2 ring-white mt-1.5 flex-shrink-0`} />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <span className={`text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded ${cfg.color}`}>
@@ -154,11 +155,11 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
             </p>
           </div>
           {citasPendientes.length > 0 ? (
-            <span className="px-2.5 py-1 rounded-full bg-[#60412B] text-white text-[11px] font-semibold">
+            <span className="px-2.5 py-1 rounded-lg bg-[#60412B] text-white text-[11px] font-semibold">
               {citasPendientes.length} left
             </span>
           ) : citasHoy.length > 0 ? (
-            <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[11px] font-semibold">
+            <span className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 text-[11px] font-semibold">
               ✓ Todo listo
             </span>
           ) : null}
@@ -167,10 +168,15 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
         {/* Citas de hoy */}
         <div className="divide-y divide-[#60412B]/6">
           {citasHoy.length === 0 ? (
-            <div className="px-5 py-8 text-center">
-              <p className="text-2xl mb-2">🗓️</p>
-              <p className="text-sm text-[#60412B]/50 font-medium">Sin citas para hoy</p>
-              <Link href="/citas/nueva" className="inline-block mt-3 text-xs text-[#60412B] underline underline-offset-2 hover:opacity-70">
+            <div className="px-5 py-10 text-center">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 text-gray-400">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                </svg>
+              </div>
+              <p className="text-sm text-gray-500 font-medium mb-1">Sin citas programadas para hoy</p>
+              <p className="text-xs text-gray-400 mb-3">Tu agenda está libre</p>
+              <Link href="/citas/nueva" className="inline-block text-xs text-morena font-medium hover:underline underline-offset-2">
                 + Agendar una cita
               </Link>
             </div>
@@ -184,7 +190,7 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
                   className="flex items-start gap-3 px-4 sm:px-5 py-3.5 hover:bg-[#60412B]/[0.03] cursor-pointer transition-colors group"
                 >
                   <div className="flex flex-col items-center pt-1 flex-shrink-0">
-                    <div className={`w-2 h-2 rounded-full ${cfg.dot} ring-2 ring-white`} />
+                    <div className={`w-2 h-2 rounded-lg ${cfg.dot} ring-2 ring-white`} />
                     {idx < citasVisibles.length - 1 && (
                       <div className="w-px bg-[#60412B]/10 mt-1" style={{ minHeight: '32px' }} />
                     )}
@@ -244,7 +250,7 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
             className="bg-white rounded-t-2xl sm:rounded-2xl border border-gray-100 shadow-2xl w-full sm:max-w-sm overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
-            <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mt-3 sm:hidden" />
+            <div className="w-10 h-1 bg-gray-200 rounded-lg mx-auto mt-3 sm:hidden" />
             <div className={`px-6 pt-5 pb-4 ${
               ESTADO_CONFIG[citaSeleccionada.estado]?.dot === 'bg-emerald-400' ? 'bg-emerald-50' :
               ESTADO_CONFIG[citaSeleccionada.estado]?.dot === 'bg-amber-400'   ? 'bg-amber-50'   : 'bg-[#FBF7F4]'
@@ -307,7 +313,7 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
             onClick={e => e.stopPropagation()}
           >
             {/* Handle móvil */}
-            <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mt-3 sm:hidden flex-shrink-0" />
+            <div className="w-10 h-1 bg-gray-200 rounded-lg mx-auto mt-3 sm:hidden flex-shrink-0" />
 
             {/* Header modal */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
@@ -337,7 +343,7 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
                           {labelFecha(diaKey)}
                         </span>
                         {esHoy && (
-                          <span className="px-1.5 py-0.5 rounded-full bg-[#60412B] text-white text-[9px] font-semibold">HOY</span>
+                          <span className="px-1.5 py-0.5 rounded-lg bg-[#60412B] text-white text-[9px] font-semibold">HOY</span>
                         )}
                         <div className="flex-1 h-px bg-gray-100" />
                         <span className="text-[10px] text-gray-300">{citasDia.length} cita{citasDia.length > 1 ? 's' : ''}</span>
@@ -353,7 +359,7 @@ export default function UpcomingToday({ citas }: UpcomingTodayProps) {
                               onClick={() => { setCitaSeleccionada(cita); setModalTodas(false); }}
                               className="flex items-center gap-3 px-4 py-3 hover:bg-[#60412B]/[0.04] cursor-pointer transition-colors group"
                             >
-                              <div className={`w-2 h-2 rounded-full ${cfg.dot} flex-shrink-0`} />
+                              <div className={`w-2 h-2 rounded-lg ${cfg.dot} flex-shrink-0`} />
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-[#3D2810] truncate">
                                   {cita.paciente?.nombre} {cita.paciente?.apellido}

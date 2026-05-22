@@ -5,6 +5,10 @@ export interface Paciente {
   fechaNacimiento: string;
   documento: string;
   sexo?: string;
+  createdAt: string;
+  objetivoEstetico?: string;
+  alergias?: string;
+  embarazoLactancia?: boolean;
 }
 
 export interface Medidas {
@@ -31,6 +35,7 @@ export interface ItemProtocolo {
 
 export interface Protocolo {
   id: string;
+  nombre?: string;
   fecha: string;
   indicaciones?: string;
   items: ItemProtocolo[];
@@ -39,7 +44,7 @@ export interface Protocolo {
 export interface Documento {
   id: string;
   nombre: string;
-  tipo: 'FOTO_FACIAL' | 'FOTO_CORPORAL' | 'FOTO_CAPILAR' | 'ANALISIS' | 'CONSENTIMIENTO' | 'INFORME' | 'OTRO';
+  tipo: 'FOTO_FACIAL' | 'FOTO_CORPORAL' | 'FOTO_CAPILAR' | 'ESTUDIO_DERMATOLOGICO' | 'CONSENTIMIENTO_INFORMADO' | 'FORMULARIO_EVALUACION' | 'OTRO';
   url: string;
   mimeType: string;
   tamaño: number;

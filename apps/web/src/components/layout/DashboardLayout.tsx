@@ -3,15 +3,19 @@
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import PersonIcon from '../icons/PersonIcon'
-import AppointmentIcon from '../icons/AppointmentIcon'
+import { Button } from '@/components/ui/button';
+import PersonIcon from '../icons/PersonIcon';
+import AppointmentIcon from '../icons/AppointmentIcon';
+import MoneyIcon from '../icons/MoneyIcon';
+import PrescriptionIcon from '../icons/PrescriptionIcon';
+import InventoryIcon from '../icons/InventoryIcon';
 
 const menuItems = [
-  { href: '/pacientes', label: 'Pacientes', icon: <PersonIcon className="w-7 h-7" /> },
-  { href: '/citas', label: 'Citas', icon: <AppointmentIcon className="w-7 h-7" /> },
-  { href: '/cobros', label: 'Cobros', icon: '💰' },
-  { href: '/recetas', label: 'Recetas', icon: '💊' },
-  { href: '/inventario', label: 'Inventario', icon: '📦' },
+  { href: '/pacientes', label: 'Pacientes', icon: <PersonIcon className="w-6 h-6" /> },
+  { href: '/citas', label: 'Citas', icon: <AppointmentIcon className="w-6 h-6" /> },
+  { href: '/cobros', label: 'Cobros', icon: <MoneyIcon className="w-6 h-6" /> },
+  { href: '/recetas', label: 'Recetas', icon: <PrescriptionIcon className="w-6 h-6" /> },
+  { href: '/inventario', label: 'Inventario', icon: <InventoryIcon className="w-6 h-6" /> },
 ];
 
 export default function DashboardLayout({
@@ -25,9 +29,9 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-[#FBF9F8]">
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 flex flex-col">
+      <aside className="fixed inset-y-0 left-0 w-64 sidebar flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-stone-200">
           <h1 className="text-xl font-heading font-bold text-concreto">
             Sistema Clinico
           </h1>
@@ -42,28 +46,27 @@ export default function DashboardLayout({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                  isActive
-                    ? 'bg-[#FEF4E4] text-[#5A350F] border-l-4 border-[#5A350F]'
-                    : 'text-marengo hover:bg-piel/10 hover:text-morena'
+                className={`sidebar-nav-item ${
+                  isActive ? 'active' : ''
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
-                <span className="font-heading text-lg">{item.label}</span>
+                <span className="font-heading">{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-200">
-          <button
+        <div className="p-4 border-t border-stone-200">
+          <Button
             onClick={logout}
-            className="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 
-                     rounded-lg transition-colors"
+            variant="danger"
+            size="sm"
+            className="w-full"
           >
-            Cerrar Sesion
-          </button>
+            Cerrar Sesión
+          </Button>
         </div>
       </aside>
 

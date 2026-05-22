@@ -65,16 +65,12 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
   }, [pacienteId, token]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProtocolos();
-  }, [fetchProtocolos]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  useEffect(() => {
-    if (showModal && productos.length === 0) {
-      fetchProductos();
-    }
-  }, [showModal]);
-
-  const fetchProductos = async () => {
+  const fetchProductos = useCallback(async () => {
     setIsLoadingProductos(true);
     try {
       const response = await fetch(apiEndpoint('/productos'), {
@@ -85,12 +81,20 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
 
       const data = await response.json();
       setProductos(data.data || []);
-    } catch (err) {
+    } catch {
       setError('No se pudieron cargar los productos');
     } finally {
       setIsLoadingProductos(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (showModal && productos.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchProductos();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showModal]);
 
   const handleAgregarItem = () => {
     if (!selectedProducto || !instrucciones.trim()) {
@@ -164,12 +168,12 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
           const errorData = JSON.parse(responseText);
           
           if (errorData.details && Array.isArray(errorData.details)) {
-            const mensajes = errorData.details.map((d: any) => `${d.path?.join('.')}: ${d.message}`).join(', ');
+            const mensajes = errorData.details.map((d: { path?: string[]; message: string }) => `${d.path?.join('.')}: ${d.message}`).join(', ');
             throw new Error(`Errores de validación: ${mensajes}`);
           }
           
           throw new Error(errorData.error || 'Error al crear prescripción');
-        } catch (parseError) {
+        } catch {
           throw new Error(`Error del servidor (${response.status}): ${responseText || 'Sin detalles'}`);
         }
       }
@@ -195,7 +199,7 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
           <h2 className="text-lg font-serif font-light text-gray-900">Prescripciones</h2>
           <button 
             onClick={() => setShowModal(true)}
-            className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
             title="Agregar prescripción"
           >
             <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -207,7 +211,7 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
         <div className="space-y-4">
           {isLoadingProtocolos ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400 mx-auto"></div>
+              <div className="animate-spin rounded-lg h-8 w-8 border-b-2 border-gray-400 mx-auto"></div>
               <p className="text-xs text-gray-400 mt-2">Cargando prescripciones...</p>
             </div>
           ) : protocolos.length === 0 ? (
@@ -232,7 +236,7 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
                           {item.aplicacion || item.frecuencia}
                         </p>
                       </div>
-                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full flex-shrink-0 ${
+                      <span className={`px-2 py-0.5 text-xs font-medium rounded-lg flex-shrink-0 ${
                         item.estado === 'COMPLETADO' 
                           ? 'bg-gray-100 text-gray-600' 
                           : 'bg-green-100 text-green-700'
@@ -263,7 +267,7 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
                 <h3 className="text-xl font-serif font-light text-gray-900">Nueva Prescripción</h3>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

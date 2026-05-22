@@ -38,8 +38,10 @@ export function useHistoriaClinica(pacienteId: string) {
   }, [pacienteId, token]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchHistoria();
-  }, [fetchHistoria]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return { historia, isLoading, error, refresh: fetchHistoria };
 }

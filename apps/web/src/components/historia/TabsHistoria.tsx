@@ -37,7 +37,7 @@ export function TabsHistoria({
           >
             {tab.label}
             {tab.count !== null && (
-              <span className="ml-2 px-2 py-0.5 bg-piel/30 text-xs rounded-full">
+              <span className="ml-2 px-2 py-0.5 bg-piel/30 text-xs rounded-lg">
                 {tab.count}
               </span>
             )}

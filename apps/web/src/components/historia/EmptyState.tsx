@@ -6,7 +6,7 @@ interface EmptyStateProps {
 
 export default function EmptyState({ pacienteId }: EmptyStateProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+    <div className="card p-12 text-center">
       <div className="text-6xl text-marengo/20 mb-4">📋</div>
       <h3 className="text-xl font-semibold text-concreto mb-2">
         No hay consultas registradas

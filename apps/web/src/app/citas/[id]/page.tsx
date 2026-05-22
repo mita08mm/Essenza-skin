@@ -181,7 +181,7 @@ export default function CitaDetailPage() {
       <ProtectedRoute>
         <DashboardLayout>
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-morena"></div>
+            <div className="animate-spin rounded-lg h-12 w-12 border-b-2 border-morena"></div>
           </div>
         </DashboardLayout>
       </ProtectedRoute>
@@ -256,7 +256,7 @@ export default function CitaDetailPage() {
           )}
 
           {/* Información del paciente */}
-          <div className="bg-white rounded-xl shadow-sm p-8">
+          <div className="card p-8">
             <h2 className="text-xl font-heading font-bold text-concreto mb-4">
               Paciente
             </h2>
@@ -287,7 +287,7 @@ export default function CitaDetailPage() {
 
           {/* Información de la cita */}
           {isEditMode ? (
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-8 space-y-6">
+            <form onSubmit={handleSubmit} className="card p-8 space-y-6">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
                 Editar Cita
               </h2>
@@ -429,7 +429,7 @@ export default function CitaDetailPage() {
               </div>
             </form>
           ) : (
-            <div className="bg-white rounded-xl shadow-sm p-8 space-y-6">
+            <div className="card p-8 space-y-6">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
                 Detalles de la Cita
               </h2>
@@ -452,7 +452,7 @@ export default function CitaDetailPage() {
 
                 <div>
                   <p className="text-sm text-marengo mb-1">Estado</p>
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getEstadoColor(cita.estado)}`}>
+                  <span className={`inline-block px-3 py-1 rounded-lg text-sm font-medium ${getEstadoColor(cita.estado)}`}>
                     {cita.estado.replace('_', ' ')}
                   </span>
                 </div>

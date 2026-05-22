@@ -84,7 +84,6 @@ export default function NuevaRecetaPage() {
       return;
     }
 
-    const { v4: uuidv4 } = require('crypto');
     setItems([...items, { 
       ...nuevoItem, 
       itemId: crypto.randomUUID()  // UUID real en lugar de temp-timestamp
@@ -175,7 +174,7 @@ export default function NuevaRecetaPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Selección de paciente */}
-            <div className="bg-white rounded-xl shadow-sm p-8">
+            <div className="card p-8">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
                 Paciente
               </h2>
@@ -202,7 +201,7 @@ export default function NuevaRecetaPage() {
             </div>
 
             {/* Items de la receta */}
-            <div className="bg-white rounded-xl shadow-sm p-8">
+            <div className="card p-8">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
                 Medicamentos e Insumos
               </h2>
@@ -345,7 +344,7 @@ export default function NuevaRecetaPage() {
             </div>
 
             {/* Indicaciones generales */}
-            <div className="bg-white rounded-xl shadow-sm p-8">
+            <div className="card p-8">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
                 Indicaciones Generales
               </h2>

@@ -1,8 +1,9 @@
 'use client';
 
 import { Documento } from '@/types/historia';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { apiEndpoint } from '@/lib/config';
+import Image from 'next/image';
 
 interface AttachmentsPanelProps {
   documentos: Documento[];
@@ -24,7 +25,7 @@ export default function AttachmentsPanel({
   const [categoria, setCategoria] = useState<'FOTO_EVOLUCION' | 'DOCUMENTO_CLINICO'>('FOTO_EVOLUCION');
   const [momento, setMomento] = useState<'ANTES' | 'DURANTE' | 'DESPUES'>('ANTES');
   const [tipoFoto, setTipoFoto] = useState<'FACIAL' | 'CORPORAL' | 'CAPILAR'>('FACIAL');
-  const [tipoDoc, setTipoDoc] = useState<'CONSENTIMIENTO' | 'LABORATORIO' | 'RAYOS_X' | 'OTRO'>('CONSENTIMIENTO');
+  const [tipoDoc, setTipoDoc] = useState<'CONSENTIMIENTO_INFORMADO' | 'ESTUDIO_DERMATOLOGICO' | 'FORMULARIO_EVALUACION' | 'OTRO'>('CONSENTIMIENTO_INFORMADO');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const uploadFile = async () => {
@@ -38,7 +39,7 @@ export default function AttachmentsPanel({
       formData.append('tipo', `FOTO_${tipoFoto}`);
       formData.append('momento', momento);
     } else {
-      formData.append('tipo', tipoDoc === 'CONSENTIMIENTO' ? 'CONSENTIMIENTO_INFORMADO' : tipoDoc);
+      formData.append('tipo', tipoDoc);
     }
 
     const token = localStorage.getItem('token');
@@ -72,8 +73,8 @@ export default function AttachmentsPanel({
       setShowUploadModal(false);
       setSelectedFile(null);
       onUploadSuccess?.();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al subir archivo');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Error al subir archivo');
     } finally {
       setIsUploading(false);
     }
@@ -91,7 +92,7 @@ export default function AttachmentsPanel({
 
       if (!response.ok) throw new Error('Error al eliminar');
       onUploadSuccess?.();
-    } catch (err) {
+    } catch {
       setError('Error al eliminar el archivo');
     }
   };
@@ -101,14 +102,14 @@ export default function AttachmentsPanel({
     d.tipo === 'FOTO_FACIAL' || d.tipo === 'FOTO_CORPORAL' || d.tipo === 'FOTO_CAPILAR'
   );
   const documentosClinicos = documentos.filter(d => 
-    d.tipo === 'CONSENTIMIENTO_INFORMADO' || d.tipo === 'ESTUDIO_DERMATOLOGICO' || d.tipo === 'OTRO'
+    d.tipo === 'CONSENTIMIENTO_INFORMADO' || d.tipo === 'ESTUDIO_DERMATOLOGICO' || d.tipo === 'FORMULARIO_EVALUACION' || d.tipo === 'OTRO'
   );
 
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
-  const getMomentoLabel = (momento: string | null) => {
+  const getMomentoLabel = (momento: string | null | undefined) => {
     switch(momento) {
       case 'ANTES': return 'Antes';
       case 'DURANTE': return 'Durante';
@@ -126,11 +127,12 @@ export default function AttachmentsPanel({
       ) : (
         fotosEvolucion.map((foto) => (
           <div key={foto.id} className="relative group">
-            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-              <img 
+            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 relative">
+              <Image 
                 src={foto.url} 
                 alt={foto.nombre}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="absolute bottom-0 left-0 right-0 p-3">
@@ -141,7 +143,7 @@ export default function AttachmentsPanel({
             </div>
             <button
               onClick={() => handleDelete(foto.id)}
-              className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+              className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -190,7 +192,7 @@ export default function AttachmentsPanel({
           <h2 className="text-lg font-serif font-light text-gray-900">Galería de Archivos</h2>
           <button 
             onClick={() => setShowUploadModal(true)}
-            className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
             title="Subir archivo"
           >
             <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -263,7 +265,7 @@ export default function AttachmentsPanel({
                 <label className="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
                 <select
                   value={categoria}
-                  onChange={(e) => setCategoria(e.target.value as any)}
+                  onChange={(e) => setCategoria(e.target.value as 'FOTO_EVOLUCION' | 'DOCUMENTO_CLINICO')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="FOTO_EVOLUCION">Foto de Evolución</option>
@@ -278,7 +280,7 @@ export default function AttachmentsPanel({
                     <label className="block text-sm font-medium text-gray-700 mb-2">Momento</label>
                     <select
                       value={momento}
-                      onChange={(e) => setMomento(e.target.value as any)}
+                      onChange={(e) => setMomento(e.target.value as 'ANTES' | 'DURANTE' | 'DESPUES')}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     >
                       <option value="ANTES">Antes</option>
@@ -290,7 +292,7 @@ export default function AttachmentsPanel({
                     <label className="block text-sm font-medium text-gray-700 mb-2">Zona</label>
                     <select
                       value={tipoFoto}
-                      onChange={(e) => setTipoFoto(e.target.value as any)}
+                      onChange={(e) => setTipoFoto(e.target.value as 'FACIAL' | 'CORPORAL' | 'CAPILAR')}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     >
                       <option value="FACIAL">Facial</option>
@@ -304,12 +306,12 @@ export default function AttachmentsPanel({
                   <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Documento</label>
                   <select
                     value={tipoDoc}
-                    onChange={(e) => setTipoDoc(e.target.value as any)}
+                    onChange={(e) => setTipoDoc(e.target.value as 'CONSENTIMIENTO_INFORMADO' | 'ESTUDIO_DERMATOLOGICO' | 'FORMULARIO_EVALUACION' | 'OTRO')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   >
-                    <option value="CONSENTIMIENTO">Consentimiento Informado</option>
-                    <option value="LABORATORIO">Resultados de Laboratorio</option>
-                    <option value="RAYOS_X">Rayos X / Estudios</option>
+                    <option value="CONSENTIMIENTO_INFORMADO">Consentimiento Informado</option>
+                    <option value="ESTUDIO_DERMATOLOGICO">Estudio Dermatológico</option>
+                    <option value="FORMULARIO_EVALUACION">Formulario de Evaluación</option>
                     <option value="OTRO">Otro</option>
                   </select>
                 </div>

@@ -9,16 +9,6 @@ interface PatientHeaderProps {
   pacienteId: string;
 }
 
-interface SaldoInfo {
-  totalDeuda: number;
-  cobros: Array<{
-    id: string;
-    total: number;
-    pagado: number;
-    saldo: number;
-  }>;
-}
-
 export default function PatientHeader({ historia, pacienteId }: PatientHeaderProps) {
   const paciente = historia.paciente;
   const edad = calcularEdad(paciente.fechaNacimiento);
@@ -84,12 +74,12 @@ export default function PatientHeader({ historia, pacienteId }: PatientHeaderPro
           </div>
 
           <div className="flex gap-3">
-            <button className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <button className="btn-secondary">
               Editar Perfil
             </button>
             <Link 
               href={`/pacientes/${pacienteId}/tratamiento/nuevo`}
-              className="px-5 py-2.5 text-sm font-medium text-white bg-amber-800 hover:bg-amber-900 rounded-lg transition-colors"
+              className="btn-primary"
             >
               Nueva Sesión
             </Link>

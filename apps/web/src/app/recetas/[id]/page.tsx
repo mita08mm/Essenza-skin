@@ -72,7 +72,7 @@ function RecetaDetailContent() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-morena"></div>
+        <div className="animate-spin rounded-lg h-12 w-12 border-b-2 border-morena"></div>
       </div>
     );
   }
@@ -88,7 +88,7 @@ function RecetaDetailContent() {
   return (
     <div className="max-w-4xl space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="card p-6">
         <div className="flex items-center gap-4 mb-4">
           <Link href="/recetas" className="text-marengo hover:text-concreto">
             ← Volver
@@ -119,7 +119,7 @@ function RecetaDetailContent() {
       </div>
 
       {/* Items */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="card p-6">
         <h2 className="text-xl font-heading font-bold text-concreto mb-4">
           Prescripción
         </h2>
@@ -136,7 +136,7 @@ function RecetaDetailContent() {
                   <p className="text-xs text-marengo mt-1">{item.tipo}</p>
                 </div>
                 <span
-                  className={`px-3 py-1 text-xs rounded-full ${
+                  className={`px-3 py-1 text-xs rounded-lg ${
                     item.estado === 'ENTREGADO'
                       ? 'bg-green-100 text-green-700'
                       : 'bg-yellow-100 text-yellow-700'
@@ -177,7 +177,7 @@ function RecetaDetailContent() {
 
       {/* Indicaciones */}
       {receta.indicaciones && (
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="card p-6">
           <h2 className="text-xl font-heading font-bold text-concreto mb-4">
             Indicaciones Generales
           </h2>
