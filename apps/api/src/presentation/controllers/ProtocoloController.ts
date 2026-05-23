@@ -12,22 +12,14 @@ const prisma = new PrismaClient();
 const protocoloRepository = new ProtocoloRepository(prisma);
 
 const createItemProtocoloSchema = z.object({
-  productoId: z.string().uuid(),
   nombre: z.string().min(1, 'Nombre requerido'),
-  cantidad: z.number().int().positive(),
-  aplicacion: z.string().min(1, 'Aplicación requerida'),
-  frecuencia: z.string().min(1, 'Frecuencia requerida'),
-  duracion: z.string().optional(),
-  precio: z.number().optional(),
-  estado: z.enum(['INDICADO', 'ADQUIRIDO', 'EN_USO', 'COMPLETADO']).optional(),
+  indicaciones: z.string().min(1, 'Indicaciones requeridas'),
+  cantidad: z.number().int().positive().optional(),
 });
 
 const createProtocoloSchema = z.object({
   pacienteId: z.string().uuid(),
-  tratamientoId: z.string().uuid().optional(),
   nombre: z.string().min(1, 'Nombre del protocolo requerido'),
-  indicaciones: z.string().optional(),
-  duracion: z.string().optional(),
   items: z.array(createItemProtocoloSchema).min(1, 'Debe incluir al menos un producto'),
 });
 

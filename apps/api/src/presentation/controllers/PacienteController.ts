@@ -25,7 +25,6 @@ const createPacienteSchema = z.object({
   embarazoLactancia: z.boolean().optional(),
   contactoEmergenciaNombre: z.string().optional(),
   contactoEmergenciaTelefono: z.string().optional(),
-  fotoUrl: z.string().url('URL invalida').optional(),
 });
 
 const updatePacienteSchema = z.object({
@@ -42,7 +41,6 @@ const updatePacienteSchema = z.object({
   embarazoLactancia: z.boolean().optional(),
   contactoEmergenciaNombre: z.string().optional(),
   contactoEmergenciaTelefono: z.string().optional(),
-  fotoUrl: z.string().url().optional(),
   estado: z.enum(['ACTIVO', 'INACTIVO']).optional(),
 });
 

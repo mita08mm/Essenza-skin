@@ -14,23 +14,20 @@ const documentoRepository = new DocumentoRepository(prisma);
 
 const createDocumentoSchema = z.object({
   pacienteId: z.string().uuid(),
-  tratamientoId: z.string().uuid().optional(),
-  descripcion: z.string().optional(),
   kind: z.enum(['FOTO', 'DOCUMENTO']),
 });
 
 const updateDocumentoSchema = z.object({
   nombre: z.string().min(1).optional(),
-  descripcion: z.string().optional(),
   kind: z.enum(['FOTO', 'DOCUMENTO']).optional(),
 });
 
 function mapKindToTipo(kind: 'FOTO' | 'DOCUMENTO'): TipoDocumento {
-  return kind === 'FOTO' ? 'FOTO_FACIAL' : 'OTRO';
+  return kind;
 }
 
 function mapTipoToKind(tipo: TipoDocumento): 'FOTO' | 'DOCUMENTO' {
-  return tipo.startsWith('FOTO_') ? 'FOTO' : 'DOCUMENTO';
+  return tipo;
 }
 
 function serializeDocumento(documento: Documento) {
@@ -39,10 +36,7 @@ function serializeDocumento(documento: Documento) {
     nombre: documento.nombre,
     kind: mapTipoToKind(documento.tipo),
     url: documento.url,
-    mimeType: documento.mimeType,
-    tamaño: documento.tamaño,
     createdAt: documento.createdAt,
-    descripcion: documento.descripcion,
   };
 }
 
@@ -83,11 +77,13 @@ export class DocumentoController {
 
       const useCase = new CreateDocumentoUseCase(documentoRepository);
       const documento = await useCase.execute({
-        ...rest,
-        nombre: req.file.originalname,
-        tipo: mapKindToTipo(kind),
-        url: `/uploads/${req.file.filename}`,
-        tamaño: req.file.size,
+        documento: {
+          ...rest,
+          nombre: req.file.originalname,
+          tipo: mapKindToTipo(kind),
+          url: `/uploads/${req.file.filename}`,
+        },
+        fileSize: req.file.size,
         mimeType: req.file.mimetype,
       });
 

@@ -19,11 +19,6 @@ export class CreateCobroUseCase {
       }
     }
 
-    // Validar descuento
-    if (input.descuento && input.descuento < 0) {
-      throw new Error('El descuento no puede ser negativo');
-    }
-
     return this.cobroRepository.create(input);
   }
 }

@@ -17,13 +17,10 @@ interface Paciente {
 
 interface Cobro {
   id: string;
-  pacienteId: string;
   fecha: string;
-  subtotal: number;
-  descuento: number;
   total: number;
-  estado: string;
   paciente: Paciente;
+  items?: Array<{ id: string; nombre: string }>;
   pagos: Array<{ monto: number }>;
 }
 
@@ -75,18 +72,8 @@ export default function CobrosPage() {
     }).format(monto);
   };
 
-  const calcularPagado = (pagos: Array<{ monto: number }>) => {
+  const calcularAbonado = (pagos: Array<{ monto: number }>) => {
     return pagos.reduce((sum, pago) => sum + Number(pago.monto), 0);
-  };
-
-  const getEstadoColor = (estado: string) => {
-    const colors: Record<string, string> = {
-      PENDIENTE: 'bg-red-100 text-red-800',
-      PARCIAL: 'bg-yellow-100 text-yellow-800',
-      PAGADO: 'bg-green-100 text-green-800',
-      CANCELADO: 'bg-gray-100 text-gray-800',
-    };
-    return colors[estado] || 'bg-gray-100 text-gray-800';
   };
 
   if (isLoading) {
@@ -95,7 +82,7 @@ export default function CobrosPage() {
         <DashboardLayout>
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-lg h-12 w-12 border-b-2 border-morena"></div>
-            <span className="ml-3 text-marengo">Cargando cobros...</span>
+            <span className="ml-3 text-marengo">Cargando registro de cobros...</span>
           </div>
         </DashboardLayout>
       </ProtectedRoute>
@@ -121,17 +108,17 @@ export default function CobrosPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-heading font-bold text-concreto">
-                Cobros
+                Registro de cobros
               </h1>
               <p className="text-marengo mt-1">
-                Facturacion y control de pagos
+                Lista para revisar a quien necesitas cobrar
               </p>
             </div>
             <Link
               href="/cobros/nuevo"
               className="btn-primary"
             >
-              Nuevo Cobro
+              Nuevo registro
             </Link>
           </div>
 
@@ -139,17 +126,17 @@ export default function CobrosPage() {
             <div className="card p-12 text-center">
               <div className="text-6xl mb-4">💰</div>
               <h3 className="text-xl font-heading font-semibold text-concreto mb-2">
-                No hay cobros registrados
+                No hay registros de cobro
               </h3>
               <p className="text-marengo mb-6">
-                Comienza creando tu primer cobro
+                Agrega un registro para recordar a quien necesitas cobrar
               </p>
               <Link
                 href="/cobros/nuevo"
                 className="inline-block px-6 py-3 bg-piel text-morena rounded-lg 
                          hover:bg-piel/90 transition-all"
               >
-                Crear primer cobro
+                Crear primer registro
               </Link>
             </div>
           ) : (
@@ -163,17 +150,17 @@ export default function CobrosPage() {
                     <th className="px-6 py-4 text-left text-xs font-medium text-concreto uppercase tracking-wider">
                       Paciente
                     </th>
-                    <th className="px-6 py-4 text-right text-xs font-medium text-concreto uppercase tracking-wider">
-                      Total
-                    </th>
-                    <th className="px-6 py-4 text-right text-xs font-medium text-concreto uppercase tracking-wider">
-                      Pagado
-                    </th>
-                    <th className="px-6 py-4 text-right text-xs font-medium text-concreto uppercase tracking-wider">
-                      Saldo
-                    </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-concreto uppercase tracking-wider">
-                      Estado
+                      Descripción
+                    </th>
+                    <th className="px-6 py-4 text-right text-xs font-medium text-concreto uppercase tracking-wider">
+                      Monto
+                    </th>
+                    <th className="px-6 py-4 text-right text-xs font-medium text-concreto uppercase tracking-wider">
+                      Abonado
+                    </th>
+                    <th className="px-6 py-4 text-right text-xs font-medium text-concreto uppercase tracking-wider">
+                      Pendiente
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-concreto uppercase tracking-wider">
                       Acciones
@@ -182,9 +169,9 @@ export default function CobrosPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-marengo/10">
                   {cobros.map((cobro) => {
-                    const pagado = calcularPagado(cobro.pagos);
-                    const saldo = Number(cobro.total) - pagado;
-                    
+                    const abonado = calcularAbonado(cobro.pagos || []);
+                    const pendiente = Math.max(Number(cobro.total) - abonado, 0);
+
                     return (
                       <tr key={cobro.id} className="hover:bg-piel/5 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-concreto">
@@ -198,26 +185,24 @@ export default function CobrosPage() {
                             {cobro.paciente.tipoDocumento}: {cobro.paciente.documento}
                           </div>
                         </td>
+                        <td className="px-6 py-4 text-sm text-concreto">
+                          {buildCobroTitle(cobro)}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-concreto text-right font-medium">
                           {formatMonto(Number(cobro.total))}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 text-right">
-                          {formatMonto(pagado)}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-concreto text-right">
+                          {formatMonto(abonado)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 text-right font-medium">
-                          {formatMonto(saldo)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-block px-3 py-1 rounded-lg text-xs font-medium ${getEstadoColor(cobro.estado)}`}>
-                            {cobro.estado}
-                          </span>
+                          {formatMonto(pendiente)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <Link
                             href={`/cobros/${cobro.id}`}
                             className="text-morena hover:text-morena/80 font-medium"
                           >
-                            Ver detalle
+                            Ver registro
                           </Link>
                         </td>
                       </tr>
@@ -231,4 +216,16 @@ export default function CobrosPage() {
       </DashboardLayout>
     </ProtectedRoute>
   );
+}
+
+function buildCobroTitle(cobro: Cobro) {
+  if (!cobro.items || cobro.items.length === 0) {
+    return 'Registro de cobro';
+  }
+
+  if (cobro.items.length === 1) {
+    return cobro.items[0].nombre;
+  }
+
+  return `${cobro.items[0].nombre} y ${cobro.items.length - 1} mas`;
 }

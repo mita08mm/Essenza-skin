@@ -2,13 +2,9 @@ import { PrismaClient, Documento, TipoDocumento } from '@clinica/database';
 
 export interface CreateDocumentoData {
   pacienteId: string;
-  tratamientoId?: string;
   nombre: string;
-  descripcion?: string;
   tipo: TipoDocumento;
   url: string;
-  tamaño: number;
-  mimeType: string;
 }
 
 export class DocumentoRepository {
@@ -16,15 +12,6 @@ export class DocumentoRepository {
 
   async findAll(): Promise<Documento[]> {
     return this.prisma.documento.findMany({
-      include: {
-        tratamiento: {
-          select: {
-            id: true,
-            fecha: true,
-            tipoTratamiento: true,
-          },
-        },
-      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -42,13 +29,6 @@ export class DocumentoRepository {
             apellido: true,
           },
         },
-        tratamiento: {
-          select: {
-            id: true,
-            fecha: true,
-            tipoTratamiento: true,
-          },
-        },
       },
     });
   }
@@ -58,7 +38,6 @@ export class DocumentoRepository {
       where: { id },
       include: {
         paciente: true,
-        tratamiento: true,
       },
     });
   }
@@ -66,24 +45,6 @@ export class DocumentoRepository {
   async findByPaciente(pacienteId: string): Promise<Documento[]> {
     return this.prisma.documento.findMany({
       where: { pacienteId },
-      include: {
-        tratamiento: {
-          select: {
-            id: true,
-            fecha: true,
-            tipoTratamiento: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-  }
-
-  async findByTratamiento(tratamientoId: string): Promise<Documento[]> {
-    return this.prisma.documento.findMany({
-      where: { tratamientoId },
       orderBy: {
         createdAt: 'desc',
       },
@@ -117,7 +78,6 @@ export class DocumentoRepository {
       data,
       include: {
         paciente: true,
-        tratamiento: true,
       },
     });
   }

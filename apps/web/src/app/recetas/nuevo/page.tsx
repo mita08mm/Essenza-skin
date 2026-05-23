@@ -18,38 +18,23 @@ interface Paciente {
 }
 
 interface Item {
-  tipo: 'MEDICAMENTO' | 'INSUMO';
-  itemId: string;
+  id: string;
   nombre: string;
-  cantidad: number;
-  dosis?: string;
-  frecuencia?: string;
-  duracion?: string;
-  precio?: number;
+  indicaciones: string;
 }
 
 export default function NuevaRecetaPage() {
   const router = useRouter();
-  const { token, usuario } = useAuth();
+  const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [loadingPacientes, setLoadingPacientes] = useState(true);
 
   const [pacienteId, setPacienteId] = useState('');
-  const [indicaciones, setIndicaciones] = useState('');
   const [items, setItems] = useState<Item[]>([]);
-
-  // Nuevo item temporal
-  const [nuevoItem, setNuevoItem] = useState<Item>({
-    tipo: 'MEDICAMENTO',
-    itemId: '',
-    nombre: '',
-    cantidad: 1,
-    dosis: '',
-    frecuencia: '',
-    duracion: '',
-  });
+  const [nombreItem, setNombreItem] = useState('');
+  const [indicaciones, setIndicaciones] = useState('');
 
   useEffect(() => {
     if (!token) return;
@@ -79,24 +64,18 @@ export default function NuevaRecetaPage() {
   }, [token]);
 
   const agregarItem = () => {
-    if (!nuevoItem.nombre || nuevoItem.cantidad <= 0) {
-      setError('Complete el nombre y cantidad del item');
+    if (!nombreItem.trim() || !indicaciones.trim()) {
+      setError('Complete el nombre y las indicaciones');
       return;
     }
 
-    setItems([...items, { 
-      ...nuevoItem, 
-      itemId: crypto.randomUUID()  // UUID real en lugar de temp-timestamp
+    setItems([...items, {
+      id: crypto.randomUUID(),
+      nombre: nombreItem.trim(),
+      indicaciones: indicaciones.trim(),
     }]);
-    setNuevoItem({
-      tipo: 'MEDICAMENTO',
-      itemId: '',
-      nombre: '',
-      cantidad: 1,
-      dosis: '',
-      frecuencia: '',
-      duracion: '',
-    });
+    setNombreItem('');
+    setIndicaciones('');
     setError('');
   };
 
@@ -109,19 +88,14 @@ export default function NuevaRecetaPage() {
     setError('');
 
     if (items.length === 0) {
-      setError('Debe agregar al menos un item a la receta');
-      return;
-    }
-
-    if (!usuario?.id) {
-      setError('Usuario no identificado');
+      setError('Debe agregar al menos un item a la prescripción');
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await fetch(apiEndpoint('/recetas'), {
+      const response = await fetch(apiEndpoint('/protocolos'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -129,15 +103,17 @@ export default function NuevaRecetaPage() {
         },
         body: JSON.stringify({
           pacienteId,
-          usuarioId: usuario.id,
-          indicaciones: indicaciones || undefined,
-          items,
+          nombre: buildPrescriptionName(items),
+          items: items.map((item) => ({
+            nombre: item.nombre,
+            indicaciones: item.indicaciones,
+          })),
         }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Error al crear receta');
+        throw new Error(data.error || 'Error al crear prescripción');
       }
 
       router.push('/recetas');
@@ -158,10 +134,10 @@ export default function NuevaRecetaPage() {
             </Link>
             <div>
               <h1 className="text-3xl font-heading font-bold text-concreto">
-                Nueva Receta
+                Nueva Prescripción
               </h1>
               <p className="text-marengo mt-1">
-                Prescripción de medicamentos e insumos
+                Registro simple de nombre del producto e indicaciones
               </p>
             </div>
           </div>
@@ -200,100 +176,48 @@ export default function NuevaRecetaPage() {
               )}
             </div>
 
-            {/* Items de la receta */}
+            {/* Items de la prescripción */}
             <div className="card p-8">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
-                Medicamentos e Insumos
+                Lista de prescripción
               </h2>
 
-              {/* Formulario para agregar items */}
-              <div className="grid grid-cols-12 gap-4 mb-6 p-4 bg-piel/10 rounded-lg">
-                <div className="col-span-2">
+              <div className="space-y-5 rounded-lg bg-piel/10 p-4">
+                <div>
                   <label className="block text-xs font-medium text-concreto mb-2">
-                    Tipo
-                  </label>
-                  <select
-                    value={nuevoItem.tipo}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, tipo: e.target.value as Item['tipo'] })}
-                    className="w-full px-3 py-2 text-sm rounded border border-marengo/30 
-                             focus:border-morena outline-none"
-                  >
-                    <option value="MEDICAMENTO">Medicamento</option>
-                    <option value="INSUMO">Insumo</option>
-                  </select>
-                </div>
-                <div className="col-span-3">
-                  <label className="block text-xs font-medium text-concreto mb-2">
-                    Nombre
+                    Nombre del producto
                   </label>
                   <input
                     type="text"
-                    value={nuevoItem.nombre}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, nombre: e.target.value })}
-                    placeholder="Nombre del item"
+                    value={nombreItem}
+                    onChange={(e) => setNombreItem(e.target.value)}
+                    placeholder="Ej: Protector solar, crema reparadora"
                     className="w-full px-3 py-2 text-sm rounded border border-marengo/30 
                              focus:border-morena outline-none"
                   />
                 </div>
-                <div className="col-span-1">
+
+                <div>
                   <label className="block text-xs font-medium text-concreto mb-2">
-                    Cant.
+                    Indicaciones
                   </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={nuevoItem.cantidad}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, cantidad: parseInt(e.target.value) || 0 })}
+                  <textarea
+                    value={indicaciones}
+                    onChange={(e) => setIndicaciones(e.target.value)}
+                    rows={3}
+                    placeholder="Ej: Aplicar por la noche durante 30 días"
                     className="w-full px-3 py-2 text-sm rounded border border-marengo/30 
-                             focus:border-morena outline-none"
+                             focus:border-morena outline-none resize-none"
                   />
                 </div>
-                <div className="col-span-2">
-                  <label className="block text-xs font-medium text-concreto mb-2">
-                    Dosis
-                  </label>
-                  <input
-                    type="text"
-                    value={nuevoItem.dosis}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, dosis: e.target.value })}
-                    placeholder="ej: 500mg"
-                    className="w-full px-3 py-2 text-sm rounded border border-marengo/30 
-                             focus:border-morena outline-none"
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-xs font-medium text-concreto mb-2">
-                    Frecuencia
-                  </label>
-                  <input
-                    type="text"
-                    value={nuevoItem.frecuencia}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, frecuencia: e.target.value })}
-                    placeholder="ej: Cada 8 horas"
-                    className="w-full px-3 py-2 text-sm rounded border border-marengo/30 
-                             focus:border-morena outline-none"
-                  />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-xs font-medium text-concreto mb-2">
-                    Duracion
-                  </label>
-                  <input
-                    type="text"
-                    value={nuevoItem.duracion}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, duracion: e.target.value })}
-                    placeholder="7 dias"
-                    className="w-full px-3 py-2 text-sm rounded border border-marengo/30 
-                             focus:border-morena outline-none"
-                  />
-                </div>
-                <div className="col-span-1 flex items-end">
+
+                <div className="flex justify-end">
                   <button
                     type="button"
                     onClick={agregarItem}
-                    className="btn-primary w-full py-2"
+                    className="btn-primary"
                   >
-                    +
+                    Agregar
                   </button>
                 </div>
               </div>
@@ -304,24 +228,16 @@ export default function NuevaRecetaPage() {
                   <table className="min-w-full divide-y divide-marengo/20">
                     <thead className="bg-marengo/10">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-concreto">Tipo</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-concreto">Nombre</th>
-                        <th className="px-4 py-3 text-center text-xs font-medium text-concreto">Cant.</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-concreto">Dosis</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-concreto">Frecuencia</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-concreto">Duracion</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-concreto">Indicaciones</th>
                         <th className="px-4 py-3"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-marengo/10">
                       {items.map((item, index) => (
                         <tr key={index}>
-                          <td className="px-4 py-3 text-sm text-concreto">{item.tipo}</td>
                           <td className="px-4 py-3 text-sm text-concreto">{item.nombre}</td>
-                          <td className="px-4 py-3 text-sm text-concreto text-center">{item.cantidad}</td>
-                          <td className="px-4 py-3 text-sm text-marengo">{item.dosis || '-'}</td>
-                          <td className="px-4 py-3 text-sm text-marengo">{item.frecuencia || '-'}</td>
-                          <td className="px-4 py-3 text-sm text-marengo">{item.duracion || '-'}</td>
+                          <td className="px-4 py-3 text-sm text-marengo">{item.indicaciones}</td>
                           <td className="px-4 py-3 text-right">
                             <button
                               type="button"
@@ -366,7 +282,7 @@ export default function NuevaRecetaPage() {
                 disabled={isLoading || items.length === 0}
                 className="btn-primary"
               >
-                {isLoading ? 'Guardando...' : 'Guardar Receta'}
+                {isLoading ? 'Guardando...' : 'Guardar Prescripción'}
               </button>
               <Link
                 href="/recetas"
@@ -380,4 +296,12 @@ export default function NuevaRecetaPage() {
       </DashboardLayout>
     </ProtectedRoute>
   );
+}
+
+function buildPrescriptionName(items: Item[]) {
+  if (items.length === 1) {
+    return items[0].nombre;
+  }
+
+  return `${items[0].nombre} y ${items.length - 1} mas`;
 }

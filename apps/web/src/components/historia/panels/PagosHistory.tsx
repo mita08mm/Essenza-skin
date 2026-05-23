@@ -1,186 +1,396 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiEndpoint } from '@/lib/config';
 import PanelFrame from './PanelFrame';
+import { Button, Input, Label } from '@/components/ui';
 
 interface PagosHistoryProps {
   pacienteId: string;
 }
 
-interface Pago {
+interface CobroRecord {
   id: string;
-  fecha: string;
-  monto: number;
-  metodoPago: string;
-  referencia?: string;
+  titulo: string;
+  tipo: 'SERVICIO' | 'PRODUCTO';
+  costo: number;
+  pagado: number;
+  pendiente: number;
+  total: number;
 }
 
-interface Cobro {
-  id: string;
-  fecha: string;
-  subtotal: number;
-  descuento: number;
-  total: number;
-  estado: string;
-  pagado: number;
-  saldo: number;
-  pagos: Pago[];
-  tratamiento?: {
-    id: string;
-    nombreTratamiento: string;
-    objetivo: string;
-  };
+interface CobroForm {
+  titulo: string;
+  costo: string;
+  pagado: string;
 }
+
+const initialForm: CobroForm = {
+  titulo: '',
+  costo: '',
+  pagado: '',
+};
 
 export default function PagosHistory({ pacienteId }: PagosHistoryProps) {
-  const [cobros, setCobros] = useState<Cobro[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showAll, setShowAll] = useState(false);
+  const [cobros, setCobros] = useState<CobroRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState('');
+  const [form, setForm] = useState<CobroForm>(initialForm);
 
-  useEffect(() => {
-    const fetchCobros = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(apiEndpoint(`/pacientes/${pacienteId}/cobros`), {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  const fetchCobros = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(apiEndpoint(`/pacientes/${pacienteId}/cobros`), {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          setCobros(data.data || []);
-        }
-      } catch (err) {
-        console.error('Error cargando historial de pagos:', err);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error('Error al cargar cobros');
       }
-    };
 
-    fetchCobros();
+      const data = await response.json();
+      setCobros(normalizeCobros(data.data || []));
+    } catch (err) {
+      console.error('Error cargando historial de cobros:', err);
+    } finally {
+      setIsLoading(false);
+    }
   }, [pacienteId]);
 
-  const formatCurrency = (amount: number) => {
-    return `Bs. ${amount.toFixed(2)}`;
+  useEffect(() => {
+    void (async () => {
+      await fetchCobros();
+    })();
+  }, [fetchCobros]);
+
+  const resumenActual = useMemo(() => {
+    const costo = Number(form.costo) || 0;
+    const pagado = Number(form.pagado) || 0;
+
+    return {
+      total: costo,
+      pendiente: Math.max(costo - pagado, 0),
+    };
+  }, [form.costo, form.pagado]);
+
+  const handleChange = (field: keyof CobroForm, value: string) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setError('');
   };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setForm(initialForm);
+    setError('');
   };
 
-  const getEstadoBadge = (saldo: number, estado: string) => {
-    if (estado === 'PAGADO' || saldo === 0) {
-      return <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 rounded">Pagado</span>;
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const titulo = form.titulo.trim();
+    const costo = Number(form.costo);
+    const pagado = Number(form.pagado || 0);
+
+    if (!titulo) {
+      setError('Ingrese un titulo');
+      return;
     }
-    if (estado === 'PARCIAL') {
-      return <span className="px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 rounded">Parcial</span>;
+
+    if (Number.isNaN(costo) || costo <= 0) {
+      setError('El costo debe ser mayor a 0');
+      return;
     }
-    return <span className="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700 rounded">Pendiente</span>;
+
+    if (Number.isNaN(pagado) || pagado < 0) {
+      setError('Lo pagado no puede ser negativo');
+      return;
+    }
+
+    if (pagado > costo) {
+      setError('Lo pagado no puede ser mayor al total');
+      return;
+    }
+
+    setIsSaving(true);
+    setError('');
+
+    try {
+      const token = localStorage.getItem('token');
+      const createResponse = await fetch(apiEndpoint('/cobros'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          pacienteId,
+          items: [
+            {
+              tipo: 'SERVICIO',
+              nombre: titulo,
+              cantidad: 1,
+              precioUnitario: costo,
+            },
+          ],
+        }),
+      });
+
+      const createData = await createResponse.json();
+
+      if (!createResponse.ok) {
+        throw new Error(createData.error || 'Error al registrar cobro');
+      }
+
+      const cobroId = createData.data?.id as string | undefined;
+
+      if (pagado > 0 && cobroId) {
+        const paymentResponse = await fetch(apiEndpoint(`/cobros/${cobroId}/pago`), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            monto: pagado,
+            metodoPago: 'EFECTIVO',
+            notas: 'Registro manual desde historia del paciente',
+          }),
+        });
+
+        const paymentData = await paymentResponse.json();
+
+        if (!paymentResponse.ok) {
+          throw new Error(paymentData.error || 'Error al registrar pago');
+        }
+      }
+
+      handleCloseModal();
+      await fetchCobros();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al guardar cobro');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const cobrosAMostrar = showAll ? cobros : cobros.slice(0, 5);
-
-  if (loading) {
-    return (
-      <PanelFrame title="Historial de Pagos">
-        <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="space-y-3">
-            <div className="h-12 bg-gray-100 rounded"></div>
-            <div className="h-12 bg-gray-100 rounded"></div>
-          </div>
-        </div>
-      </PanelFrame>
-    );
-  }
+  const formatCurrency = (amount: number) => `Bs. ${amount.toFixed(2)}`;
 
   return (
     <PanelFrame
-      title="Historial de Pagos"
-      action={<span className="text-xs text-gray-500">{cobros.length} registros</span>}
+      title="Registro de cobros"
+      action={
+        <button
+          onClick={() => setShowModal(true)}
+          className="rounded-lg p-1.5 text-marengo transition-colors hover:bg-stone-100 hover:text-concreto"
+          title="Agregar registro de cobro"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+      }
     >
-
       <div className="space-y-4">
-        {cobrosAMostrar.length === 0 ? (
+        {isLoading ? (
           <div className="text-center py-8">
-            <p className="text-sm text-gray-400">Sin registros de pagos</p>
+            <div className="mx-auto h-8 w-8 animate-spin rounded-lg border-b-2 border-gray-400"></div>
+            <p className="mt-2 text-xs text-gray-400">Cargando registro de cobros...</p>
+          </div>
+        ) : cobros.length === 0 ? (
+          <div className="rounded-lg bg-stone-50 px-4 py-8 text-center">
+            <p className="text-sm text-concreto">Sin registros de cobro</p>
+            <p className="mt-1 text-xs text-marengo">boton + para registrar</p>
           </div>
         ) : (
-          cobrosAMostrar.map((cobro) => (
-            <div key={cobro.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
-              {/* Header del cobro */}
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="text-sm font-medium text-gray-900">
-                      {cobro.tratamiento?.nombreTratamiento || 'Servicios varios'}
-                    </h4>
-                    {getEstadoBadge(cobro.saldo, cobro.estado)}
-                  </div>
-                  <p className="text-xs text-gray-500">{formatDate(cobro.fecha)}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-gray-900">{formatCurrency(cobro.total)}</p>
-                  {cobro.descuento > 0 && (
-                    <p className="text-xs text-gray-500">Desc: {formatCurrency(cobro.descuento)}</p>
-                  )}
-                </div>
-              </div>
+          <div className="space-y-3">
+            <div className="hidden grid-cols-[minmax(0,1.5fr)_140px_120px_120px_120px_120px] gap-4 border-b border-stone-200 pb-2 text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/70 sm:grid">
+              <p>Titulo</p>
+              <p>Tipo</p>
+              <p className="text-right">Costo</p>
+              <p className="text-right">Pagado</p>
+              <p className="text-right">Pendiente</p>
+              <p className="text-right">Total</p>
+            </div>
 
-              {/* Resumen de pagos */}
-              <div className="grid grid-cols-3 gap-3 pt-3 border-t border-gray-100">
+            {cobros.map((cobro) => (
+              <div key={cobro.id} className="grid grid-cols-1 gap-2 border-b border-stone-100 py-3 sm:grid-cols-[minmax(0,1.5fr)_140px_120px_120px_120px_120px] sm:gap-4">
                 <div>
-                  <p className="text-xs text-gray-500">Total</p>
-                  <p className="text-sm font-medium text-gray-900">{formatCurrency(cobro.total)}</p>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/60 sm:hidden">Titulo</p>
+                  <p className="text-sm font-medium text-concreto">{cobro.titulo}</p>
                 </div>
+
                 <div>
-                  <p className="text-xs text-gray-500">Pagado</p>
-                  <p className="text-sm font-medium text-green-600">{formatCurrency(cobro.pagado)}</p>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/60 sm:hidden">Tipo</p>
+                  <p className="text-sm text-marengo">{cobro.tipo === 'SERVICIO' ? 'Servicio' : 'Producto'}</p>
                 </div>
+
                 <div>
-                  <p className="text-xs text-gray-500">Saldo</p>
-                  <p className={`text-sm font-medium ${cobro.saldo > 0 ? 'text-red-600' : 'text-gray-400'}`}>
-                    {formatCurrency(cobro.saldo)}
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/60 sm:hidden">Costo</p>
+                  <p className="text-sm text-concreto sm:text-right">{formatCurrency(cobro.costo)}</p>
+                </div>
+
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/60 sm:hidden">Pagado</p>
+                  <p className="text-sm text-concreto sm:text-right">{formatCurrency(cobro.pagado)}</p>
+                </div>
+
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/60 sm:hidden">Pendiente</p>
+                  <p className={`text-sm sm:text-right ${cobro.pendiente > 0 ? 'text-red-600' : 'text-green-700'}`}>
+                    {formatCurrency(cobro.pendiente)}
                   </p>
                 </div>
+
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/60 sm:hidden">Total</p>
+                  <p className="text-sm text-concreto sm:text-right">{formatCurrency(cobro.total)}</p>
+                </div>
               </div>
-
-              {/* Detalle de pagos si existen */}
-              {cobro.pagos.length > 0 && (
-                <details className="mt-3">
-                  <summary className="text-xs text-gray-600 cursor-pointer hover:text-gray-900">
-                    Ver {cobro.pagos.length} pago(s)
-                  </summary>
-                  <div className="mt-2 space-y-2 pl-3 border-l-2 border-gray-200">
-                    {cobro.pagos.map((pago) => (
-                      <div key={pago.id} className="flex items-center justify-between text-xs">
-                        <div>
-                          <span className="text-gray-600">{formatDate(pago.fecha)}</span>
-                          <span className="mx-2 text-gray-400">•</span>
-                          <span className="text-gray-500">{pago.metodoPago}</span>
-                          {pago.referencia && (
-                            <span className="ml-2 text-gray-400">({pago.referencia})</span>
-                          )}
-                        </div>
-                        <span className="font-medium text-green-600">{formatCurrency(pago.monto)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </details>
-              )}
-            </div>
-          ))
-        )}
-
-        {cobros.length > 5 && (
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="w-full text-xs text-gray-500 hover:text-gray-700 pt-3 transition-colors"
-          >
-            {showAll ? 'Ver menos' : `Ver todos (${cobros.length})`} →
-          </button>
+            ))}
+          </div>
         )}
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-concreto/15 p-4 backdrop-blur-[2px]">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-xl">
+            <div className="sticky top-0 border-b border-gray-200 bg-white px-6 py-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-serif text-xl font-light text-gray-900">Nuevo registro de cobro</h3>
+                <button
+                  onClick={handleCloseModal}
+                  className="rounded-lg p-2 transition-colors hover:bg-gray-100"
+                >
+                  <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4 p-6">
+              {error && (
+                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+                  {error}
+                </div>
+              )}
+
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/75">
+                Entrada
+              </p>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <Label htmlFor="titulo" required>Titulo</Label>
+                  <Input
+                    id="titulo"
+                    value={form.titulo}
+                    onChange={(event) => handleChange('titulo', event.target.value)}
+                    placeholder="Ej: Limpieza facial, serum reparador"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="costo" required>Costo</Label>
+                  <Input
+                    id="costo"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.costo}
+                    onChange={(event) => handleChange('costo', event.target.value)}
+                    placeholder="0.00"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="pagado">Lo que me pago</Label>
+                  <Input
+                    id="pagado"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.pagado}
+                    onChange={(event) => handleChange('pagado', event.target.value)}
+                    placeholder="0.00"
+                  />
+                </div>
+
+                <div>
+                  <Label>Total</Label>
+                  <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-concreto">
+                    {formatCurrency(resumenActual.total)}
+                  </div>
+                </div>
+
+                <div>
+                  <Label>Pendiente</Label>
+                  <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-concreto">
+                    {formatCurrency(resumenActual.pendiente)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
+                <Button type="button" onClick={handleCloseModal} variant="outline">
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={isSaving} variant="primary">
+                  {isSaving ? 'Guardando...' : 'Guardar registro'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </PanelFrame>
   );
+}
+
+function normalizeCobros(data: unknown[]): CobroRecord[] {
+  return data.flatMap((entry, index) => {
+    const rawCobro = entry as {
+      id?: string;
+      total?: number | string;
+      pagado?: number | string;
+      saldo?: number | string;
+      items?: Array<{
+        id?: string;
+        tipo?: string;
+        nombre?: string;
+        precioUnitario?: number | string;
+      }>;
+    };
+
+    const total = Number(rawCobro.total ?? 0);
+    const pagado = Number(rawCobro.pagado ?? 0);
+    const saldo = Number(rawCobro.saldo ?? Math.max(total - pagado, 0));
+
+    if (!rawCobro.items || rawCobro.items.length === 0) {
+      return [
+        {
+          id: rawCobro.id ?? `cobro-${index}`,
+          titulo: 'Cobro',
+          tipo: 'SERVICIO',
+          costo: total,
+          pagado,
+          pendiente: saldo,
+          total,
+        },
+      ];
+    }
+
+    return rawCobro.items.map((item, itemIndex) => ({
+      id: item.id ?? `${rawCobro.id ?? index}-${itemIndex}`,
+      titulo: item.nombre ?? 'Cobro',
+      tipo: item.tipo === 'PRODUCTO' ? 'PRODUCTO' : 'SERVICIO',
+      costo: Number(item.precioUnitario ?? total),
+      pagado,
+      pendiente: saldo,
+      total,
+    }));
+  });
 }

@@ -50,9 +50,6 @@ model Paciente {
   email           String?
   direccion       String?
   sexo            String?
-  grupoSanguineo  String?
-  peso            Decimal?               @db.Decimal(5, 2)
-  altura          Decimal?               @db.Decimal(5, 2)
 
   // Campos específicos de medicina estética
   objetivoEstetico   String? // Objetivo principal del paciente
@@ -63,7 +60,6 @@ model Paciente {
 
   contactoEmergenciaNombre   String?
   contactoEmergenciaTelefono String?
-  fotoUrl                    String?
   estado                     EstadoPaciente @default(ACTIVO)
   createdAt                  DateTime       @default(now())
   updatedAt                  DateTime       @updatedAt
@@ -150,21 +146,8 @@ model Tratamiento {
   // Evaluación y protocolo
   evaluacionInicial String? // Estado inicial de la piel/área
   protocolo         String? // Protocolo aplicado
-  productosUsados   String? // Productos/equipos utilizados
-  parametros        Json? // Parámetros técnicos (intensidad, tiempo, etc.)
-
-  // Seguimiento
-  reaccionesInmediatas           String? // Eritema, edema, etc.
-  recomendacionesPostTratamiento String? // Cuidados posteriores
-  observaciones                  String?
-  proximaSesion                  DateTime?
-
-  // Datos de sesión/paquete
-  sesionNumero  Int? // Ej: "Sesión 3 de 6"
-  totalSesiones Int?
-
-  // Medidas corporales/faciales (JSON para flexibilidad)
-  medidas Json? // { peso, contornos, pliegues, etc. según tipo de tratamiento }
+  observaciones     String?
+  proximaSesion     DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -175,7 +158,6 @@ model Tratamiento {
   cita            Cita?           @relation(fields: [citaId], references: [id])
   protocolos      Protocolo[]
   cobros          Cobro[]
-  documentos      Documento[]
 
   @@index([pacienteId])
   @@index([historiaClinicaId])
@@ -295,22 +277,20 @@ enum TipoProducto {
 // ========================================
 
 model Cobro {
-  id            String      @id @default(uuid())
-  pacienteId    String
-  tratamientoId String?
-  fecha         DateTime    @default(now())
-  subtotal      Decimal     @default(0) @db.Decimal(10, 2)
-  descuento     Decimal     @default(0) @db.Decimal(10, 2)
-  total         Decimal     @default(0) @db.Decimal(10, 2)
-  estado        EstadoCobro @default(PENDIENTE)
-  notas         String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id         String      @id @default(uuid())
+  pacienteId String
+  fecha      DateTime    @default(now())
+  subtotal   Decimal     @default(0) @db.Decimal(10, 2)
+  total      Decimal     @default(0) @db.Decimal(10, 2)
+  estado     EstadoCobro @default(PENDIENTE)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
-  paciente    Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  tratamiento Tratamiento? @relation(fields: [tratamientoId], references: [id])
-  items       ItemCobro[]
-  pagos       Pago[]
+  paciente      Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  items         ItemCobro[]
+  pagos         Pago[]
+  tratamiento   Tratamiento? @relation(fields: [tratamientoId], references: [id])
+  tratamientoId String?
 
   @@index([pacienteId])
   @@index([estado])
@@ -379,21 +359,19 @@ enum MetodoPago {
 // ========================================
 
 model Protocolo {
-  id            String   @id @default(uuid())
-  pacienteId    String
-  tratamientoId String?
-  usuarioId     String
-  fecha         DateTime @default(now())
-  nombre        String // Ej: "Protocolo post-peeling", "Rutina facial diaria"
-  indicaciones  String? // Instrucciones generales
-  duracion      String? // Ej: "14 días", "uso continuo"
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id         String   @id @default(uuid())
+  pacienteId String
+  usuarioId  String
+  fecha      DateTime @default(now())
+  nombre     String // Ej: "Protocolo post-peeling", "Rutina facial diaria"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  paciente    Paciente        @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  tratamiento Tratamiento?    @relation(fields: [tratamientoId], references: [id])
-  usuario     Usuario         @relation(fields: [usuarioId], references: [id])
-  items       ItemProtocolo[]
+  paciente      Paciente        @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  usuario       Usuario         @relation(fields: [usuarioId], references: [id])
+  items         ItemProtocolo[]
+  tratamiento   Tratamiento?    @relation(fields: [tratamientoId], references: [id])
+  tratamientoId String?
 
   @@index([pacienteId])
   @@index([fecha])
@@ -441,57 +419,22 @@ enum EstadoItemProtocolo {
 // ========================================
 
 model Documento {
-  id            String         @id @default(uuid())
-  pacienteId    String
-  tratamientoId String?
-  nombre        String
-  descripcion   String?
-  tipo          TipoDocumento
-  categoria     CategoriaFoto? // Para fotos: ángulo/zona
-  momento       MomentoFoto? // ANTES, DESPUES, DURANTE, CONTROL
-  url           String
-  tamaño       Int // en bytes
-  mimeType      String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id         String        @id @default(uuid())
+  pacienteId String
+  nombre     String
+  tipo       TipoDocumento
+  url        String
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
-  paciente    Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
-  tratamiento Tratamiento? @relation(fields: [tratamientoId], references: [id])
+  paciente Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
 
   @@index([pacienteId])
-  @@index([tratamientoId])
   @@index([tipo])
-  @@index([momento])
   @@map("documentos")
 }
 
 enum TipoDocumento {
-  FOTO_FACIAL
-  FOTO_CORPORAL
-  FOTO_CAPILAR
-  ESTUDIO_DERMATOLOGICO
-  CONSENTIMIENTO_INFORMADO
-  FORMULARIO_EVALUACION
-  OTRO
-}
-
-enum CategoriaFoto {
-  FRONTAL
-  PERFIL_DERECHO
-  PERFIL_IZQUIERDO
-  LATERAL_DERECHO
-  LATERAL_IZQUIERDO
-  SUPERIOR
-  INFERIOR
-  DETALLE
-}
-
-enum MomentoFoto {
-  ANTES
-  DURANTE
-  DESPUES
-  CONTROL_1_SEMANA
-  CONTROL_1_MES
-  CONTROL_3_MESES
-  CONTROL_6_MESES
+  FOTO
+  DOCUMENTO
 }

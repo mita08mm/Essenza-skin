@@ -49,35 +49,8 @@ export const TIPOS_DOCUMENTO = {
 
 // Tipos de documento/archivo
 export const TIPOS_ARCHIVO = {
-  FOTO_FACIAL: 'Foto Facial',
-  FOTO_CORPORAL: 'Foto Corporal',
-  FOTO_CAPILAR: 'Foto Capilar',
-  ANALISIS: 'Análisis',
-  CONSENTIMIENTO: 'Consentimiento Informado',
-  INFORME: 'Informe Médico',
-  OTRO: 'Otro',
-} as const;
-
-// Categorías de foto
-export const CATEGORIAS_FOTO = {
-  FRONTAL: 'Frontal',
-  PERFIL_DERECHO: 'Perfil Derecho',
-  PERFIL_IZQUIERDO: 'Perfil Izquierdo',
-  LATERAL: 'Lateral',
-  DETALLE: 'Detalle',
-  COMPLETO: 'Cuerpo Completo',
-} as const;
-
-// Momentos de captura de foto
-export const MOMENTOS_FOTO = {
-  ANTES: 'Antes del Tratamiento',
-  DURANTE: 'Durante el Tratamiento',
-  DESPUES: 'Después del Tratamiento',
-  CONTROL_1_SEMANA: 'Control 1 Semana',
-  CONTROL_1_MES: 'Control 1 Mes',
-  CONTROL_3_MESES: 'Control 3 Meses',
-  CONTROL_6_MESES: 'Control 6 Meses',
-  CONTROL_1_ANO: 'Control 1 Año',
+  FOTO: 'Foto',
+  DOCUMENTO: 'Documento',
 } as const;
 
 // Estados de protocolo/item

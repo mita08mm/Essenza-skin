@@ -11,25 +11,18 @@ export interface Paciente {
   embarazoLactancia?: boolean;
 }
 
-export interface Medidas {
-  peso?: number;
-  talla?: number;
-  imc?: number;
-  circunferencias?: Record<string, number>; // ej: { cintura: 80, cadera: 95 }
-  plieguesCutaneos?: Record<string, number>;
-  otros?: Record<string, string | number>;
-}
-
 export interface ItemProtocolo {
   id: string;
-  producto: {
+  producto?: {
     id: string;
     nombre: string;
     tipo: 'COSMECEUTICO' | 'DERMOCOSMETICO' | 'EQUIPO' | 'INSUMO';
   };
-  cantidad: number;
+  nombre: string;
+  cantidad?: number;
   aplicacion?: string;
   frecuencia?: string;
+  indicaciones?: string;
   estado: 'INDICADO' | 'ADQUIRIDO' | 'EN_USO' | 'COMPLETADO';
 }
 
@@ -46,10 +39,7 @@ export interface Documento {
   nombre: string;
   kind: 'FOTO' | 'DOCUMENTO';
   url: string;
-  mimeType: string;
-  tamaño: number;
   createdAt: string;
-  descripcion?: string;
 }
 
 export interface Tratamiento {
@@ -61,13 +51,8 @@ export interface Tratamiento {
   objetivo?: string;
   evaluacionInicial?: string;
   protocolo?: string;
-  parametros?: string;
-  reaccionesInmediatas?: string;
   observaciones?: string;
-  sesionNumero?: number;
-  totalSesiones?: number;
   proximaSesion?: string;
-  medidas?: Medidas;
   usuario: {
     nombre: string;
     apellido?: string;

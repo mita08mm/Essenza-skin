@@ -15,8 +15,8 @@ import LogoutIcon from '../icons/LogoutIcon';
 const menuItems = [
   { href: '/pacientes', label: 'Pacientes', icon: <PersonIcon className="w-5 h-5" /> },
   { href: '/citas', label: 'Citas', icon: <AppointmentIcon className="w-5 h-5" /> },
-  { href: '/cobros', label: 'Cobros', icon: <MoneyIcon className="w-5 h-5" /> },
-  { href: '/recetas', label: 'Recetas', icon: <PrescriptionIcon className="w-5 h-5" /> },
+  { href: '/cobros', label: 'Registro de cobros', icon: <MoneyIcon className="w-5 h-5" /> },
+  { href: '/recetas', label: 'Prescripciones', icon: <PrescriptionIcon className="w-5 h-5" /> },
   { href: '/inventario', label: 'Inventario', icon: <InventoryIcon className="w-5 h-5" /> },
 ];
 

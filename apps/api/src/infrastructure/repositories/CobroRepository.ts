@@ -10,16 +10,11 @@ export interface CreateItemCobroInput {
 
 export interface CreateCobroInput {
   pacienteId: string;
-  evolucionId?: string;
   items: CreateItemCobroInput[];
-  descuento?: number;
-  notas?: string;
 }
 
 export interface UpdateCobroInput {
-  descuento?: number;
   estado?: EstadoCobro;
-  notas?: string;
 }
 
 export interface CreatePagoInput {
@@ -34,20 +29,19 @@ export class CobroRepository {
   constructor(private prisma: PrismaClient) {}
 
   async create(input: CreateCobroInput): Promise<any> {
-    const { items, descuento = 0, ...cobroData } = input;
+    const { items, ...cobroData } = input;
 
     // Calcular subtotal
     const subtotal = items.reduce((sum, item) => {
       return sum + item.cantidad * item.precioUnitario;
     }, 0);
 
-    const total = subtotal - descuento;
+    const total = subtotal;
 
     return this.prisma.cobro.create({
       data: {
         ...cobroData,
         subtotal,
-        descuento,
         total,
         items: {
           create: items.map(item => ({

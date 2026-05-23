@@ -14,18 +14,6 @@ const tratamientoRepository = new TratamientoRepository(prisma);
 const historiaClinicaRepository = new HistoriaClinicaRepository(prisma);
 
 // Schemas de validación
-const medidasSchema = z.object({
-  peso: z.number().optional(),
-  talla: z.number().optional(),
-  imc: z.number().optional(),
-  circunferenciaCadera: z.number().optional(),
-  circunferenciaCintura: z.number().optional(),
-  circunferenciaBrazo: z.number().optional(),
-  circunferenciaPierna: z.number().optional(),
-  porcentajeGrasa: z.number().optional(),
-  masaMuscular: z.number().optional(),
-}).optional();
-
 const createTratamientoSchema = z.object({
   pacienteId: z.string().uuid(),
   citaId: z.string().uuid().optional(),
@@ -35,13 +23,8 @@ const createTratamientoSchema = z.object({
   objetivo: z.string().min(1, 'Objetivo del tratamiento requerido'),
   evaluacionInicial: z.string().optional(),
   protocolo: z.string().optional(),
-  parametros: z.any().optional(),
-  reaccionesInmediatas: z.string().optional(),
-  sesionNumero: z.number().int().positive().optional(),
-  totalSesiones: z.number().int().positive().optional(),
   observaciones: z.string().optional(),
   proximaSesion: z.string().datetime().optional(),
-  medidas: medidasSchema,
 });
 
 const updateTratamientoSchema = z.object({
@@ -50,13 +33,8 @@ const updateTratamientoSchema = z.object({
   objetivo: z.string().optional(),
   evaluacionInicial: z.string().optional(),
   protocolo: z.string().optional(),
-  parametros: z.any().optional(),
-  reaccionesInmediatas: z.string().optional(),
-  sesionNumero: z.number().int().positive().optional(),
-  totalSesiones: z.number().int().positive().optional(),
   observaciones: z.string().optional(),
   proximaSesion: z.string().datetime().optional(),
-  medidas: medidasSchema,
 });
 
 export class TratamientoController {

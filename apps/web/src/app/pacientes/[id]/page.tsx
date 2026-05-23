@@ -149,7 +149,7 @@ export default function EditarPacientePage() {
             </Link>
             <div className="text-center">
               <h1 className="text-3xl font-heading font-bold text-concreto">Editar Paciente</h1>
-              <p className="text-marengo mt-1">Modificá los datos del paciente</p>
+              <p className="text-marengo mt-1">Datos personales, datos clínicos y contacto de emergencia</p>
             </div>
           </div>
 
@@ -231,7 +231,7 @@ export default function EditarPacientePage() {
             <div className="card p-8 space-y-6">
               <div>
                 <h2 className="text-2xl font-heading text-morena">Datos Clínicos</h2>
-                <p className="text-sm text-marengo mt-1">Información relevante para tratamientos estéticos</p>
+                <p className="text-sm text-marengo mt-1">Información clínica relevante del paciente</p>
                 <hr className="mt-2 border-[#D7C5B9]" />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -246,7 +246,7 @@ export default function EditarPacientePage() {
                   </select>
                 </div>
                 <div>
-                  <label className={labelClass}>Objetivo Estético Principal</label>
+                  <label className={labelClass}>Objetivo principal</label>
                   <input type="text" name="objetivoEstetico" value={formData.objetivoEstetico} onChange={handleChange}
                     className={inputClass} disabled={isLoading} />
                 </div>

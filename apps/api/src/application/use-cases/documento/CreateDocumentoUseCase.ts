@@ -1,12 +1,18 @@
 import { DocumentoRepository, CreateDocumentoData } from '../../../infrastructure/repositories/DocumentoRepository';
 
+interface CreateDocumentoInput {
+  documento: CreateDocumentoData;
+  fileSize: number;
+  mimeType: string;
+}
+
 export class CreateDocumentoUseCase {
   constructor(private documentoRepository: DocumentoRepository) {}
 
-  async execute(data: CreateDocumentoData) {
+  async execute({ documento, fileSize, mimeType }: CreateDocumentoInput) {
     // Validar tamaño máximo (50MB)
     const MAX_SIZE = 50 * 1024 * 1024;
-    if (data.tamaño > MAX_SIZE) {
+    if (fileSize > MAX_SIZE) {
       throw new Error('El archivo excede el tamaño máximo permitido (50MB)');
     }
 
@@ -21,10 +27,10 @@ export class CreateDocumentoUseCase {
       'application/msword',
     ];
 
-    if (!allowedMimeTypes.includes(data.mimeType)) {
+    if (!allowedMimeTypes.includes(mimeType)) {
       throw new Error('Tipo de archivo no permitido');
     }
 
-    return this.documentoRepository.create(data);
+    return this.documentoRepository.create(documento);
   }
 }

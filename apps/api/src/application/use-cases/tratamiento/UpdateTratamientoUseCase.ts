@@ -6,13 +6,8 @@ interface UpdateTratamientoDTO {
   objetivo?: string;
   evaluacionInicial?: string;
   protocolo?: string;
-  parametros?: any;
-  reaccionesInmediatas?: string;
-  sesionNumero?: number;
-  totalSesiones?: number;
   observaciones?: string;
   proximaSesion?: Date;
-  medidas?: any;
 }
 
 export class UpdateTratamientoUseCase {

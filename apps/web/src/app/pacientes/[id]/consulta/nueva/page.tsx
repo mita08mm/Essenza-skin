@@ -30,11 +30,11 @@ function NuevaConsultaContent() {
   // Formulario simplificado
   const [tipoTratamiento, setTipoTratamiento] = useState<'FACIAL' | 'CORPORAL' | 'CAPILAR'>('FACIAL');
   const [zonaTratada, setZonaTratada] = useState('');
-  const [evaluacionInicial, setEvaluacionInicial] = useState('');
+  const [evaluacion, setEvaluacion] = useState('');
   const [objetivoSesion, setObjetivoSesion] = useState('');
   const [procedimiento, setProcedimiento] = useState('');
   const [observaciones, setObservaciones] = useState('');
-  const [proximaSesion, setProximaSesion] = useState('');
+  const [proximaConsulta, setProximaConsulta] = useState('');
 
   useEffect(() => {
     if (!token) return;
@@ -77,10 +77,10 @@ function NuevaConsultaContent() {
         nombreTratamiento: procedimiento.trim() || `Consulta ${tipoTratamiento.toLowerCase()}`,
         zonaTratada: zonaTratada.trim(),
         objetivo: objetivoSesion.trim(),
-        evaluacionInicial: evaluacionInicial.trim() || undefined,
+        evaluacionInicial: evaluacion.trim() || undefined,
         protocolo: procedimiento.trim() || undefined,
         observaciones: observaciones.trim() || undefined,
-        proximaSesion: proximaSesion ? new Date(`${proximaSesion}T00:00:00`).toISOString() : undefined,
+        proximaSesion: proximaConsulta ? new Date(`${proximaConsulta}T00:00:00`).toISOString() : undefined,
       };
 
       const response = await fetch(apiEndpoint('/tratamientos'), {
@@ -148,7 +148,7 @@ function NuevaConsultaContent() {
           <CardContent className="p-6 space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label required>Tipo de Tratamiento</Label>
+                <Label required>Tipo de tratamiento</Label>
                 <Select
                   value={tipoTratamiento}
                   onChange={(e) => setTipoTratamiento(e.target.value as 'FACIAL' | 'CORPORAL' | 'CAPILAR')}
@@ -183,21 +183,21 @@ function NuevaConsultaContent() {
             </div>
 
             <div className="space-y-2">
-              <Label>Evaluación inicial</Label>
+              <Label>Nota clínica / evaluación</Label>
               <Textarea
-                value={evaluacionInicial}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEvaluacionInicial(e.target.value)}
-                placeholder="Evaluación inicial"
+                value={evaluacion}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEvaluacion(e.target.value)}
+                placeholder="Nota clínica o evaluación"
                 rows={3}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Procedimiento realizado</Label>
+              <Label>Procedimiento</Label>
               <Textarea
                 value={procedimiento}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setProcedimiento(e.target.value)}
-                placeholder="Procedimiento realizado"
+                placeholder="Procedimiento"
                 rows={3}
               />
             </div>
@@ -214,11 +214,11 @@ function NuevaConsultaContent() {
               </div>
 
               <div className="space-y-2">
-                <Label>Próxima sesión</Label>
+                <Label>Próxima consulta</Label>
                 <Input
                   type="date"
-                  value={proximaSesion}
-                  onChange={(e) => setProximaSesion(e.target.value)}
+                  value={proximaConsulta}
+                  onChange={(e) => setProximaConsulta(e.target.value)}
                 />
               </div>
             </div>

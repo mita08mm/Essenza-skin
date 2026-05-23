@@ -7,63 +7,45 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Link from 'next/link';
 import { apiEndpoint } from '@/lib/config';
 
-interface Paciente {
-  id: string;
-  nombre: string;
-  apellido: string;
-  documento: string;
-  tipoDocumento: string;
-}
-
-interface Usuario {
-  id: string;
-  nombre: string;
-  apellido: string;
-}
-
-interface ItemReceta {
-  id: string;
-  tipo: string;
-  nombre: string;
-  cantidad: number;
-  dosis?: string;
-  frecuencia?: string;
-  duracion?: string;
-  estado: string;
-}
-
-interface Receta {
+interface Prescripcion {
   id: string;
   fecha: string;
-  indicaciones?: string;
-  paciente: Paciente;
-  usuario: Usuario;
-  items: ItemReceta[];
+  nombre: string;
+  paciente: {
+    id: string;
+    nombre: string;
+    apellido: string;
+  };
+  items: Array<{
+    id: string;
+    nombre: string;
+    indicaciones: string;
+  }>;
 }
 
 export default function RecetasPage() {
   const { token } = useAuth();
-  const [recetas, setRecetas] = useState<Receta[]>([]);
+  const [prescripciones, setPrescripciones] = useState<Prescripcion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (!token) return;
 
-    const fetchRecetas = async () => {
+    const fetchPrescripciones = async () => {
       try {
-        const response = await fetch(apiEndpoint('/recetas'), {
+        const response = await fetch(apiEndpoint('/protocolos'), {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
 
         if (!response.ok) {
-          throw new Error('Error al cargar recetas');
+          throw new Error('Error al cargar prescripciones');
         }
 
         const data = await response.json();
-        setRecetas(data.data);
+        setPrescripciones(normalizePrescripciones(data.data || []));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error desconocido');
       } finally {
@@ -71,7 +53,7 @@ export default function RecetasPage() {
       }
     };
 
-    fetchRecetas();
+    fetchPrescripciones();
   }, [token]);
 
   const formatFecha = (fecha: string) => {
@@ -82,12 +64,6 @@ export default function RecetasPage() {
     });
   };
 
-  const countItemsByEstado = (items: ItemReceta[]) => {
-    const prescritos = items.filter((i) => i.estado === 'PRESCRITO').length;
-    const entregados = items.filter((i) => i.estado === 'ENTREGADO').length;
-    return { prescritos, entregados };
-  };
-
   if (isLoading) {
     return (
       <ProtectedRoute>
@@ -95,7 +71,7 @@ export default function RecetasPage() {
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="text-center">
               <div className="animate-spin rounded-lg h-12 w-12 border-b-2 border-morena mx-auto mb-4"></div>
-              <p className="text-marengo">Cargando recetas...</p>
+              <p className="text-marengo">Cargando prescripciones...</p>
             </div>
           </div>
         </DashboardLayout>
@@ -110,17 +86,17 @@ export default function RecetasPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-heading font-bold text-concreto">
-                Recetas
+                Prescripciones
               </h1>
               <p className="text-marengo mt-1">
-                Prescripciones y medicamentos
+                Lista general de prescripciones registradas
               </p>
             </div>
             <Link
               href="/recetas/nuevo"
               className="btn-primary"
             >
-              Nueva Receta
+              Nueva Prescripción
             </Link>
           </div>
 
@@ -130,16 +106,16 @@ export default function RecetasPage() {
             </div>
           )}
 
-          {recetas.length === 0 ? (
+          {prescripciones.length === 0 ? (
             <div className="card p-12 text-center">
               <p className="text-marengo mb-4">
-                No hay recetas registradas
+                No hay prescripciones registradas
               </p>
               <Link
                 href="/recetas/nuevo"
                 className="btn-primary"
               >
-                Crear primera receta
+                Crear primera prescripción
               </Link>
             </div>
           ) : (
@@ -154,16 +130,10 @@ export default function RecetasPage() {
                       Paciente
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-concreto uppercase tracking-wider">
-                      Prescriptor
+                      Prescripción
                     </th>
-                    <th className="px-6 py-4 text-center text-xs font-medium text-concreto uppercase tracking-wider">
-                      Items Totales
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-medium text-concreto uppercase tracking-wider">
-                      Prescritos
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-medium text-concreto uppercase tracking-wider">
-                      Entregados
+                    <th className="px-6 py-4 text-left text-xs font-medium text-concreto uppercase tracking-wider">
+                      Indicaciones
                     </th>
                     <th className="px-6 py-4 text-right text-xs font-medium text-concreto uppercase tracking-wider">
                       Acciones
@@ -171,43 +141,30 @@ export default function RecetasPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-marengo/10">
-                  {recetas.map((receta) => {
-                    const { prescritos, entregados } = countItemsByEstado(receta.items);
+                  {prescripciones.map((prescripcion) => {
                     return (
-                      <tr key={receta.id} className="hover:bg-piel/5 transition-colors">
+                      <tr key={prescripcion.id} className="hover:bg-piel/5 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-concreto">
-                          {formatFecha(receta.fecha)}
+                          {formatFecha(prescripcion.fecha)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-concreto">
-                            {receta.paciente.nombre} {receta.paciente.apellido}
-                          </div>
-                          <div className="text-xs text-marengo">
-                            {receta.paciente.tipoDocumento}: {receta.paciente.documento}
+                            {prescripcion.paciente.nombre} {prescripcion.paciente.apellido}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-concreto">
-                          Dr. {receta.usuario.nombre} {receta.usuario.apellido}
+                        <td className="px-6 py-4 text-sm text-concreto">
+                          <div className="font-medium">{prescripcion.nombre}</div>
+                          <div className="text-xs text-marengo">{prescripcion.items.length} item{prescripcion.items.length === 1 ? '' : 's'}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-concreto">
-                          {receta.items.length}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <span className="px-2 py-1 text-xs font-medium rounded-lg bg-yellow-100 text-yellow-800">
-                            {prescritos}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <span className="px-2 py-1 text-xs font-medium rounded-lg bg-green-100 text-green-800">
-                            {entregados}
-                          </span>
+                        <td className="px-6 py-4 text-sm text-marengo">
+                          {prescripcion.items.map((item) => item.indicaciones).filter(Boolean).join(' • ') || 'Sin indicaciones'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                           <Link
-                            href={`/recetas/${receta.id}`}
+                            href={`/recetas/${prescripcion.id}`}
                             className="text-morena hover:text-morena/80 font-medium"
                           >
-                            Ver detalle
+                            Ver prescripción
                           </Link>
                         </td>
                       </tr>
@@ -221,4 +178,34 @@ export default function RecetasPage() {
       </DashboardLayout>
     </ProtectedRoute>
   );
+}
+
+function normalizePrescripciones(data: unknown[]): Prescripcion[] {
+  return data.map((entry, index) => {
+    const raw = entry as {
+      id?: string;
+      fecha?: string;
+      nombre?: string;
+      paciente?: { id?: string; nombre?: string; apellido?: string };
+      items?: Array<{ id?: string; nombre?: string; indicaciones?: string; aplicacion?: string; frecuencia?: string }>;
+    };
+
+    const items = (raw.items ?? []).map((item, itemIndex) => ({
+      id: item.id ?? `${raw.id ?? index}-${itemIndex}`,
+      nombre: item.nombre ?? 'Item',
+      indicaciones: item.indicaciones ?? item.aplicacion ?? item.frecuencia ?? '',
+    }));
+
+    return {
+      id: raw.id ?? `prescripcion-${index}`,
+      fecha: raw.fecha ?? new Date().toISOString(),
+      nombre: raw.nombre ?? (items[0]?.nombre || 'Prescripción'),
+      paciente: {
+        id: raw.paciente?.id ?? '',
+        nombre: raw.paciente?.nombre ?? 'Paciente',
+        apellido: raw.paciente?.apellido ?? '',
+      },
+      items,
+    };
+  });
 }

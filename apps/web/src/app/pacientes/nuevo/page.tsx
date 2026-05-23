@@ -94,7 +94,7 @@ export default function NuevoPacientePage() {
             </Link>
             <div className="text-center">
               <h1 className="text-3xl font-heading font-bold text-concreto">Nuevo Paciente</h1>
-              <p className="text-marengo mt-1">Registra un nuevo paciente en el sistema</p>
+              <p className="text-marengo mt-1">Datos personales, datos clínicos y contacto de emergencia</p>
             </div>
           </div>
 
@@ -181,7 +181,7 @@ export default function NuevoPacientePage() {
             <div className="card p-8 space-y-6">
               <div>
                 <h2 className="text-2xl font-heading text-morena">Datos Clínicos</h2>
-                <p className="text-sm text-marengo mt-1">Información relevante para tratamientos estéticos</p>
+                <p className="text-sm text-marengo mt-1">Información clínica relevante del paciente</p>
                 <hr className="mt-2 border-[#D7C5B9]" />
               </div>
 
@@ -197,7 +197,7 @@ export default function NuevoPacientePage() {
                   </select>
                 </div>
                 <div>
-                  <label className={labelClass}>Objetivo Estético Principal</label>
+                  <label className={labelClass}>Objetivo principal</label>
                   <input type="text" name="objetivoEstetico" value={formData.objetivoEstetico} onChange={handleChange}
                     placeholder="Ej: Rejuvenecimiento facial, reducción corporal..."
                     className={inputClass} disabled={isLoading} />

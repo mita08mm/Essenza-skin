@@ -3,7 +3,6 @@ import { DocumentoRepository } from '../../../infrastructure/repositories/Docume
 
 interface UpdateDocumentoInput {
   nombre?: string;
-  descripcion?: string;
   tipo?: TipoDocumento;
 }
 

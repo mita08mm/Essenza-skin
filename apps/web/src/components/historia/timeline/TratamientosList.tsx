@@ -9,9 +9,9 @@ export default function TratamientosList({
   tratamientos,
 }: TratamientosListProps) {
   return (
-    <section className="space-y-4">
+    <section className="card space-y-4">
       <div>
-        <h4 className="text-xl">Historial Clinico</h4>
+        <h4 className="text-xm">Historial medico</h4>
       </div>
 
       {tratamientos.map((tratamiento) => {
@@ -26,9 +26,16 @@ export default function TratamientosList({
                 <h3 className="mt-2 text-lg font-heading text-concreto">
                   {tratamiento.nombreTratamiento}
                 </h3>
-                <p className="mt-3 text-sm leading-6 text-marengo">
-                  {getDescription(tratamiento)}
-                </p>
+
+                <div className="mt-4 space-y-3 text-sm text-marengo">
+                  <Field label="Tipo de tratamiento" value={formatTipo(tratamiento.tipoTratamiento)} />
+                  <Field label="Zona tratada" value={tratamiento.zonaTratada} />
+                  <Field label="Objetivo" value={tratamiento.objetivo} />
+                  <Field label="Nota clínica" value={tratamiento.evaluacionInicial} />
+                  <Field label="Procedimiento" value={tratamiento.protocolo} />
+                  <Field label="Observaciones" value={tratamiento.observaciones} />
+                  <Field label="Próxima consulta" value={formatOptionalDate(tratamiento.proximaSesion)} />
+                </div>
               </CardContent>
             </Card>
           </article>
@@ -46,12 +53,34 @@ function formatDate(date: string) {
   });
 }
 
-function getDescription(tratamiento: Tratamiento) {
+function Field({ label, value }: { label: string; value?: string }) {
+  if (!value) return null;
+
   return (
-    tratamiento.evaluacionInicial ||
-    tratamiento.objetivo ||
-    tratamiento.observaciones ||
-    tratamiento.protocolo ||
-    "Sin descripcion registrada."
+    <div>
+      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/70">{label}</p>
+      <p className="mt-1 leading-6 text-concreto">{value}</p>
+    </div>
   );
+}
+
+function formatTipo(tipo: Tratamiento['tipoTratamiento']) {
+  const labels: Record<Tratamiento['tipoTratamiento'], string> = {
+    FACIAL: 'Facial',
+    CORPORAL: 'Corporal',
+    CAPILAR: 'Capilar',
+    COMBINADO: 'Combinado',
+  };
+
+  return labels[tipo];
+}
+
+function formatOptionalDate(date?: string) {
+  if (!date) return undefined;
+
+  return new Date(date).toLocaleDateString('es-BO', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
 }

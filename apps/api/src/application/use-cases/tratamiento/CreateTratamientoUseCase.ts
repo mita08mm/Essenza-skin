@@ -11,23 +11,8 @@ interface CreateTratamientoDTO {
   objetivo: string;
   evaluacionInicial?: string;
   protocolo?: string;
-  parametros?: any;
-  reaccionesInmediatas?: string;
-  sesionNumero?: number;
-  totalSesiones?: number;
   observaciones?: string;
   proximaSesion?: Date;
-  medidas?: {
-    peso?: number;
-    talla?: number;
-    imc?: number;
-    circunferenciaCadera?: number;
-    circunferenciaCintura?: number;
-    circunferenciaBrazo?: number;
-    circunferenciaPierna?: number;
-    porcentajeGrasa?: number;
-    masaMuscular?: number;
-  };
 }
 
 export class CreateTratamientoUseCase {
@@ -70,13 +55,8 @@ export class CreateTratamientoUseCase {
       objetivo: data.objetivo,
       ...(data.evaluacionInicial && { evaluacionInicial: data.evaluacionInicial }),
       ...(data.protocolo && { protocolo: data.protocolo }),
-      parametros: data.parametros || {},
-      ...(data.reaccionesInmediatas && { reaccionesInmediatas: data.reaccionesInmediatas }),
-      ...(data.sesionNumero && { sesionNumero: data.sesionNumero }),
-      ...(data.totalSesiones && { totalSesiones: data.totalSesiones }),
       ...(data.observaciones && { observaciones: data.observaciones }),
       ...(data.proximaSesion && { proximaSesion: data.proximaSesion }),
-      medidas: data.medidas || {},
     });
 
     return tratamiento;

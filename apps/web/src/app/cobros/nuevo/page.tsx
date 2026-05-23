@@ -17,14 +17,6 @@ interface Paciente {
   estado: string;
 }
 
-interface Item {
-  tipo: 'SERVICIO' | 'MEDICAMENTO' | 'INSUMO';
-  itemId: string;
-  nombre: string;
-  cantidad: number;
-  precioUnitario: number;
-}
-
 export default function NuevoCobroPage() {
   const router = useRouter();
   const { token } = useAuth();
@@ -34,18 +26,8 @@ export default function NuevoCobroPage() {
   const [loadingPacientes, setLoadingPacientes] = useState(true);
 
   const [pacienteId, setPacienteId] = useState('');
-  const [items, setItems] = useState<Item[]>([]);
-  const [descuento, setDescuento] = useState(0);
-  const [notas, setNotas] = useState('');
-
-  // Nuevo item temporal
-  const [nuevoItem, setNuevoItem] = useState<Item>({
-    tipo: 'SERVICIO',
-    itemId: '',
-    nombre: '',
-    cantidad: 1,
-    precioUnitario: 0,
-  });
+  const [titulo, setTitulo] = useState('');
+  const [costo, setCosto] = useState('');
 
   useEffect(() => {
     if (!token) return;
@@ -74,46 +56,19 @@ export default function NuevoCobroPage() {
     fetchPacientes();
   }, [token]);
 
-  const agregarItem = () => {
-    if (!nuevoItem.nombre || nuevoItem.cantidad <= 0 || nuevoItem.precioUnitario <= 0) {
-      setError('Complete todos los campos del item');
-      return;
-    }
-
-    const item = { ...nuevoItem };
-    if (item.tipo === 'SERVICIO') {
-      item.itemId = crypto.randomUUID();
-    }
-
-    setItems([...items, item]);
-    setNuevoItem({
-      tipo: 'SERVICIO',
-      itemId: '',
-      nombre: '',
-      cantidad: 1,
-      precioUnitario: 0,
-    });
-    setError('');
-  };
-
-  const eliminarItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
-  };
-
-  const calcularSubtotal = () => {
-    return items.reduce((sum, item) => sum + item.cantidad * item.precioUnitario, 0);
-  };
-
-  const calcularTotal = () => {
-    return calcularSubtotal() - descuento;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (items.length === 0) {
-      setError('Debe agregar al menos un item al cobro');
+    const monto = Number(costo);
+
+    if (!titulo.trim()) {
+      setError('Ingrese una descripción o título');
+      return;
+    }
+
+    if (Number.isNaN(monto) || monto <= 0) {
+      setError('El costo debe ser mayor a 0');
       return;
     }
 
@@ -128,9 +83,15 @@ export default function NuevoCobroPage() {
         },
         body: JSON.stringify({
           pacienteId,
-          items,
-          descuento,
-          notas: notas || undefined,
+          items: [
+            {
+              tipo: 'SERVICIO',
+              itemId: crypto.randomUUID(),
+              nombre: titulo.trim(),
+              cantidad: 1,
+              precioUnitario: monto,
+            },
+          ],
         }),
       });
 
@@ -155,6 +116,8 @@ export default function NuevoCobroPage() {
     }).format(monto);
   };
 
+  const costoActual = Number(costo) || 0;
+
   return (
     <ProtectedRoute>
       <DashboardLayout>
@@ -165,10 +128,10 @@ export default function NuevoCobroPage() {
             </Link>
             <div>
               <h1 className="text-3xl font-heading font-bold text-concreto">
-                Nuevo Cobro
+                Nuevo registro de cobro
               </h1>
               <p className="text-marengo mt-1">
-                Registra un nuevo cobro o factura
+                Descripción del producto o servicio y costo
               </p>
             </div>
           </div>
@@ -207,171 +170,53 @@ export default function NuevoCobroPage() {
               )}
             </div>
 
-            {/* Items del cobro */}
             <div className="card p-8">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
-                Items del Cobro
+                Registro
               </h2>
 
-              {/* Formulario para agregar items */}
-              <div className="grid grid-cols-12 gap-4 mb-6 p-4 bg-piel/10 rounded-lg">
-                <div className="col-span-2">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
                   <label className="block text-xs font-medium text-concreto mb-2">
-                    Tipo
-                  </label>
-                  <select
-                    value={nuevoItem.tipo}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, tipo: e.target.value as Item['tipo'] })}
-                    className="w-full px-3 py-2 text-sm rounded border border-marengo/30 
-                             focus:border-morena outline-none"
-                  >
-                    <option value="SERVICIO">Servicio</option>
-                    <option value="MEDICAMENTO">Medicamento</option>
-                    <option value="INSUMO">Insumo</option>
-                  </select>
-                </div>
-                <div className="col-span-4">
-                  <label className="block text-xs font-medium text-concreto mb-2">
-                    Descripcion
+                    Descripción o título
                   </label>
                   <input
                     type="text"
-                    value={nuevoItem.nombre}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, nombre: e.target.value })}
-                    placeholder="Nombre del item"
+                    value={titulo}
+                    onChange={(e) => setTitulo(e.target.value)}
+                    placeholder="Ej: Limpieza facial, producto reparador"
                     className="w-full px-3 py-2 text-sm rounded border border-marengo/30 
                              focus:border-morena outline-none"
                   />
                 </div>
-                <div className="col-span-2">
+
+                <div>
                   <label className="block text-xs font-medium text-concreto mb-2">
-                    Cantidad
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={nuevoItem.cantidad}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, cantidad: parseInt(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 text-sm rounded border border-marengo/30 
-                             focus:border-morena outline-none"
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-xs font-medium text-concreto mb-2">
-                    Precio Unit.
+                    Costo
                   </label>
                   <input
                     type="number"
                     min="0"
                     step="0.01"
-                    value={nuevoItem.precioUnitario}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, precioUnitario: parseFloat(e.target.value) || 0 })}
+                    value={costo}
+                    onChange={(e) => setCosto(e.target.value)}
                     className="w-full px-3 py-2 text-sm rounded border border-marengo/30 
                              focus:border-morena outline-none"
                   />
                 </div>
-                <div className="col-span-2 flex items-end">
-                  <button
-                    type="button"
-                    onClick={agregarItem}
-                    className="btn-primary w-full"
-                  >
-                    Agregar
-                  </button>
-                </div>
               </div>
-
-              {/* Lista de items */}
-              {items.length > 0 ? (
-                <div className="border border-marengo/20 rounded-lg overflow-hidden">
-                  <table className="min-w-full divide-y divide-marengo/20">
-                    <thead className="bg-marengo/10">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-concreto">Tipo</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-concreto">Descripcion</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-concreto">Cantidad</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-concreto">Precio Unit.</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-concreto">Subtotal</th>
-                        <th className="px-4 py-3"></th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-marengo/10">
-                      {items.map((item, index) => (
-                        <tr key={index}>
-                          <td className="px-4 py-3 text-sm text-concreto">{item.tipo}</td>
-                          <td className="px-4 py-3 text-sm text-concreto">{item.nombre}</td>
-                          <td className="px-4 py-3 text-sm text-concreto text-right">{item.cantidad}</td>
-                          <td className="px-4 py-3 text-sm text-concreto text-right">
-                            {formatMonto(item.precioUnitario)}
-                          </td>
-                          <td className="px-4 py-3 text-sm text-concreto text-right font-medium">
-                            {formatMonto(item.cantidad * item.precioUnitario)}
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <button
-                              type="button"
-                              onClick={() => eliminarItem(index)}
-                              className="text-red-600 hover:text-red-800 text-sm"
-                            >
-                              Eliminar
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-marengo">
-                  No hay items agregados. Agregue al menos uno para continuar.
-                </div>
-              )}
             </div>
 
-            {/* Resumen y totales */}
             <div className="card p-8">
               <h2 className="text-xl font-heading font-bold text-concreto mb-4">
-                Totales
+                Resumen
               </h2>
               
               <div className="space-y-4 max-w-md ml-auto">
-                <div className="flex justify-between text-concreto">
-                  <span>Subtotal:</span>
-                  <span className="font-medium">{formatMonto(calcularSubtotal())}</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <label className="text-concreto">Descuento:</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={descuento}
-                    onChange={(e) => setDescuento(parseFloat(e.target.value) || 0)}
-                    className="w-32 px-3 py-2 text-right rounded border border-marengo/30 
-                             focus:border-morena outline-none"
-                  />
-                </div>
-                
                 <div className="flex justify-between text-xl font-bold text-concreto border-t-2 border-marengo/30 pt-4">
-                  <span>TOTAL:</span>
-                  <span className="text-morena">{formatMonto(calcularTotal())}</span>
+                  <span>COSTO:</span>
+                  <span className="text-morena">{formatMonto(costoActual)}</span>
                 </div>
-              </div>
-
-              <div className="mt-6">
-                <label className="block text-sm font-medium text-concreto mb-2">
-                  Notas / Observaciones
-                </label>
-                <textarea
-                  value={notas}
-                  onChange={(e) => setNotas(e.target.value)}
-                  rows={3}
-                  placeholder="Informacion adicional..."
-                  className="w-full px-4 py-3 rounded-lg border border-marengo/30 
-                           focus:border-morena focus:ring-2 focus:ring-piel/20 
-                           transition-all outline-none resize-none"
-                />
               </div>
             </div>
 
@@ -379,10 +224,10 @@ export default function NuevoCobroPage() {
             <div className="flex gap-4">
               <button
                 type="submit"
-                disabled={isLoading || items.length === 0}
+                disabled={isLoading || !titulo.trim() || costoActual <= 0}
                 className="btn-primary"
               >
-                {isLoading ? 'Guardando...' : 'Guardar Cobro'}
+                {isLoading ? 'Guardando...' : 'Guardar registro'}
               </button>
               <Link
                 href="/cobros"

@@ -17,16 +17,11 @@ const itemCobroSchema = z.object({
 
 const createCobroSchema = z.object({
   pacienteId: z.string().uuid('ID de paciente invalido'),
-  evolucionId: z.string().uuid('ID de evolucion invalido').optional(),
   items: z.array(itemCobroSchema).min(1, 'Debe incluir al menos un item'),
-  descuento: z.number().nonnegative('El descuento no puede ser negativo').optional(),
-  notas: z.string().optional(),
 });
 
 const updateCobroSchema = z.object({
-  descuento: z.number().nonnegative('El descuento no puede ser negativo').optional(),
   estado: z.enum(['PENDIENTE', 'PARCIAL', 'PAGADO', 'CANCELADO']).optional(),
-  notas: z.string().optional(),
 });
 
 const registrarPagoSchema = z.object({

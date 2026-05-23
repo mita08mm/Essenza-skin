@@ -57,11 +57,11 @@ export default function AttachmentsPanel({
         </div>
       )}
 
-      <div className="mb-5 flex gap-1 border-b border-gray-200">
+      <div className="mb-3 flex border-b border-gray-200">
         <button
           type="button"
           onClick={() => setActiveTab('fotos')}
-          className={`px-4 py-2 text-sm font-medium transition-colors ${
+          className={`px-2 py-2 text-sm font-medium transition-colors ${
             activeTab === 'fotos'
               ? 'border-b-2 border-morena text-morena'
               : 'text-marengo hover:text-concreto'
@@ -72,7 +72,7 @@ export default function AttachmentsPanel({
         <button
           type="button"
           onClick={() => setActiveTab('documentos')}
-          className={`px-4 py-2 text-sm font-medium transition-colors ${
+          className={`px-2 py-2 text-sm font-medium transition-colors ${
             activeTab === 'documentos'
               ? 'border-b-2 border-morena text-morena'
               : 'text-marengo hover:text-concreto'

@@ -9,32 +9,20 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { apiEndpoint } from '@/lib/config';
 import { formatFecha } from '@/lib/utils/date';
 
-interface ItemReceta {
-  id: string;
-  tipo: string;
-  nombre: string;
-  cantidad: number;
-  dosis?: string;
-  frecuencia?: string;
-  duracion?: string;
-  estado: string;
-}
-
-interface Receta {
+interface Prescripcion {
   id: string;
   fecha: string;
-  indicaciones?: string;
+  nombre: string;
   paciente: {
     id: string;
     nombre: string;
     apellido: string;
-    documento: string;
   };
-  usuario: {
+  items: Array<{
+    id: string;
     nombre: string;
-    apellido?: string;
-  };
-  items: ItemReceta[];
+    indicaciones: string;
+  }>;
 }
 
 function RecetaDetailContent() {
@@ -42,23 +30,23 @@ function RecetaDetailContent() {
   const { token } = useAuth();
   const recetaId = params.id as string;
 
-  const [receta, setReceta] = useState<Receta | null>(null);
+  const [prescripcion, setPrescripcion] = useState<Prescripcion | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (!token) return;
 
-    const fetchReceta = async () => {
+    const fetchPrescripcion = async () => {
       try {
-        const response = await fetch(apiEndpoint(`/recetas/${recetaId}`), {
+        const response = await fetch(apiEndpoint(`/protocolos/${recetaId}`), {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!response.ok) throw new Error('Error al cargar receta');
+        if (!response.ok) throw new Error('Error al cargar prescripción');
 
         const data = await response.json();
-        setReceta(data.data);
+        setPrescripcion(normalizePrescripcion(data.data));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error desconocido');
       } finally {
@@ -66,7 +54,7 @@ function RecetaDetailContent() {
       }
     };
 
-    fetchReceta();
+    fetchPrescripcion();
   }, [recetaId, token]);
 
   if (isLoading) {
@@ -77,10 +65,10 @@ function RecetaDetailContent() {
     );
   }
 
-  if (error || !receta) {
+  if (error || !prescripcion) {
     return (
       <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
-        <p className="text-red-600">{error || 'Receta no encontrada'}</p>
+        <p className="text-red-600">{error || 'Prescripción no encontrada'}</p>
       </div>
     );
   }
@@ -94,7 +82,7 @@ function RecetaDetailContent() {
             ← Volver
           </Link>
           <h1 className="text-3xl font-heading font-bold text-concreto">
-            Receta Médica
+            Prescripción
           </h1>
         </div>
 
@@ -102,18 +90,12 @@ function RecetaDetailContent() {
           <div>
             <span className="text-marengo">Paciente:</span>
             <p className="font-medium text-concreto">
-              {receta.paciente.nombre} {receta.paciente.apellido}
+              {prescripcion.paciente.nombre} {prescripcion.paciente.apellido}
             </p>
           </div>
           <div>
             <span className="text-marengo">Fecha:</span>
-            <p className="font-medium text-concreto">{formatFecha(receta.fecha)}</p>
-          </div>
-          <div>
-            <span className="text-marengo">Médico:</span>
-            <p className="font-medium text-concreto">
-              Dr. {receta.usuario.nombre} {receta.usuario.apellido || ''}
-            </p>
+            <p className="font-medium text-concreto">{formatFecha(prescripcion.fecha)}</p>
           </div>
         </div>
       </div>
@@ -121,69 +103,28 @@ function RecetaDetailContent() {
       {/* Items */}
       <div className="card p-6">
         <h2 className="text-xl font-heading font-bold text-concreto mb-4">
-          Prescripción
+          {prescripcion.nombre}
         </h2>
 
-        <div className="space-y-3">
-          {receta.items.map((item) => (
-            <div
-              key={item.id}
-              className="p-4 border border-gray-200 rounded-lg hover:border-morena/30 transition-colors"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="font-semibold text-concreto">{item.nombre}</h3>
-                  <p className="text-xs text-marengo mt-1">{item.tipo}</p>
-                </div>
-                <span
-                  className={`px-3 py-1 text-xs rounded-lg ${
-                    item.estado === 'ENTREGADO'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-yellow-100 text-yellow-700'
-                  }`}
-                >
-                  {item.estado}
-                </span>
+        <div className="overflow-hidden rounded-lg border border-stone-200 bg-white">
+          <div className="hidden grid-cols-[minmax(0,220px)_minmax(0,1fr)] gap-4 border-b border-stone-200 px-4 py-3 text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/70 sm:grid">
+            <p>Nombre del producto</p>
+            <p>Indicaciones</p>
+          </div>
+          {prescripcion.items.map((item) => (
+            <div key={item.id} className="grid grid-cols-1 gap-2 border-t border-stone-200 px-4 py-4 first:border-t-0 sm:grid-cols-[minmax(0,220px)_minmax(0,1fr)] sm:gap-4">
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/60 sm:hidden">Nombre del producto</p>
+                <p className="text-sm font-medium text-concreto">{item.nombre}</p>
               </div>
-
-              <div className="grid grid-cols-4 gap-4 text-sm mt-3">
-                <div>
-                  <span className="text-marengo text-xs">Cantidad:</span>
-                  <p className="font-medium">{item.cantidad}</p>
-                </div>
-                {item.dosis && (
-                  <div>
-                    <span className="text-marengo text-xs">Dosis:</span>
-                    <p className="font-medium">{item.dosis}</p>
-                  </div>
-                )}
-                {item.frecuencia && (
-                  <div>
-                    <span className="text-marengo text-xs">Frecuencia:</span>
-                    <p className="font-medium">{item.frecuencia}</p>
-                  </div>
-                )}
-                {item.duracion && (
-                  <div>
-                    <span className="text-marengo text-xs">Duración:</span>
-                    <p className="font-medium">{item.duracion}</p>
-                  </div>
-                )}
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-marengo/60 sm:hidden">Indicaciones</p>
+                <p className="text-sm text-marengo">{item.indicaciones || 'Sin indicaciones'}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
-
-      {/* Indicaciones */}
-      {receta.indicaciones && (
-        <div className="card p-6">
-          <h2 className="text-xl font-heading font-bold text-concreto mb-4">
-            Indicaciones Generales
-          </h2>
-          <p className="text-marengo whitespace-pre-line">{receta.indicaciones}</p>
-        </div>
-      )}
 
       {/* Botón de impresión */}
       <div className="flex justify-end">
@@ -191,11 +132,37 @@ function RecetaDetailContent() {
           onClick={() => window.print()}
           className="btn-secondary"
         >
-          🖨️ Imprimir Receta
+          🖨️ Imprimir Prescripción
         </button>
       </div>
     </div>
   );
+}
+
+function normalizePrescripcion(entry: unknown): Prescripcion {
+  const raw = entry as {
+    id?: string;
+    fecha?: string;
+    nombre?: string;
+    paciente?: { id?: string; nombre?: string; apellido?: string };
+    items?: Array<{ id?: string; nombre?: string; indicaciones?: string; aplicacion?: string; frecuencia?: string }>;
+  };
+
+  return {
+    id: raw.id ?? '',
+    fecha: raw.fecha ?? new Date().toISOString(),
+    nombre: raw.nombre ?? 'Prescripción',
+    paciente: {
+      id: raw.paciente?.id ?? '',
+      nombre: raw.paciente?.nombre ?? 'Paciente',
+      apellido: raw.paciente?.apellido ?? '',
+    },
+    items: (raw.items ?? []).map((item, index) => ({
+      id: item.id ?? `item-${index}`,
+      nombre: item.nombre ?? 'Item',
+      indicaciones: item.indicaciones ?? item.aplicacion ?? item.frecuencia ?? '',
+    })),
+  };
 }
 
 export default function RecetaDetailPage() {

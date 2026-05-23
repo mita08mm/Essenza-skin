@@ -1,23 +1,15 @@
 import { PrismaClient, Protocolo, Prisma } from '@clinica/database';
 
 interface CreateItemProtocoloInput {
-  productoId: string;
   nombre: string;
-  cantidad: number;
-  aplicacion: string;
-  frecuencia: string;
-  duracion?: string;
-  precio?: number;
-  estado?: 'INDICADO' | 'ADQUIRIDO' | 'EN_USO' | 'COMPLETADO';
+  indicaciones: string;
+  cantidad?: number;
 }
 
 interface CreateProtocoloInput {
   pacienteId: string;
-  tratamientoId?: string;
   usuarioId: string;
   nombre: string;
-  indicaciones?: string;
-  duracion?: string;
   items: CreateItemProtocoloInput[];
 }
 
@@ -30,38 +22,24 @@ export class ProtocoloRepository {
         paciente: {
           connect: { id: data.pacienteId },
         },
-        ...(data.tratamientoId && {
-          tratamiento: {
-            connect: { id: data.tratamientoId },
-          },
-        }),
         usuario: {
           connect: { id: data.usuarioId },
         },
         nombre: data.nombre,
-        indicaciones: data.indicaciones,
-        duracion: data.duracion,
         items: {
           create: data.items.map((item) => ({
-            tipo: 'PRODUCTO' as const,
-            itemId: item.productoId,
+            tipo: 'RECOMENDACION' as const,
+            itemId: item.nombre,
             nombre: item.nombre,
-            cantidad: item.cantidad,
-            producto: {
-              connect: { id: item.productoId },
-            },
-            aplicacion: item.aplicacion,
-            frecuencia: item.frecuencia,
-            duracion: item.duracion,
-            precio: item.precio,
-            estado: item.estado || 'INDICADO',
+            cantidad: item.cantidad ?? 1,
+            aplicacion: item.indicaciones,
+            frecuencia: item.indicaciones,
           })),
         },
       },
       include: {
         paciente: true,
         usuario: true,
-        tratamiento: true,
         items: {
           include: {
             producto: true,
@@ -94,7 +72,6 @@ export class ProtocoloRepository {
       include: {
         paciente: true,
         usuario: true,
-        tratamiento: true,
         items: {
           include: {
             producto: true,
@@ -109,22 +86,6 @@ export class ProtocoloRepository {
       where: { pacienteId },
       include: {
         usuario: true,
-        items: {
-          include: {
-            producto: true,
-          },
-        },
-      },
-      orderBy: {
-        fecha: 'desc',
-      },
-    });
-  }
-
-  async findByTratamiento(tratamientoId: string): Promise<Protocolo[]> {
-    return this.prisma.protocolo.findMany({
-      where: { tratamientoId },
-      include: {
         items: {
           include: {
             producto: true,

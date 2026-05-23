@@ -10,9 +10,6 @@ export interface CreatePacienteInput {
   email?: string;
   direccion?: string;
   sexo?: string;
-  grupoSanguineo?: string;
-  peso?: number;
-  altura?: number;
   alergias?: string;
   objetivoEstetico?: string;
   condicionesMedicas?: string;
@@ -20,7 +17,6 @@ export interface CreatePacienteInput {
   embarazoLactancia?: boolean;
   contactoEmergenciaNombre?: string;
   contactoEmergenciaTelefono?: string;
-  fotoUrl?: string;
 }
 
 export interface UpdatePacienteInput {
@@ -30,13 +26,13 @@ export interface UpdatePacienteInput {
   email?: string;
   direccion?: string;
   sexo?: string;
-  grupoSanguineo?: string;
-  peso?: number;
-  altura?: number;
+  objetivoEstetico?: string;
+  condicionesMedicas?: string;
+  medicacionActual?: string;
   alergias?: string;
+  embarazoLactancia?: boolean;
   contactoEmergenciaNombre?: string;
   contactoEmergenciaTelefono?: string;
-  fotoUrl?: string;
   estado?: EstadoPaciente;
 }
 

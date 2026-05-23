@@ -1,7 +1,6 @@
 import { Documento } from "@/types/historia";
 import {
   formatAttachmentDate,
-  formatAttachmentSize,
   getAttachmentFileUrl,
 } from "./attachments.utils";
 
@@ -54,7 +53,6 @@ export function AttachmentsDocumentsTab({
               {doc.nombre}
             </span>
             <p className="mt-1 text-xs text-marengo">
-              {formatAttachmentSize(doc.tamaño)} •{" "}
               {formatAttachmentDate(doc.createdAt)}
             </p>
           </a>
