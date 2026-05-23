@@ -17,3 +17,5 @@ export type { SelectProps } from './select';
 
 export { Textarea } from './textarea';
 export type { TextareaProps } from './textarea';
+export { default as DatePicker } from './DatePicker';
+export type { DatePickerProps } from './DatePicker';

@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Link from 'next/link';
 import { apiEndpoint } from '@/lib/config';
+import DatePicker from '@/components/ui/DatePicker';
 
 interface Paciente {
   id: string;
@@ -299,20 +300,20 @@ function FormularioEditarCita() {
         {/* Fecha + Horas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <label className="block text-sm font-medium text-concreto">Fecha *</label>
+            <div className="flex justify-between items-center mb-2">
+              <span className="block text-xs font-medium text-concreto uppercase tracking-wider">
+                Fecha <span className="text-red-500">*</span>
+              </span>
               {fechaLabel && (
                 <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#FBF7F4] text-[#60412B] border border-[#60412B]/20">
                   {fechaLabel}
                 </span>
               )}
             </div>
-            <input
-              type="date"
+            <DatePicker
               name="fecha"
               value={formData.fecha}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg border border-marengo/30 focus:border-morena focus:ring-2 focus:ring-piel/20 transition-all outline-none"
               required
               disabled={isLoading}
             />
