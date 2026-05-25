@@ -1,0 +1,149 @@
+'use client';
+
+import { Documento } from '@/features/historia-clinica/types';
+import { useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
+import PanelFrame from '@/features/historia-clinica/components/panels/PanelFrame';
+import { AttachmentsDocumentsTab } from '@/features/historia-clinica/components/panels/attachments/AttachmentsDocumentsTab';
+import { AttachmentsPhotoTab } from '@/features/historia-clinica/components/panels/attachments/AttachmentsPhotoTab';
+import { AttachmentTab } from '@/features/historia-clinica/components/panels/attachments/attachments.types';
+import { useAttachments } from '@/features/historia-clinica/components/panels/attachments/useAttachments';
+
+const PhotoViewerModal = dynamic(
+  () =>
+    import('@/features/historia-clinica/components/panels/attachments/PhotoViewerModal').then(
+      (m) => ({
+        default: m.PhotoViewerModal,
+      }),
+    ),
+  { ssr: false },
+);
+
+interface AttachmentsPanelProps {
+  documentos: Documento[];
+  pacienteId: string;
+  onUploadSuccess?: () => void;
+}
+
+export default function AttachmentsPanel({
+  documentos,
+  pacienteId,
+  onUploadSuccess,
+}: AttachmentsPanelProps) {
+  const [activeTab, setActiveTab] = useState<AttachmentTab>('fotos');
+  const [previewFotoId, setPreviewFotoId] = useState<string | null>(null);
+  const [isFotoModalOpen, setIsFotoModalOpen] = useState(false);
+  const [openDocumentoMenuId, setOpenDocumentoMenuId] = useState<string | null>(null);
+  const {
+    documentosClinicos,
+    error,
+    documentoInputRef,
+    fotoInputRef,
+    fotos,
+    handleDelete,
+    handleInlineUpload,
+    isUploading,
+  } = useAttachments({
+    pacienteId,
+    initialDocumentos: documentos,
+    onUploadSuccess,
+  });
+
+  const previewFoto = useMemo(
+    () => fotos.find((foto) => foto.id === previewFotoId) ?? null,
+    [fotos, previewFotoId],
+  );
+
+  const handleClosePhotoModal = () => {
+    setIsFotoModalOpen(false);
+    setPreviewFotoId(null);
+  };
+
+  return (
+    <PanelFrame title="Archivos">
+      {error && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      <div className="-mx-5 mb-4 flex border-b border-gray-200">
+        <button
+          type="button"
+          onClick={() => setActiveTab('fotos')}
+          className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+            activeTab === 'fotos'
+              ? 'border-morena text-morena border-b-2 bg-stone-50'
+              : 'text-marengo hover:text-concreto hover:bg-stone-50'
+          }`}
+        >
+          Fotos ({fotos.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('documentos')}
+          className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+            activeTab === 'documentos'
+              ? 'border-morena text-morena border-b-2 bg-stone-50'
+              : 'text-marengo hover:text-concreto hover:bg-stone-50'
+          }`}
+        >
+          Documentos ({documentosClinicos.length})
+        </button>
+      </div>
+
+      <div>
+        <input
+          ref={fotoInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => handleInlineUpload(e.target.files?.[0] || null, 'fotos')}
+        />
+        <input
+          ref={documentoInputRef}
+          type="file"
+          accept=".pdf,.doc,.docx"
+          className="hidden"
+          onChange={(e) => handleInlineUpload(e.target.files?.[0] || null, 'documentos')}
+        />
+      </div>
+
+      {activeTab === 'fotos' ? (
+        <AttachmentsPhotoTab
+          fotos={fotos}
+          isUploading={isUploading}
+          onOpenPhoto={(fotoId) => {
+            setPreviewFotoId(fotoId);
+            setIsFotoModalOpen(true);
+          }}
+          onTriggerUpload={() => fotoInputRef.current?.click()}
+          previewFotoId={previewFotoId}
+        />
+      ) : (
+        <AttachmentsDocumentsTab
+          documentos={documentosClinicos}
+          isUploading={isUploading}
+          onDelete={(documentoId) => {
+            setOpenDocumentoMenuId(null);
+            handleDelete(documentoId);
+          }}
+          onToggleMenu={(documentoId) => {
+            setOpenDocumentoMenuId((current) => (current === documentoId ? null : documentoId));
+          }}
+          onTriggerUpload={() => documentoInputRef.current?.click()}
+          openMenuId={openDocumentoMenuId}
+        />
+      )}
+
+      {activeTab === 'fotos' && previewFoto && (
+        <PhotoViewerModal
+          foto={previewFoto}
+          isOpen={isFotoModalOpen}
+          onClose={handleClosePhotoModal}
+          onDelete={handleDelete}
+        />
+      )}
+    </PanelFrame>
+  );
+}

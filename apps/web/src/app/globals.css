@@ -1,4 +1,68 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+/* ============================================================
+   THEME — mapea CSS vars a tokens Tailwind v4.
+   Permite escribir text-neutral-800 en lugar de text-[var(--neutral-800)]
+   ============================================================ */
+@theme inline {
+  /* Brand */
+  --color-brand-piel: var(--brand-piel);
+  --color-brand-morena: var(--brand-morena);
+  --color-brand-morena-dark: var(--brand-morena-dark);
+  --color-brand-marengo: var(--brand-marengo);
+  --color-brand-concreto: var(--brand-concreto);
+
+  /* Neutrals (sobreescriben la escala default) */
+  --color-neutral-0: var(--neutral-0);
+  --color-neutral-25: var(--neutral-25);
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+
+  /* Semánticos: text-success, bg-success-bg, etc. */
+  --color-success: var(--semantic-success);
+  --color-success-bg: var(--semantic-success-bg);
+  --color-warning: var(--semantic-warning);
+  --color-warning-bg: var(--semantic-warning-bg);
+  --color-danger: var(--semantic-danger);
+  --color-danger-bg: var(--semantic-danger-bg);
+  --color-info: var(--semantic-info);
+  --color-info-bg: var(--semantic-info-bg);
+
+  /* Radios */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(60, 40, 20, 0.04);
+  --shadow-sm: 0 1px 3px rgba(60, 40, 20, 0.06), 0 1px 2px rgba(60, 40, 20, 0.04);
+  --shadow-md: 0 4px 12px rgba(60, 40, 20, 0.08);
+  --shadow-lg: 0 12px 28px rgba(60, 40, 20, 0.1);
+
+  /* Tipografía (usable como text-2xs, text-xs, etc.) */
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 0.9375rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+
+  /* Fuentes (font-sans, font-heading) */
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Playfair Display', 'DM Sans', serif;
+}
 
 @layer base {
   :root {
@@ -18,30 +82,30 @@
     /* ========================================
        NEUTRALS - escala c\u00e1lida
        ======================================== */
-    --neutral-0:  #FFFFFF;
-    --neutral-25: #FDFCFB;   /* canvas */
-    --neutral-50: #FAF7F4;   /* surface muted */
-    --neutral-100: #F3EFEA;
-    --neutral-200: #E8E1DA;  /* borders sutiles */
-    --neutral-300: #D7C5B9;  /* sand */
-    --neutral-400: #B8A99C;
-    --neutral-500: #8B7E73;
-    --neutral-600: #666666;  /* marengo */
-    --neutral-700: #4A4A4A;
-    --neutral-800: #333333;  /* concreto */
-    --neutral-900: #1F1F1F;
+    --neutral-0: #ffffff;
+    --neutral-25: #fdfcfb; /* canvas */
+    --neutral-50: #faf7f4; /* surface muted */
+    --neutral-100: #f3efea;
+    --neutral-200: #e8e1da; /* borders sutiles */
+    --neutral-300: #d7c5b9; /* sand */
+    --neutral-400: #b8a99c;
+    --neutral-500: #8b7e73;
+    --neutral-600: #666666; /* marengo */
+    --neutral-700: #4a4a4a;
+    --neutral-800: #333333; /* concreto */
+    --neutral-900: #1f1f1f;
 
     /* ========================================
        SEM\u00c1NTICOS
        ======================================== */
-    --semantic-success: #2D7A4F;
-    --semantic-success-bg: #E8F3EC;
-    --semantic-warning: #C77A1F;
-    --semantic-warning-bg: #FBF1E0;
-    --semantic-danger: #B53A3A;
-    --semantic-danger-bg: #FBEAEA;
-    --semantic-info: #2A5F8F;
-    --semantic-info-bg: #E5EFF7;
+    --semantic-success: #2d7a4f;
+    --semantic-success-bg: #e8f3ec;
+    --semantic-warning: #c77a1f;
+    --semantic-warning-bg: #fbf1e0;
+    --semantic-danger: #b53a3a;
+    --semantic-danger-bg: #fbeaea;
+    --semantic-info: #2a5f8f;
+    --semantic-info-bg: #e5eff7;
 
     /* ========================================
        SHADCN tokens (hsl)
@@ -95,20 +159,20 @@
     --shadow-xs: 0 1px 2px rgba(60, 40, 20, 0.04);
     --shadow-sm: 0 1px 3px rgba(60, 40, 20, 0.06), 0 1px 2px rgba(60, 40, 20, 0.04);
     --shadow-md: 0 4px 12px rgba(60, 40, 20, 0.08);
-    --shadow-lg: 0 12px 28px rgba(60, 40, 20, 0.10);
+    --shadow-lg: 0 12px 28px rgba(60, 40, 20, 0.1);
 
     /* ========================================
        TIPOGRAF\u00cdA escala
        ======================================== */
-    --text-2xs: 0.6875rem;  /* 11px */
-    --text-xs: 0.75rem;     /* 12px */
-    --text-sm: 0.875rem;    /* 14px */
+    --text-2xs: 0.6875rem; /* 11px */
+    --text-xs: 0.75rem; /* 12px */
+    --text-sm: 0.875rem; /* 14px */
     --text-base: 0.9375rem; /* 15px */
-    --text-md: 1rem;        /* 16px */
-    --text-lg: 1.125rem;    /* 18px */
-    --text-xl: 1.375rem;    /* 22px */
-    --text-2xl: 1.75rem;    /* 28px */
-    --text-3xl: 2.25rem;    /* 36px */
+    --text-md: 1rem; /* 16px */
+    --text-lg: 1.125rem; /* 18px */
+    --text-xl: 1.375rem; /* 22px */
+    --text-2xl: 1.75rem; /* 28px */
+    --text-3xl: 2.25rem; /* 36px */
   }
 
   * {
@@ -118,21 +182,31 @@
   body {
     background: var(--neutral-25);
     color: var(--neutral-800);
-    font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+    font-family:
+      'DM Sans',
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-weight: 400;
     font-size: var(--text-base);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "ss01", "cv11";
+    font-feature-settings: 'ss01', 'cv11';
   }
 
-  table, .table-dense {
+  table,
+  .table-dense {
     line-height: 1.4;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: "Playfair Display", "DM Sans", serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Playfair Display', 'DM Sans', serif;
     font-weight: 500;
     line-height: 1.15;
     letter-spacing: -0.01em;
@@ -150,20 +224,44 @@
   /* ========================================
      LEGACY color helpers (compat)
      ======================================== */
-  .text-piel { color: var(--color-piel); }
-  .text-morena { color: var(--color-morena); }
-  .text-concreto { color: var(--color-concreto); }
-  .text-marengo { color: var(--color-marengo); }
-  .text-marengo-muted { color: rgba(102, 102, 102, 0.8); }
+  .text-piel {
+    color: var(--color-piel);
+  }
+  .text-morena {
+    color: var(--color-morena);
+  }
+  .text-concreto {
+    color: var(--color-concreto);
+  }
+  .text-marengo {
+    color: var(--color-marengo);
+  }
+  .text-marengo-muted {
+    color: rgba(102, 102, 102, 0.8);
+  }
 
-  .bg-canvas { background-color: var(--neutral-25); }
-  .bg-surface { background-color: var(--neutral-0); }
-  .bg-surface-muted { background-color: var(--neutral-50); }
-  .bg-piel-soft { background-color: rgba(204, 175, 125, 0.12); }
+  .bg-canvas {
+    background-color: var(--neutral-25);
+  }
+  .bg-surface {
+    background-color: var(--neutral-0);
+  }
+  .bg-surface-muted {
+    background-color: var(--neutral-50);
+  }
+  .bg-piel-soft {
+    background-color: rgba(204, 175, 125, 0.12);
+  }
 
-  .border-sand { border-color: var(--neutral-300); }
-  .border-sand-soft { border-color: rgba(215, 197, 185, 0.3); }
-  .border-morena { border-color: var(--color-morena); }
+  .border-sand {
+    border-color: var(--neutral-300);
+  }
+  .border-sand-soft {
+    border-color: rgba(215, 197, 185, 0.3);
+  }
+  .border-morena {
+    border-color: var(--color-morena);
+  }
 
   .outline-morena-soft {
     outline: 2px solid rgba(117, 76, 36, 0.18);
@@ -187,7 +285,10 @@
     gap: 0.5rem;
     border: none;
     cursor: pointer;
-    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    transition:
+      background-color 0.15s ease,
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
   }
 
   .btn-primary:hover {
@@ -267,7 +368,9 @@
     gap: 0.75rem;
     padding: 0.625rem 0.875rem;
     border-radius: var(--radius-md);
-    transition: background-color 0.15s, color 0.15s;
+    transition:
+      background-color 0.15s,
+      color 0.15s;
     color: var(--neutral-700);
     font-size: var(--text-sm);
     font-weight: 500;
@@ -275,7 +378,7 @@
   }
 
   .sidebar-nav-item:hover {
-    background-color: rgba(204, 175, 125, 0.10);
+    background-color: rgba(204, 175, 125, 0.1);
     color: var(--brand-morena);
   }
 
@@ -316,7 +419,9 @@
     border-color: var(--neutral-300);
   }
 
-  .card-no-padding { padding: 0; }
+  .card-no-padding {
+    padding: 0;
+  }
 
   /* ========================================
      FORMULARIOS - layout
@@ -327,7 +432,9 @@
     margin-right: auto;
   }
 
-  .form-field-limited { max-width: 32rem; }
+  .form-field-limited {
+    max-width: 32rem;
+  }
 
   .form-grid-2 {
     display: grid;
@@ -336,21 +443,39 @@
   }
 
   @media (max-width: 768px) {
-    .form-grid-2 { grid-template-columns: 1fr; }
+    .form-grid-2 {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* ========================================
      UTILIDADES SEM\u00c1NTICAS
      ======================================== */
-  .text-success { color: var(--semantic-success); }
-  .text-warning { color: var(--semantic-warning); }
-  .text-danger { color: var(--semantic-danger); }
-  .text-info { color: var(--semantic-info); }
+  .text-success {
+    color: var(--semantic-success);
+  }
+  .text-warning {
+    color: var(--semantic-warning);
+  }
+  .text-danger {
+    color: var(--semantic-danger);
+  }
+  .text-info {
+    color: var(--semantic-info);
+  }
 
-  .bg-success-soft { background-color: var(--semantic-success-bg); }
-  .bg-warning-soft { background-color: var(--semantic-warning-bg); }
-  .bg-danger-soft { background-color: var(--semantic-danger-bg); }
-  .bg-info-soft { background-color: var(--semantic-info-bg); }
+  .bg-success-soft {
+    background-color: var(--semantic-success-bg);
+  }
+  .bg-warning-soft {
+    background-color: var(--semantic-warning-bg);
+  }
+  .bg-danger-soft {
+    background-color: var(--semantic-danger-bg);
+  }
+  .bg-info-soft {
+    background-color: var(--semantic-info-bg);
+  }
 
   /* ========================================
      OVERLINE - etiquetas peque\u00f1as
@@ -362,15 +487,215 @@
     text-transform: uppercase;
     color: var(--neutral-500);
   }
+  /* ========================================
+     TIPOGRAFÍA — reemplaza walls de Tailwind
+     Uso: <h1 class="title-page">, <p class="muted">, etc.
+     ======================================== */
+  .title-page {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-weight: 500;
+    color: var(--neutral-900);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+  .title-section {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--neutral-900);
+    line-height: 1.2;
+  }
+  .title-card {
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--neutral-900);
+  }
+  .subtitle {
+    font-size: var(--text-sm);
+    color: var(--neutral-500);
+    line-height: 1.5;
+  }
+  .body {
+    font-size: var(--text-sm);
+    color: var(--neutral-700);
+  }
+  .body-strong {
+    font-size: var(--text-sm);
+    color: var(--neutral-800);
+    font-weight: 500;
+  }
+  .muted {
+    font-size: var(--text-xs);
+    color: var(--neutral-500);
+  }
+  .caption {
+    font-size: var(--text-2xs);
+    color: var(--neutral-500);
+  }
+
+  /* ========================================
+     SURFACES — cards/paneles repetidos
+     ======================================== */
+  .surface {
+    background-color: var(--neutral-0);
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-lg);
+  }
+  .surface-muted {
+    background-color: var(--neutral-50);
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-lg);
+  }
+  .surface-dashed {
+    background-color: var(--neutral-0);
+    border: 1px dashed var(--neutral-300);
+    border-radius: var(--radius-lg);
+  }
+
+  /* ========================================
+     ALERTS / BADGES de estado
+     ======================================== */
+  .alert-success {
+    background-color: var(--semantic-success-bg);
+    color: var(--semantic-success);
+    border: 1px solid rgba(45, 122, 79, 0.2);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    font-size: var(--text-sm);
+  }
+  .alert-warning {
+    background-color: var(--semantic-warning-bg);
+    color: var(--semantic-warning);
+    border: 1px solid rgba(192, 138, 46, 0.25);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    font-size: var(--text-sm);
+  }
+  .alert-danger {
+    background-color: var(--semantic-danger-bg);
+    color: var(--semantic-danger);
+    border: 1px solid rgba(181, 58, 58, 0.2);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    font-size: var(--text-sm);
+  }
+
+  /* === Form controls === */
+  .input-base {
+    width: 100%;
+    height: 2.5rem;
+    padding: 0 0.75rem;
+    border: 1px solid var(--neutral-300);
+    border-radius: var(--radius-md);
+    background-color: #ffffff;
+    color: var(--neutral-800);
+    font-size: var(--text-sm);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .input-base:focus {
+    outline: none;
+    border-color: var(--brand-morena);
+    box-shadow: 0 0 0 3px rgba(117, 76, 36, 0.12);
+  }
+
+  .textarea-base {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--neutral-300);
+    border-radius: var(--radius-md);
+    background-color: #ffffff;
+    color: var(--neutral-800);
+    font-size: var(--text-sm);
+    resize: vertical;
+    min-height: 5rem;
+  }
+  .textarea-base:focus {
+    outline: none;
+    border-color: var(--brand-morena);
+    box-shadow: 0 0 0 3px rgba(117, 76, 36, 0.12);
+  }
+
+  .input-conflict {
+    border-color: var(--semantic-danger) !important;
+    background-color: var(--semantic-danger-bg);
+  }
+
+  /* === Buttons (small variants used in forms) === */
+  .btn-primary-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    height: 2.25rem;
+    padding: 0 0.875rem;
+    border-radius: var(--radius-md);
+    background-color: var(--brand-morena);
+    color: #ffffff;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+  }
+  .btn-primary-sm:hover {
+    background-color: var(--brand-morena-dark, #5d3c1c);
+  }
+  .btn-primary-sm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    height: 2.25rem;
+    padding: 0 0.875rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--neutral-300);
+    background-color: #ffffff;
+    color: var(--neutral-700);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+  }
+  .btn-secondary-sm:hover {
+    background-color: var(--neutral-50);
+  }
+
+  .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    height: 2.25rem;
+    padding: 0 0.875rem;
+    border-radius: var(--radius-md);
+    background-color: var(--semantic-danger);
+    color: #ffffff;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    transition: opacity 0.15s ease;
+  }
+  .btn-danger:hover {
+    opacity: 0.9;
+  }
 }
 
 @layer base {
-  input, select, textarea {
+  input,
+  select,
+  textarea {
     border-color: var(--neutral-300) !important;
     font-family: inherit;
   }
 
-  input:focus, select:focus, textarea:focus {
+  input:focus,
+  select:focus,
+  textarea:focus {
     outline: none;
     border-color: var(--brand-morena) !important;
     box-shadow: 0 0 0 3px rgba(117, 76, 36, 0.12);
@@ -385,12 +710,12 @@
     cursor: pointer;
   }
 
-  input[type="date"] {
+  input[type='date'] {
     color-scheme: light;
     cursor: pointer;
   }
 
-  input[type="date"]::-webkit-calendar-picker-indicator {
+  input[type='date']::-webkit-calendar-picker-indicator {
     opacity: 0.6;
     filter: invert(30%) sepia(50%) saturate(500%) hue-rotate(350deg);
     cursor: pointer;
