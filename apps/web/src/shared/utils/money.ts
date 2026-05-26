@@ -1,10 +1,10 @@
 /**
- * Formatea un monto como moneda USD
+ * Formatea un monto como moneda boliviana (Bs)
  */
 export function formatMonto(monto: number | string): string {
   const value = typeof monto === 'string' ? Number(monto) : monto;
-  return new Intl.NumberFormat('es-ES', {
-    style: 'currency',
-    currency: 'USD',
+  return 'Bs ' + new Intl.NumberFormat('es-BO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(value);
 }
