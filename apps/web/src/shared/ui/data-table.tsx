@@ -37,7 +37,7 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   return (
     <div
-      className={`${desktopOnly ? 'hidden lg:block' : ''}rounded-lg overflow-hidden border border-neutral-200 bg-white`}
+      className={`${desktopOnly ? 'hidden lg:block' : ''} rounded-lg overflow-hidden border border-neutral-200 bg-white`}
     >
       <table className="w-full">
         <thead>

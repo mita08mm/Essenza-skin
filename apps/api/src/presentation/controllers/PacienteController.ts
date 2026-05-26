@@ -15,7 +15,10 @@ const createPacienteSchema = z.object({
     message: 'Fecha invalida',
   }),
   telefono: z.string().min(7, 'Telefono invalido'),
-  email: z.string().email('Email invalido').optional(),
+  email: z.preprocess(
+    (val) => (val === '' ? undefined : val),
+    z.string().email('Email invalido').optional()
+  ),
   direccion: z.string().optional(),
   sexo: z.string().optional(),
   objetivoEstetico: z.string().optional(),
