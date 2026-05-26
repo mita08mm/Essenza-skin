@@ -65,7 +65,11 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
           ? new Date(`${proximaConsulta}T00:00:00`).toISOString()
           : undefined,
       });
-      router.push(`/pacientes/${pacienteId}/historia`);
+      if (proximaConsulta) {
+        router.push(`/citas/nueva?fecha=${proximaConsulta}&pacienteId=${pacienteId}`);
+      } else {
+        router.push(`/pacientes/${pacienteId}/historia`);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al guardar tratamiento');
     } finally {

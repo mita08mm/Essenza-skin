@@ -43,6 +43,7 @@ interface Props {
 }
 
 export function CitaForm({ mode, citaId }: Props) {
+  
   const router = useRouter();
   const searchParams = useSearchParams();
   const isEdit = mode === 'edit';
@@ -61,7 +62,7 @@ export function CitaForm({ mode, citaId }: Props) {
   const [formData, setFormData] = useState(() => {
     if (isEdit) {
       return {
-        pacienteId: '',
+        pacienteId: searchParams.get('pacienteId') || '',
         fecha: '',
         horaInicio: '',
         horaFin: '',
@@ -168,6 +169,12 @@ export function CitaForm({ mode, citaId }: Props) {
     setConflicto(c || null);
   }, [formData.horaInicio, formData.horaFin, citasDelDia]);
 
+  useEffect(() => {
+    const paramId = searchParams.get('pacienteId');
+    if (paramId && !isEdit && pacientes.length > 0) {
+      setFormData((prev) => ({ ...prev, pacienteId: paramId }));
+    }
+  }, [pacientes]);
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
