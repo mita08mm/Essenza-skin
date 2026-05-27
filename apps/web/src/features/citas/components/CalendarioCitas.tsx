@@ -8,8 +8,12 @@ import {
   CardTitle,
   CloseIcon,
   LinkButton,
+  Badge,
   Muted,
 } from '@/shared/ui';
+import { api } from '@/shared/api';
+import EditIcon from '@/shared/icons/EditIcon';
+import TrashIcon from '@/shared/icons/TrashIcon';
 
 interface Paciente {
   id: string;
@@ -87,6 +91,30 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
   const [citaSeleccionada, setCitaSeleccionada] = useState<Cita | null>(null);
   const [diaModal, setDiaModal] = useState<{ fecha: Date; citas: Cita[] } | null>(null);
 
+  const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
+  const [eliminando, setEliminando] = useState(false);
+  const [errorEliminar, setErrorEliminar] = useState('');
+
+  const cerrarDetalleCita = () => {
+    setCitaSeleccionada(null);
+    setConfirmandoEliminar(false);
+    setErrorEliminar('');
+  };
+
+  const handleEliminar = async () => {
+    if (!citaSeleccionada) return;
+    setEliminando(true);
+    setErrorEliminar('');
+    try {
+      await api.delete(`/citas/${citaSeleccionada.id}`);
+      cerrarDetalleCita();
+    } catch (err) {
+      setErrorEliminar(err instanceof Error ? err.message : 'Error desconocido');
+    } finally {
+      setEliminando(false);
+    }
+  };
+
   const citasPorDia = citas.reduce<Record<string, Cita[]>>((acc, cita) => {
     if (!cita.fecha) return acc;
     const key = cita.fecha.split('T')[0];
@@ -160,14 +188,12 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
     const mesActual = cursor.getMonth();
     return (
       <div className="flex min-h-0 flex-1 flex-col">
-        {/* Cabecera días semana */}
         <div className="grid grid-cols-7 border-b border-gray-100 bg-white">
           {DIAS_CORTO.map((d) => (
             <div
               key={d}
               className="py-2 text-center text-[10px] font-medium tracking-wider text-[#5F5955] sm:py-4 sm:text-xs"
             >
-              {/* En móvil solo primera letra */}
               <span className="sm:hidden">{d[0]}</span>
               <span className="hidden sm:inline">{d}</span>
             </div>
@@ -193,13 +219,11 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
                   >
                     {dia.getDate()}
                   </span>
-                  {/* Punto indicador en móvil */}
                   {citasDia.length > 0 && (
                     <span className="mt-1 mr-0.5 h-1.5 w-1.5 flex-shrink-0 rounded-lg bg-[#60412B] sm:hidden" />
                   )}
                 </div>
 
-                {/* Citas — solo en desktop */}
                 <div className="mt-2 hidden flex-1 flex-col justify-end space-y-1 sm:flex">
                   {citasDia.slice(0, 2).map((cita) => {
                     const col = ESTADO_COLORS[cita.estado] || ESTADO_COLORS.PROGRAMADA;
@@ -224,7 +248,6 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
                   )}
                 </div>
 
-                {/* Contador en móvil */}
                 {citasDia.length > 0 && (
                   <div className="mt-auto sm:hidden">
                     <span className="text-[9px] font-medium text-[#60412B]/60">
@@ -245,7 +268,6 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
     const dias = diasDeSemana();
     return (
       <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-white">
-        {/* Header días */}
         <div
           className="sticky top-0 z-10 grid border-b border-gray-100 bg-white"
           style={{ gridTemplateColumns: '40px repeat(7, 1fr)' }}
@@ -272,7 +294,6 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
           ))}
         </div>
 
-        {/* Filas de horas */}
         <div className="flex-1">
           {HORAS.map((hora) => (
             <div
@@ -392,7 +413,6 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
       <div className="mx-auto w-full max-w-5xl rounded-2xl border border-gray-100/50 bg-[#FAF8F6] p-2 shadow-sm sm:rounded-[24px] sm:p-6">
         {/* Toolbar */}
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-100/40 bg-white p-2 shadow-xs sm:mb-6 sm:gap-4 sm:rounded-2xl sm:p-4">
-          {/* Título + navegación */}
           <div className="flex min-w-0 items-center gap-2 sm:gap-6">
             <h2 className="truncate font-serif text-base font-normal tracking-tight text-[#60412B] sm:text-2xl">
               {titulo()}
@@ -419,7 +439,6 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
             </div>
           </div>
 
-          {/* Vista selector + Nueva cita */}
           <div className="ml-auto flex items-center gap-2">
             <div className="flex rounded-lg border border-gray-200/20 bg-[#F5F1EE] p-0.5 text-[10px] font-medium sm:rounded-xl sm:p-1 sm:text-xs">
               {(['month', 'week', 'day'] as Vista[]).map((v) => (
@@ -455,114 +474,132 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
       </div>
 
       {/* MODAL DETALLES CITA */}
-      <BottomSheet open={!!citaSeleccionada} onClose={() => setCitaSeleccionada(null)} size="sm">
+      <BottomSheet open={!!citaSeleccionada} onClose={cerrarDetalleCita} size="sm">
         {citaSeleccionada && (
-          <div className="space-y-4 p-5 sm:p-6">
-            <div className="flex items-start justify-between">
-              <CardTitle className="font-serif">{citaSeleccionada.motivo}</CardTitle>
-              <button
-                onClick={() => setCitaSeleccionada(null)}
-                className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
-                aria-label="Cerrar"
-              >
-                <CloseIcon className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="space-y-2 text-sm text-neutral-600">
-              <p>
-                <BodyStrong>Paciente:</BodyStrong> {citaSeleccionada.paciente?.nombre}{' '}
-                {citaSeleccionada.paciente?.apellido}
-              </p>
-              <p>
-                <BodyStrong>Horario:</BodyStrong> {citaSeleccionada.horaInicio} –{' '}
-                {citaSeleccionada.horaFin}
-              </p>
-              <p>
-                <BodyStrong>Teléfono:</BodyStrong> {citaSeleccionada.paciente?.telefono}
-              </p>
-              {citaSeleccionada.notas && (
-                <p>
-                  <BodyStrong>Notas:</BodyStrong> {citaSeleccionada.notas}
-                </p>
-              )}
-            </div>
-            <Button
-              variant="secondary"
-              size="md"
-              className="w-full"
-              onClick={() => setCitaSeleccionada(null)}
-            >
-              Cerrar
-            </Button>
-          </div>
-        )}
-      </BottomSheet>
-
-      {/* MODAL DÍA RÁPIDO */}
-      <BottomSheet open={!!diaModal} onClose={() => setDiaModal(null)} size="sm">
-        {diaModal && (
-          <div className="space-y-4 p-5 sm:p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="font-serif">Citas del Día</CardTitle>
-                <Muted>
-                  {diaModal.fecha.getDate()} de {MESES[diaModal.fecha.getMonth()]}
-                </Muted>
+          <>
+            {/* Cabecera */}
+            <div className="bg-neutral-25 px-6 pt-5 pb-4">
+              <div className="flex items-center justify-between">
+                <span
+                  className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium
+                    ${ESTADO_COLORS[citaSeleccionada.estado]?.bg ?? ''}
+                    ${ESTADO_COLORS[citaSeleccionada.estado]?.text ?? ''}
+                    ${ESTADO_COLORS[citaSeleccionada.estado]?.border ?? ''}`}
+                >
+                  {citaSeleccionada.estado}
+                </span>
+                <button
+                  onClick={cerrarDetalleCita}
+                  className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+                  aria-label="Cerrar"
+                >
+                  <CloseIcon className="h-4 w-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setDiaModal(null)}
-                className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
-                aria-label="Cerrar"
-              >
-                <CloseIcon className="h-4 w-4" />
-              </button>
+              <CardTitle className="mt-2 font-serif">{citaSeleccionada.motivo}</CardTitle>
+              <p className="mt-0.5 text-sm text-neutral-500">
+                {citaSeleccionada.paciente?.nombre} {citaSeleccionada.paciente?.apellido}
+              </p>
             </div>
-            <div className="max-h-52 space-y-2 overflow-y-auto">
-              {diaModal.citas.length === 0 ? (
-                <Muted className="py-2 text-center italic">No hay citas en esta fecha.</Muted>
-              ) : (
-                diaModal.citas.map((c) => (
-                  <div
-                    key={c.id}
-                    onClick={() => {
-                      setCitaSeleccionada(c);
-                      setDiaModal(null);
-                    }}
-                    className="text-brand-morena bg-neutral-25 cursor-pointer rounded-lg border border-neutral-200 p-2.5 text-xs transition-all hover:brightness-95"
-                    style={{ borderLeft: '3px solid var(--brand-morena)' }}
-                  >
-                    <strong>
-                      {c.horaInicio} – {c.horaFin}
-                    </strong>{' '}
-                    · {c.paciente?.nombre} {c.paciente?.apellido}
-                    <div className="mt-0.5 truncate text-neutral-500">{c.motivo}</div>
-                  </div>
-                ))
+
+            {/* Detalle */}
+            <div className="space-y-3 px-6 py-4 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-500">Horario</span>
+                <span className="font-mono font-medium text-[#60412B]">
+                  {citaSeleccionada.horaInicio} – {citaSeleccionada.horaFin}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-500">Teléfono</span>
+                <a
+                  href={`tel:${citaSeleccionada.paciente?.telefono}`}
+                  className="font-medium text-[#60412B] hover:underline"
+                >
+                  {citaSeleccionada.paciente?.telefono}
+                </a>
+              </div>
+              {citaSeleccionada.notas && (
+                <div>
+                  <p className="mb-1 text-xs text-neutral-400">Notas</p>
+                  <p className="rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-700">
+                    {citaSeleccionada.notas}
+                  </p>
+                </div>
+              )}
+              {errorEliminar && (
+                <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{errorEliminar}</p>
               )}
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                size="md"
-                className="flex-1"
-                onClick={() => {
-                  setCursor(diaModal.fecha);
-                  setVista('day');
-                  setDiaModal(null);
-                }}
-              >
-                Ver día
-              </Button>
-              <LinkButton
-                href={`/citas/nueva?fecha=${dateKey(diaModal.fecha)}`}
-                variant="primary"
-                size="md"
-                className="flex-1"
-              >
-                + Agendar
-              </LinkButton>
+
+            {/* Acciones */}
+            <div className="space-y-2 px-6 pb-6">
+              {!confirmandoEliminar ? (
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className="flex-1 h-10"
+                    onClick={cerrarDetalleCita}
+                  >
+                    Cerrar
+                  </Button>
+                  <LinkButton
+                    href={`/citas/${citaSeleccionada.id}/editar`}
+                    variant="primary"
+                    size="md"
+                    className="flex-1 h-10 justify-center"
+                  >
+                    <EditIcon />
+                    Editar
+                  </LinkButton>
+                  <Button
+                    variant="danger"
+                    size="md"
+                    className="flex-1 h-10"
+                    onClick={() => setConfirmandoEliminar(true)}
+                  >
+                    <TrashIcon color="currentColor" />
+                    Eliminar
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="rounded-xl bg-red-50 p-3 text-center text-red-700">
+                    <p className="text-sm font-semibold">¿Eliminar esta cita?</p>
+                    <p className="mt-0.5 text-xs opacity-80">
+                      {citaSeleccionada.paciente?.nombre} · {citaSeleccionada.horaInicio}
+                    </p>
+                    <p className="mt-1 text-xs opacity-70">Esta acción no se puede deshacer.</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      className="flex-1"
+                      disabled={eliminando}
+                      onClick={() => {
+                        setConfirmandoEliminar(false);
+                        setErrorEliminar('');
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="md"
+                      className="flex-1"
+                      disabled={eliminando}
+                      isLoading={eliminando}
+                      onClick={handleEliminar}
+                    >
+                      {eliminando ? 'Eliminando...' : 'Sí, eliminar'}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          </>
         )}
       </BottomSheet>
     </>

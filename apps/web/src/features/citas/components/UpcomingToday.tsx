@@ -219,7 +219,7 @@ export default function UpcomingToday({ citas, onCitaEliminada }: UpcomingTodayP
               return (
                 <div
                   key={cita.id}
-                  onClick={() => setCitaSeleccionada(cita)}
+                  onClick={() => (window.location.href = `/pacientes/${cita.pacienteId}/historia`)}
                   className="group flex cursor-pointer items-start gap-3 px-4 py-3.5 transition-colors hover:bg-neutral-50 sm:px-5"
                 >
                   <div className="flex flex-shrink-0 flex-col items-center pt-1">
