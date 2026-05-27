@@ -21,6 +21,8 @@ interface ConfigClinica {
   telefono: string;
   email: string;
   nit: string;
+  logo?: string | null;
+  isPublic?: boolean;
 }
 
 const ROL_LABELS = {
@@ -55,6 +57,8 @@ export function ConfiguracionView() {
     telefono: '+591 3 1234567',
     email: 'contacto@clinica.com',
     nit: '1234567890',
+    logo: null,
+    isPublic: false,
   });
 
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -66,6 +70,23 @@ export function ConfiguracionView() {
     password: '',
     rol: 'RECEPCIONISTA' as Usuario['rol'],
   });
+
+  // Cargar configuración de la clínica al montar
+  useEffect(() => {
+    const fetchConfigClinica = async () => {
+      try {
+        setIsLoading(true);
+        const data = await api.get<ConfigClinica>('/configuracion');
+        if (data) setConfigClinica(data);
+      } catch (err) {
+        console.error('Error cargando configuración:', err);
+        // Mantener valores por defecto en caso de error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchConfigClinica();
+  }, []);
 
   const fetchUsuarios = useCallback(async () => {
     try {
@@ -105,11 +126,15 @@ export function ConfiguracionView() {
     setSuccess('');
     try {
       setIsSaving(true);
-      await api.put('/configuracion/clinica', configClinica);
+      const updated = await api.put<ConfigClinica>('/configuracion', configClinica);
+      if (updated) setConfigClinica(updated);
       setSuccess('Configuración guardada correctamente');
     } catch (err) {
-      if (err instanceof ApiError) setSuccess('Configuración guardada (modo demo)');
-      else setError('Error al guardar configuración');
+      if (err instanceof ApiError) {
+        setError(err.message || 'Error al guardar configuración');
+      } else {
+        setError('Error al guardar configuración');
+      }
     } finally {
       setIsSaving(false);
     }
@@ -268,6 +293,21 @@ export function ConfiguracionView() {
                   required
                 />
               </FormField>
+            </div>
+            <div className="pt-3">
+              <label className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={configClinica.isPublic || false}
+                  onChange={(e) =>
+                    setConfigClinica({ ...configClinica, isPublic: e.target.checked })
+                  }
+                  className="accent-brand-morena h-4 w-4"
+                />
+                <span className="body">
+                  Mostrar información de la clínica en la página pública
+                </span>
+              </label>
             </div>
           </FormSection>
           <div className="flex justify-end">

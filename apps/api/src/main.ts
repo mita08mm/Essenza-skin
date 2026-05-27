@@ -124,8 +124,9 @@ app.use('/api/pacientes', pacienteHistoriaRoutes);
 import documentoRoutes from './presentation/routes/documento.routes';
 app.use('/api/documentos', documentoRoutes);
 
-import reporteRoutes from './presentation/routes/reporte.routes';
-app.use('/api/reportes', reporteRoutes);
+// Rutas de configuración
+import configuracionRoutes from './presentation/routes/configuracion.routes';
+app.use('/api/configuracion', configuracionRoutes);
 
 // 404 handler
 app.use((_req, res) => {

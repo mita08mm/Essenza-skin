@@ -7,15 +7,17 @@ import { QueryProvider } from '@/shared/api';
 const playfair = Playfair_Display({
   variable: '--font-heading',
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['600', '700'],
   display: 'swap',
+  preload: true,
 });
 
 const dmSans = DM_Sans({
   variable: '--font-body',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600'],
   display: 'swap',
+  preload: true,
 });
 
 export const metadata: Metadata = {

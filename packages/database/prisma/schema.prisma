@@ -427,7 +427,7 @@ model Documento {
   nombre     String
   tipo       TipoDocumento
   url        String
-  publicId   String?  
+  publicId   String?
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 
@@ -441,4 +441,25 @@ model Documento {
 enum TipoDocumento {
   FOTO
   DOCUMENTO
+}
+
+// ========================================
+// MÓDULO: CONFIGURACIÓN
+// ========================================
+
+model ConfiguracionClinica {
+  id        String  @id @default("singleton") // Solo habrá 1 registro
+  nombre    String
+  direccion String
+  telefono  String
+  email     String
+  nit       String?
+  ciudad    String?
+  pais      String? @default("Bolivia")
+  logo      String? // URL del logo en Cloudinary
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("configuracion_clinica")
 }

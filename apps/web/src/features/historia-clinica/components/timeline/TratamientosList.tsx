@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Tratamiento } from '@/features/historia-clinica/types';
 import { Overline, SectionTitle, CardTitle } from '@/shared/ui';
 
@@ -6,6 +10,20 @@ interface TratamientosListProps {
 }
 
 export default function TratamientosList({ tratamientos }: TratamientosListProps) {
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
   return (
     <section>
       <header className="mb-5 flex items-baseline justify-between">
@@ -16,28 +34,52 @@ export default function TratamientosList({ tratamientos }: TratamientosListProps
       </header>
 
       <ol className="relative space-y-5 before:absolute before:top-2 before:bottom-2 before:left-[7px] before:w-px before:bg-neutral-200">
-        {tratamientos.map((t) => (
-          <li key={t.id} className="relative pl-7">
-            <span className="bg-brand-morena absolute top-3.5 left-0 h-[15px] w-[15px] rounded-full border-[3px] border-white shadow-xs" />
-            <article className="surface overflow-hidden transition-colors hover:border-neutral-300">
-              <header className="bg-neutral-25 flex items-baseline justify-between gap-4 border-b border-neutral-100 px-5 py-3">
-                <CardTitle className="truncate">{t.nombreTratamiento}</CardTitle>
-                <Overline as="time" className="shrink-0">
-                  {formatDate(t.fecha)}
-                </Overline>
-              </header>
-              <div className="grid gap-3 px-5 py-4 sm:grid-cols-2">
-                <Field label="Tipo" value={formatTipo(t.tipoTratamiento)} />
-                <Field label="Zona tratada" value={t.zonaTratada} />
-                <Field label="Objetivo" value={t.objetivo} wide />
-                <Field label="Nota clínica" value={t.evaluacionInicial} wide />
-                <Field label="Procedimiento" value={t.protocolo} wide />
-                <Field label="Observaciones" value={t.observaciones} wide />
-                <Field label="Próxima consulta" value={formatOptionalDate(t.proximaSesion)} />
-              </div>
-            </article>
-          </li>
-        ))}
+        {tratamientos.map((t) => {
+          const isExpanded = expandedIds.has(t.id);
+          const hasDetails = !!(t.evaluacionInicial || t.protocolo || t.observaciones || t.proximaSesion);
+
+          return (
+            <li key={t.id} className="relative pl-7">
+              <span className="bg-brand-morena absolute top-3.5 left-0 h-[15px] w-[15px] rounded-full border-[3px] border-white shadow-xs" />
+              <article className="surface overflow-hidden transition-colors hover:border-neutral-300">
+                <button
+                  onClick={() => hasDetails && toggleExpanded(t.id)}
+                  disabled={!hasDetails}
+                  className={`bg-neutral-25 flex w-full items-baseline justify-between gap-4 border-b border-neutral-100 px-5 py-3 text-left ${
+                    hasDetails ? 'cursor-pointer transition-colors hover:bg-neutral-50' : 'cursor-default'
+                  }`}
+                >
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    {hasDetails && (
+                      isExpanded ? (
+                        <ChevronDown className="h-4 w-4 shrink-0 text-neutral-500" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 shrink-0 text-neutral-500" />
+                      )
+                    )}
+                    <CardTitle className="truncate">{t.nombreTratamiento}</CardTitle>
+                  </div>
+                  <Overline as="time" className="shrink-0">
+                    {formatDate(t.fecha)}
+                  </Overline>
+                </button>
+
+                {/* Información completa (visible al expandir) */}
+                {isExpanded && (
+                  <div className="grid gap-3 px-5 py-4 sm:grid-cols-2">
+                    <Field label="Tipo" value={formatTipo(t.tipoTratamiento)} />
+                    <Field label="Zona tratada" value={t.zonaTratada} />
+                    <Field label="Objetivo" value={t.objetivo} wide />
+                    <Field label="Nota clínica" value={t.evaluacionInicial} wide />
+                    <Field label="Procedimiento" value={t.protocolo} wide />
+                    <Field label="Observaciones" value={t.observaciones} wide />
+                    <Field label="Próxima consulta" value={formatOptionalDate(t.proximaSesion)} />
+                  </div>
+                )}
+              </article>
+            </li>
+          );
+        })}
       </ol>
     </section>
   );

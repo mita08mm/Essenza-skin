@@ -91,3 +91,29 @@ docker compose logs -f           # Ver logs
 - Express + TypeScript
 - PostgreSQL 16 + Prisma
 - pnpm workspaces
+
+---
+
+## Landing Page
+
+**Ubicación:** `apps/web/src/components/landing/`
+
+**Componentes:**
+- Navbar, Hero, Features, Services, Process, Testimonials, ContactCTA, Footer, WhatsAppButton
+
+**Configuración Estática:**
+- Facebook: `https://facebook.com/essenzaskinclinic`
+- Instagram: `https://instagram.com/essenzaskinclinic`
+- WhatsApp: `+591 72226431`
+
+**Información de la Clínica:**
+- Nombre: Essenza Skin & Hair Clinic Spa
+- Ubicación: Cochabamba
+- Especialidad: Medicina estética facial, corporal y capilar
+- Filosofía: "La fusión perfecta entre medicina estética y arte"
+
+**Características:**
+- ✅ Modularizada (107 líneas en page.tsx)
+- ✅ Imágenes como fondos CSS (no components)
+- ✅ Información real verificada de redes sociales
+- ✅ Redes sociales y contacto estáticos en código

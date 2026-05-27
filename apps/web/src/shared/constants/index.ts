@@ -109,7 +109,7 @@ export const RUTAS = {
   },
   // Autenticación
   auth: {
-    login: '/login',
+    login: '/admin',
     registro: '/registro',
     logout: '/api/auth/logout',
   },
@@ -126,7 +126,6 @@ export const RUTAS = {
     cobroNuevo: '/cobros/nuevo',
     recetas: '/recetas',
     recetaNueva: '/recetas/nueva',
-    reportes: '/reportes',
     configuracion: '/configuracion',
   },
   // API
@@ -136,7 +135,6 @@ export const RUTAS = {
     cobros: '/api/cobros',
     recetas: '/api/recetas',
     archivos: '/api/archivos',
-    reportes: '/api/reportes',
   },
 } as const;
 

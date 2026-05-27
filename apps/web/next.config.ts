@@ -15,6 +15,20 @@ const nextConfig: NextConfig = {
   compress: true,
   reactStrictMode: true,
 
+  // Configuración de imágenes remotas
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'img.magnific.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'skin-fusion.ca',
+      },
+    ],
+  },
+
   experimental: {
     // Importa sólo los íconos usados de lucide-react (tree-shaking efectivo en Turbopack).
     // Agregar aquí cualquier otra librería pesada con barrel grande.
@@ -42,6 +56,14 @@ const nextConfig: NextConfig = {
         source: "/_next/static/(.*)",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      });
+    } else {
+      // En dev: evitar cache agresivo del navegador en páginas HTML
+      headers.push({
+        source: "/((?!_next/static|_next/image|favicon.ico).*)",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
         ],
       });
     }

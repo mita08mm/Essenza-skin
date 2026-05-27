@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/features/auth';
-import { Menu, X, BarChart3, Settings } from 'lucide-react';
+import { Menu, X, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -20,7 +20,6 @@ const menuItems = [
   { href: '/cobros', label: 'Cobros', icon: <MoneyIcon className={ICON_CLS} /> },
   { href: '/recetas', label: 'Prescripciones', icon: <PrescriptionIcon className={ICON_CLS} /> },
   { href: '/inventario', label: 'Inventario', icon: <InventoryIcon className={ICON_CLS} /> },
-  { href: '/reportes', label: 'Reportes', icon: <BarChart3 className={ICON_CLS} /> },
   { href: '/configuracion', label: 'Configuración', icon: <Settings className={ICON_CLS} /> },
 ];
 
