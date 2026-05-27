@@ -26,6 +26,17 @@ const updateStockSchema = z.object({
   cantidad: z.number().int().refine((val) => val !== 0, 'La cantidad debe ser diferente de 0'),
 });
 
+const updateProductoSchema = z.object({
+  nombre: z.string().min(1, 'El nombre es requerido').optional(),
+  tipo: z.enum(['COSMECEUTICO', 'DERMOCOSMETICO', 'EQUIPO', 'INSUMO']).optional(),
+  descripcion: z.string().optional(),
+  precio: z.number().nonnegative('El precio debe ser mayor o igual a 0').optional(),
+  stock: z.number().int().nonnegative().optional(),
+  stockMinimo: z.number().int().nonnegative().optional(),
+  marca: z.string().optional(),
+  principioActivo: z.string().optional(),
+});
+
 export class ProductoController {
   // POST /api/productos
   static async create(req: Request, res: Response): Promise<void> {
@@ -159,6 +170,50 @@ export class ProductoController {
       res.status(400).json({
         success: false,
         error: error instanceof Error ? error.message : 'Error al actualizar stock',
+      });
+    }
+  }
+
+  // PUT /api/productos/:id
+  static async update(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      
+      if (Array.isArray(id)) {
+        res.status(400).json({ success: false, error: 'ID inválido' });
+        return;
+      }
+      
+      const validatedData = updateProductoSchema.parse(req.body);
+      
+      const producto = await productoRepository.update(id, validatedData);
+
+      res.json({
+        success: true,
+        data: producto,
+        message: 'Producto actualizado exitosamente',
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          success: false,
+          error: 'Datos inválidos',
+          details: error.errors,
+        });
+        return;
+      }
+
+      if (error instanceof Error && error.message === 'Producto no encontrado') {
+        res.status(404).json({
+          success: false,
+          error: error.message,
+        });
+        return;
+      }
+
+      res.status(400).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Error al actualizar producto',
       });
     }
   }

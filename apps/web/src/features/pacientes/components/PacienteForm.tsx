@@ -29,7 +29,7 @@ type FormState = {
 const EMPTY: FormState = {
   nombre: '',
   apellido: '',
-  tipoDocumento: 'DNI',
+  tipoDocumento: 'CI',
   documento: '',
   fechaNacimiento: '',
   telefono: '',
@@ -79,7 +79,7 @@ export function PacienteForm({
         setFormData({
           nombre: (p.nombre as string) ?? '',
           apellido: (p.apellido as string) ?? '',
-          tipoDocumento: (p.tipoDocumento as string) ?? 'DNI',
+          tipoDocumento: (p.tipoDocumento as string) ?? 'CI',
           documento: (p.documento as string) ?? '',
           fechaNacimiento: p.fechaNacimiento?.slice(0, 10) ?? '',
           telefono: (p.telefono as string) ?? '',
@@ -118,6 +118,7 @@ export function PacienteForm({
     setError('');
     setIsLoading(true);
     try {
+      console.log('Enviando datos:', formData);
       if (isEdit && pacienteId) {
         await api.put(`/pacientes/${pacienteId}`, formData);
       } else {
@@ -125,15 +126,24 @@ export function PacienteForm({
       }
       router.push('/pacientes');
     } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : err instanceof Error
-            ? err.message
-            : isEdit
-              ? 'Error al actualizar paciente'
-              : 'Error al crear paciente',
-      );
+      console.error('Error al guardar paciente:', err);
+      let errorMessage = isEdit ? 'Error al actualizar paciente' : 'Error al crear paciente';
+      
+      if (err instanceof ApiError) {
+        errorMessage = err.message;
+        // Si hay detalles de validación, agregarlos al mensaje
+        if (err.details && typeof err.details === 'object' && 'details' in err.details) {
+          const validationErrors = (err.details as any).details;
+          if (Array.isArray(validationErrors)) {
+            const errorList = validationErrors.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ');
+            errorMessage += ` - ${errorList}`;
+          }
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -198,7 +208,7 @@ export function PacienteForm({
                 required
                 disabled={isLoading}
               >
-                <option value="DNI">CI (Cédula de identidad)</option>
+                <option value="CI">CI (Cédula de identidad)</option>
                 <option value="PASAPORTE">Pasaporte (Extranjero)</option>
               </select>
             </FormField>

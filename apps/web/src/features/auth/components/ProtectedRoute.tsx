@@ -14,7 +14,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     if (!isLoading && !usuario) {
-      router.push('/admin');
+      router.push('/sys-e7k9m2px');
     }
   }, [usuario, isLoading, router]);
 

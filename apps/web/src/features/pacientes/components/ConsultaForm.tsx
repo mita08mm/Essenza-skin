@@ -52,7 +52,7 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
     setIsSaving(true);
     setError('');
     try {
-      await api.post('/tratamientos', {
+      await api.post('/consultas', {
         pacienteId,
         tipoTratamiento,
         nombreTratamiento: procedimiento.trim() || `Consulta ${tipoTratamiento.toLowerCase()}`,
@@ -173,11 +173,12 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
                 disabled={isSaving}
               />
             </FormField>
-            <FormField label="Próxima consulta">
+            <FormField label="Próxima consulta" hint="Solo fechas desde hoy en adelante">
               <input
                 type="date"
                 value={proximaConsulta}
                 onChange={(e) => setProximaConsulta(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
                 className={inputBase}
                 disabled={isSaving}
               />

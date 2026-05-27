@@ -57,13 +57,13 @@ export function Footer({ config }: FooterProps) {
           {/* Column 1: Brand */}
           <div>
             <h3 className="font-heading mb-4 text-2xl font-bold" style={{ color: '#ffffff' }}>
-              Essenza Skin & Hair Clinic Spa
+              {config?.nombre || 'Essenza Skin & Hair Clinic Spa'}
             </h3>
             <p className="mb-2 text-sm font-semibold" style={{ color: '#c9a96e' }}>
               DRA. CECILE ARCE DERPIC
             </p>
             <p className="mb-2 leading-relaxed" style={{ color: '#888' }}>
-              La fusión perfecta entre medicina estética y arte en Cochabamba.
+              La fusión perfecta entre medicina estética y arte{config?.ciudad ? ` en ${config.ciudad}` : ' en Cochabamba'}.
             </p>
             <a
               href="https://maps.app.goo.gl/2HqrPerLqgoHks9P9"
@@ -72,7 +72,7 @@ export function Footer({ config }: FooterProps) {
               className="mb-6 block text-sm leading-relaxed font-medium transition-opacity hover:opacity-80"
               style={{ color: '#c9a96e' }}
             >
-              Calle Tumusla 561, entre calles México y Reza
+              {config?.direccion || 'Calle Tumusla 561, entre calles México y Reza'}
             </a>
             <div className="flex gap-3">
               {socialLinks.map((social, i) => (
@@ -153,7 +153,7 @@ export function Footer({ config }: FooterProps) {
           className="mt-12 border-t pt-8 text-center text-sm"
           style={{ borderColor: 'rgba(255, 255, 255, 0.1)', color: '#666' }}
         >
-          © {new Date().getFullYear()} Essenza Skin & Hair Clinic Spa - DRA. CECILE ARCE DERPIC.
+          © {new Date().getFullYear()} {config?.nombre || 'Essenza Skin & Hair Clinic Spa'} - DRA. CECILE ARCE DERPIC.
           Todos los derechos reservados.
         </div>
       </div>

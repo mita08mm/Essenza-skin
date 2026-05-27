@@ -45,7 +45,7 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res) => {
         rol: usuario.rol,
       },
     });
-  } catch (error) {
+  } catch (_error) {
     res.status(500).json({
       success: false,
       error: 'Error interno del servidor',

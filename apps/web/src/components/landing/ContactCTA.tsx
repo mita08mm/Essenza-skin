@@ -83,16 +83,13 @@ export function ContactCTA({ config }: ContactCTAProps) {
               Nuestra Ubicación
             </div>
             <div className="text-lg leading-tight font-bold" style={{ color: '#ffffff' }}>
-              Calle Tumusla 561
-            </div>
-            <div className="mt-2 text-sm leading-relaxed" style={{ color: '#e0e0e0' }}>
-              Entre calles México y Reza
+              {config.direccion || 'Calle Tumusla 561'}
             </div>
             <div
               className="mt-3 flex items-center justify-center gap-2 text-sm font-semibold"
               style={{ color: '#c9a96e' }}
             >
-              Cochabamba, Bolivia
+              {config.ciudad || 'Cochabamba'}, {config.pais || 'Bolivia'}
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"

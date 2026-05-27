@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { HistoriaClinica } from '@/features/historia-clinica/types';
 import { LinkButton } from '@/shared/ui';
 

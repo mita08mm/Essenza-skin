@@ -14,7 +14,7 @@ import {
   Overline,
 } from '@/shared/ui';
 import { usePacienteCobros, CobroRow } from '@/features/pacientes';
-import { useProductos, type Producto } from '@/features/inventario';
+import { useProductos, type Producto } from '@/features/productos';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

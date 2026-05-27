@@ -13,15 +13,9 @@ export interface Paciente {
 
 export interface ItemProtocolo {
   id: string;
-  producto?: {
-    id: string;
-    nombre: string;
-    tipo: 'COSMECEUTICO' | 'DERMOCOSMETICO' | 'EQUIPO' | 'INSUMO';
-  };
   nombre: string;
   cantidad?: number;
   aplicacion?: string;
-  frecuencia?: string;
   indicaciones?: string;
   estado: 'INDICADO' | 'ADQUIRIDO' | 'EN_USO' | 'COMPLETADO';
 }

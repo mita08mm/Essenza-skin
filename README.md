@@ -13,6 +13,11 @@ docker compose up postgres -d
 pnpm db:migrate
 pnpm db:seed
 
+pnpm db:migrate:reset  
+pnpm db:migrate  
+init && pnpm db:seed
+
+
 # 3. Iniciar
 pnpm dev
 ```
@@ -20,13 +25,6 @@ pnpm dev
 **Accesos:**
 - Frontend: http://localhost:3000
 - API: http://localhost:4000
-
-**Usuarios:**
-- Admin: `admin@clinica.com` / `admin123`
-- Médico: `medico@clinica.com` / `medico123`
-- Recepcionista: `recepcion@clinica.com` / `recep123`
-
----
 
 ## Estructura
 

@@ -14,7 +14,7 @@ export interface Paciente {
   nombre: string;
   apellido: string;
   documento: string;
-  tipoDocumento: 'DNI' | 'PASAPORTE' | 'OTRO';
+  tipoDocumento: 'CI' | 'PASAPORTE';
   fechaNacimiento: Date;
   telefono: string;
   email?: string;

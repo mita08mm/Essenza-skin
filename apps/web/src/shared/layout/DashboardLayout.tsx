@@ -18,8 +18,8 @@ const menuItems = [
   { href: '/pacientes', label: 'Pacientes', icon: <PersonIcon className={ICON_CLS} /> },
   { href: '/citas', label: 'Citas', icon: <AppointmentIcon className={ICON_CLS} /> },
   { href: '/cobros', label: 'Cobros', icon: <MoneyIcon className={ICON_CLS} /> },
-  { href: '/recetas', label: 'Prescripciones', icon: <PrescriptionIcon className={ICON_CLS} /> },
-  { href: '/inventario', label: 'Inventario', icon: <InventoryIcon className={ICON_CLS} /> },
+  { href: '/prescripciones', label: 'Prescripciones', icon: <PrescriptionIcon className={ICON_CLS} /> },
+  { href: '/productos', label: 'Productos', icon: <InventoryIcon className={ICON_CLS} /> },
   { href: '/configuracion', label: 'Configuración', icon: <Settings className={ICON_CLS} /> },
 ];
 

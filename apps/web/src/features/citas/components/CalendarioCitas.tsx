@@ -2,14 +2,11 @@
 
 import { useState } from 'react';
 import {
-  BodyStrong,
   BottomSheet,
   Button,
   CardTitle,
   CloseIcon,
   LinkButton,
-  Badge,
-  Muted,
 } from '@/shared/ui';
 import { api } from '@/shared/api';
 import EditIcon from '@/shared/icons/EditIcon';
@@ -89,7 +86,6 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
   const [vista, setVista] = useState<Vista>('month');
   const [cursor, setCursor] = useState(new Date());
   const [citaSeleccionada, setCitaSeleccionada] = useState<Cita | null>(null);
-  const [diaModal, setDiaModal] = useState<{ fecha: Date; citas: Cita[] } | null>(null);
 
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
   const [eliminando, setEliminando] = useState(false);
@@ -178,8 +174,9 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
   }
 
   function abrirDia(fecha: Date) {
-    const key = dateKey(fecha);
-    setDiaModal({ fecha, citas: citasPorDia[key] || [] });
+    if (onDiaClick) {
+      onDiaClick(fecha);
+    }
   }
 
   // VISTA MES

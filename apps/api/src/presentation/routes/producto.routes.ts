@@ -19,6 +19,9 @@ router.get('/low-stock', ProductoController.getLowStock);
 // GET /api/productos/:id - Obtener producto por ID
 router.get('/:id', ProductoController.getById);
 
+// PUT /api/productos/:id - Actualizar producto
+router.put('/:id', ProductoController.update);
+
 // PATCH /api/productos/:id/stock - Actualizar stock del producto
 router.patch('/:id/stock', ProductoController.updateStock);
 

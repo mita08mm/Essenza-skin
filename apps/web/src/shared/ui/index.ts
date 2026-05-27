@@ -22,6 +22,8 @@ export type { TextareaProps } from './textarea';
 export { default as DatePicker } from './DatePicker';
 export type { DatePickerProps } from './DatePicker';
 
+export { TimePicker } from './TimePicker';
+
 export { Modal } from './modal';
 export { BottomSheet } from './bottom-sheet';
 export { Spinner } from './spinner';

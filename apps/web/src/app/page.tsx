@@ -19,7 +19,11 @@ export default function LandingPage() {
   useEffect(() => {
     const fetchPublicConfig = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/configuracion/public`);
+        // Agregar timestamp para evitar cache del navegador
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/configuracion/public?_t=${Date.now()}`,
+          { cache: 'no-store' }
+        );
         if (response.ok) {
           const data = await response.json();
           setConfig(data);
@@ -48,7 +52,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f5f0e8' }}>
-      <Hero />
+      <Hero config={config} />
       <Features />
       <Services />
       <Process />

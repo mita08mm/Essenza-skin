@@ -1,4 +1,5 @@
 import { CitaRepository, CreateCitaInput } from '../../../infrastructure/repositories/CitaRepository';
+import { Cita } from '@clinica/database';
 
 export class CreateCitaUseCase {
   constructor(private citaRepository: CitaRepository) {}
@@ -20,7 +21,7 @@ export class CreateCitaUseCase {
 
     // Verificar conflicto de horario
     const citasDelDia = await this.citaRepository.findByFecha(fechaCita);
-    const hayConflicto = citasDelDia.some(cita => {
+    const hayConflicto = citasDelDia.some((cita: Cita) => {
       if (cita.estado === 'CANCELADA') return false;
       if (cita.horaFin <= cita.horaInicio) return false;
       return cita.horaInicio < input.horaFin && cita.horaFin > input.horaInicio;

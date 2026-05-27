@@ -17,7 +17,7 @@ export class HistoriaClinicaRepository {
       where: { id },
       include: {
         paciente: true,
-        tratamientos: {
+        consultas: {
           include: {
             usuario: {
               select: {
@@ -26,7 +26,7 @@ export class HistoriaClinicaRepository {
                 rol: true,
               },
             },
-            protocolos: {
+            prescripciones: {
               select: {
                 id: true,
                 fecha: true,
@@ -46,7 +46,7 @@ export class HistoriaClinicaRepository {
       where: { pacienteId },
       include: {
         paciente: true,
-        tratamientos: {
+        consultas: {
           include: {
             usuario: {
               select: {
@@ -56,17 +56,13 @@ export class HistoriaClinicaRepository {
                 rol: true,
               },
             },
-            protocolos: {
+            prescripciones: {
               select: {
                 id: true,
                 fecha: true,
                 items: {
                   select: {
-                    producto: {
-                      select: {
-                        nombre: true,
-                      },
-                    },
+                    nombre: true,
                     aplicacion: true,
                   },
                 },

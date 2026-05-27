@@ -42,9 +42,8 @@ export const METODOS_PAGO = {
 
 // Tipos de documento
 export const TIPOS_DOCUMENTO = {
-  DNI: 'DNI',
+  CI: 'CI',
   PASAPORTE: 'Pasaporte',
-  OTRO: 'Otro',
 } as const;
 
 // Tipos de documento/archivo
@@ -109,7 +108,7 @@ export const RUTAS = {
   },
   // Autenticación
   auth: {
-    login: '/admin',
+    login: '/sys-e7k9m2px',
     registro: '/registro',
     logout: '/api/auth/logout',
   },
@@ -124,8 +123,10 @@ export const RUTAS = {
     citaNueva: '/citas/nueva',
     cobros: '/cobros',
     cobroNuevo: '/cobros/nuevo',
-    recetas: '/recetas',
-    recetaNueva: '/recetas/nueva',
+    prescripciones: '/prescripciones',
+    prescripcionNueva: '/prescripciones/nueva',
+    productos: '/productos',
+    productoNuevo: '/productos/nuevo',
     configuracion: '/configuracion',
   },
   // API
@@ -133,7 +134,9 @@ export const RUTAS = {
     pacientes: '/api/pacientes',
     citas: '/api/citas',
     cobros: '/api/cobros',
-    recetas: '/api/recetas',
+    prescripciones: '/api/prescripciones',
+    consultas: '/api/consultas',
+    productos: '/api/productos',
     archivos: '/api/archivos',
   },
 } as const;

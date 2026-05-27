@@ -33,7 +33,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     };
 
     next();
-  } catch (error) {
+  } catch (_error) {
     res.status(401).json({
       success: false,
       error: 'No autorizado - Token invalido',

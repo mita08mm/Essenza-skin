@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAME } from '@/features/auth';
 
-const PUBLIC_PATHS = ['/', '/admin'];
+const PUBLIC_PATHS = ['/', '/sys-e7k9m2px'];
 
 export function proxy(req: NextRequest) {
   const token = req.cookies.get(AUTH_COOKIE_NAME)?.value;
@@ -10,12 +10,12 @@ export function proxy(req: NextRequest) {
 
   if (!token && !isPublic) {
     const url = req.nextUrl.clone();
-    url.pathname = '/admin';
+    url.pathname = '/sys-e7k9m2px';
     if (pathname !== '/') url.searchParams.set('redirect', pathname);
     return NextResponse.redirect(url);
   }
 
-  if (token && pathname === '/admin') {
+  if (token && pathname === '/sys-e7k9m2px') {
     const url = req.nextUrl.clone();
     url.pathname = '/pacientes';
     return NextResponse.redirect(url);

@@ -41,7 +41,7 @@ export class DocumentoController {
         ? await documentoRepository.findByPaciente(pacienteId)
         : await documentoRepository.findAll();
       res.json({ success: true, data: documentos.map(serializeDocumento) });
-    } catch (error) {
+    } catch (_error) {
       res.status(500).json({ success: false, error: 'Error al listar documentos' });
     }
   }
@@ -104,7 +104,7 @@ export class DocumentoController {
       const useCase = new GetDocumentosByPacienteUseCase(documentoRepository);
       const documentos = await useCase.execute(pacienteId);
       res.json({ success: true, data: documentos.map(serializeDocumento) });
-    } catch (error) {
+    } catch (_error) {
       res.status(500).json({ success: false, error: 'Error al obtener documentos' });
     }
   }
@@ -118,7 +118,7 @@ export class DocumentoController {
         return;
       }
       res.json({ success: true, data: serializeDocumento(documento) });
-    } catch (error) {
+    } catch (_error) {
       res.status(500).json({ success: false, error: 'Error al obtener documento' });
     }
   }
@@ -129,7 +129,7 @@ export class DocumentoController {
       const useCase = new DeleteDocumentoUseCase(documentoRepository);
       await useCase.execute(id);
       res.json({ success: true, message: 'Documento eliminado correctamente' });
-    } catch (error) {
+    } catch (_error) {
       res.status(500).json({ success: false, error: 'Error al eliminar documento' });
     }
   }

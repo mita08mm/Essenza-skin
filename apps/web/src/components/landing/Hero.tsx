@@ -1,8 +1,13 @@
 'use client';
 
 import { ArrowRight } from 'lucide-react';
+import type { ConfigClinica } from './types';
 
-export function Hero() {
+interface HeroProps {
+  config: ConfigClinica | null;
+}
+
+export function Hero({ config }: HeroProps) {
   return (
     <section className="relative" style={{ minHeight: '100vh' }}>
       {/* Background Image */}
@@ -26,7 +31,7 @@ export function Hero() {
         <div className="mx-auto flex max-w-7xl items-center px-6 py-4 lg:px-16">
           <div>
             <div className="font-heading text-xl font-bold lg:text-2xl" style={{ color: '#ffffff' }}>
-              Essenza Skin & Hair Clinic Spa
+              {config?.nombre || 'Essenza Skin & Hair Clinic Spa'}
             </div>
             <div className="text-xs font-medium" style={{ color: '#c9a96e' }}>
               DRA. CECILE ARCE DERPIC

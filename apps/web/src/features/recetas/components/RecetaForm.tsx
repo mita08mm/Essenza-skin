@@ -76,7 +76,7 @@ export function RecetaForm() {
     }
     setIsLoading(true);
     try {
-      await api.post('/protocolos', {
+      await api.post('/prescripciones', {
         pacienteId,
         nombre: buildName(items),
         items: items.map((i) => ({ nombre: i.nombre, indicaciones: i.indicaciones })),

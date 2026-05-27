@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { PrismaClient } from '@clinica/database';
 import { HistoriaClinicaController } from '../controllers/HistoriaClinicaController';
-import { TratamientoController } from '../controllers/TratamientoController';
-import { ProtocoloController } from '../controllers/ProtocoloController';
+import { ConsultaController } from '../controllers/ConsultaController';
+import { PrescripcionController } from '../controllers/PrescripcionController';
 import { DocumentoController } from '../controllers/DocumentoController';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
@@ -20,10 +20,10 @@ router.get('/:pacienteId/historia-clinica', HistoriaClinicaController.getByPacie
 router.put('/:pacienteId/historia-clinica', HistoriaClinicaController.update);
 
 // GET /api/pacientes/:pacienteId/tratamientos
-router.get('/:pacienteId/tratamientos', TratamientoController.getByPaciente);
+router.get('/:pacienteId/tratamientos', ConsultaController.getByPaciente);
 
 // GET /api/pacientes/:pacienteId/protocolos
-router.get('/:pacienteId/protocolos', ProtocoloController.getByPaciente);
+router.get('/:pacienteId/protocolos', PrescripcionController.getByPaciente);
 
 // GET /api/pacientes/:pacienteId/documentos
 router.get('/:pacienteId/documentos', DocumentoController.getByPaciente);
@@ -72,7 +72,7 @@ router.get('/:pacienteId/cobros', async (req, res) => {
         pagos: {
           orderBy: { fecha: 'desc' }
         },
-        tratamiento: {
+        consulta: {
           select: {
             id: true,
             nombreTratamiento: true,

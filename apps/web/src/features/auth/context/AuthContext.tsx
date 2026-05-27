@@ -89,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUsuario(null);
     setToken(null);
     clearClientToken();
-    router.push('/admin');
+    router.push('/sys-e7k9m2px');
   }, [router]);
 
   return (

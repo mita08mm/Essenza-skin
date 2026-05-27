@@ -62,7 +62,7 @@ app.get('/health', async (_req, res) => {
       timestamp: new Date().toISOString(),
       database: 'connected',
     });
-  } catch (error) {
+  } catch (_error) {
     res.status(503).json({
       status: 'error',
       timestamp: new Date().toISOString(),
@@ -82,8 +82,8 @@ app.get('/api', (_req, res) => {
       patients: '/api/pacientes',
       appointments: '/api/citas',
       medicalRecords: '/api/historias-clinicas',
-      treatments: '/api/tratamientos',
-      protocols: '/api/protocolos',
+      consultations: '/api/consultas',
+      prescriptions: '/api/prescripciones',
       products: '/api/productos',
     },
   });
@@ -105,17 +105,17 @@ app.use('/api/citas', citaRoutes);
 import cobroRoutes from './presentation/routes/cobro.routes';
 app.use('/api/cobros', cobroRoutes);
 
-// Rutas de protocolos de cuidados
-import protocoloRoutes from './presentation/routes/protocolo.routes';
-app.use('/api/protocolos', protocoloRoutes);
+// Rutas de prescripciones
+import prescripcionRoutes from './presentation/routes/prescripcion.routes';
+app.use('/api/prescripciones', prescripcionRoutes);
 
 // Rutas de productos (cosméticos, equipos, insumos)
 import productoRoutes from './presentation/routes/producto.routes';
 app.use('/api/productos', productoRoutes);
 
-// Rutas de tratamientos estéticos
-import tratamientoRoutes from './presentation/routes/tratamiento.routes';
-app.use('/api/tratamientos', tratamientoRoutes);
+// Rutas de consultas médicas
+import consultaRoutes from './presentation/routes/consulta.routes';
+app.use('/api/consultas', consultaRoutes);
 
 // Rutas de historia clínica (montadas sobre pacientes)
 import pacienteHistoriaRoutes from './presentation/routes/paciente-historia.routes';
@@ -128,6 +128,10 @@ app.use('/api/documentos', documentoRoutes);
 // Rutas de configuración
 import configuracionRoutes from './presentation/routes/configuracion.routes';
 app.use('/api/configuracion', configuracionRoutes);
+
+// Rutas de usuarios
+import usuarioRoutes from './presentation/routes/usuario.routes';
+app.use('/api/usuarios', usuarioRoutes);
 
 // 404 handler
 app.use((_req, res) => {

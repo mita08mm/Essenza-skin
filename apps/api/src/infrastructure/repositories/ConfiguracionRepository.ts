@@ -23,21 +23,39 @@ export class ConfiguracionRepository {
   }
 
   async update(data: UpdateConfiguracionInput): Promise<ConfiguracionClinica> {
+    // Convertir cadenas vacías a null para campos opcionales
+    const sanitizedData = {
+      ...data,
+      nit: data.nit === '' ? null : data.nit,
+      ciudad: data.ciudad === '' ? null : data.ciudad,
+      pais: data.pais === '' ? null : data.pais,
+      logo: data.logo === '' ? null : data.logo,
+    };
+
     // Upsert: crea si no existe, actualiza si existe
     return this.prisma.configuracionClinica.upsert({
       where: { id: SINGLETON_ID },
       create: {
         id: SINGLETON_ID,
-        nombre: data.nombre || 'Clínica Estética',
-        direccion: data.direccion || '',
-        telefono: data.telefono || '',
-        email: data.email || '',
-        nit: data.nit,
-        ciudad: data.ciudad,
-        pais: data.pais,
-        logo: data.logo,
+        nombre: sanitizedData.nombre || 'Clínica Estética',
+        direccion: sanitizedData.direccion || '',
+        telefono: sanitizedData.telefono || '',
+        email: sanitizedData.email || '',
+        nit: sanitizedData.nit || null,
+        ciudad: sanitizedData.ciudad || null,
+        pais: sanitizedData.pais || null,
+        logo: sanitizedData.logo || null,
       },
-      update: data,
+      update: {
+        ...(sanitizedData.nombre !== undefined && { nombre: sanitizedData.nombre }),
+        ...(sanitizedData.direccion !== undefined && { direccion: sanitizedData.direccion }),
+        ...(sanitizedData.telefono !== undefined && { telefono: sanitizedData.telefono }),
+        ...(sanitizedData.email !== undefined && { email: sanitizedData.email }),
+        ...(sanitizedData.nit !== undefined && { nit: sanitizedData.nit }),
+        ...(sanitizedData.ciudad !== undefined && { ciudad: sanitizedData.ciudad }),
+        ...(sanitizedData.pais !== undefined && { pais: sanitizedData.pais }),
+        ...(sanitizedData.logo !== undefined && { logo: sanitizedData.logo }),
+      },
     });
   }
 

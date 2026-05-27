@@ -21,8 +21,9 @@ interface ConfigClinica {
   telefono: string;
   email: string;
   nit: string;
+  ciudad?: string;
+  pais?: string;
   logo?: string | null;
-  isPublic?: boolean;
 }
 
 const ROL_LABELS = {
@@ -53,12 +54,13 @@ export function ConfiguracionView() {
 
   const [configClinica, setConfigClinica] = useState<ConfigClinica>({
     nombre: 'Clínica Estética',
-    direccion: 'Av. Principal #123, Santa Cruz',
+    direccion: 'Av. Principal #123',
     telefono: '+591 3 1234567',
     email: 'contacto@clinica.com',
     nit: '1234567890',
+    ciudad: 'Santa Cruz',
+    pais: 'Bolivia',
     logo: null,
-    isPublic: false,
   });
 
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -284,30 +286,35 @@ export function ConfiguracionView() {
                   required
                 />
               </FormField>
-              <FormField label="NIT" required>
+              <FormField label="NIT">
                 <input
                   type="text"
-                  value={configClinica.nit}
+                  value={configClinica.nit || ''}
                   onChange={(e) => setConfigClinica({ ...configClinica, nit: e.target.value })}
                   className={inputBase}
-                  required
+                  placeholder="Ej. 1234567890"
                 />
               </FormField>
             </div>
-            <div className="pt-3">
-              <label className="flex cursor-pointer items-center gap-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField label="Ciudad" hint="Se muestra en la landing page">
                 <input
-                  type="checkbox"
-                  checked={configClinica.isPublic || false}
-                  onChange={(e) =>
-                    setConfigClinica({ ...configClinica, isPublic: e.target.checked })
-                  }
-                  className="accent-brand-morena h-4 w-4"
+                  type="text"
+                  value={configClinica.ciudad || ''}
+                  onChange={(e) => setConfigClinica({ ...configClinica, ciudad: e.target.value })}
+                  className={inputBase}
+                  placeholder="Ej. Santa Cruz"
                 />
-                <span className="body">
-                  Mostrar información de la clínica en la página pública
-                </span>
-              </label>
+              </FormField>
+              <FormField label="País" hint="Se muestra en la landing page">
+                <input
+                  type="text"
+                  value={configClinica.pais || 'Bolivia'}
+                  onChange={(e) => setConfigClinica({ ...configClinica, pais: e.target.value })}
+                  className={inputBase}
+                  placeholder="Ej. Bolivia"
+                />
+              </FormField>
             </div>
           </FormSection>
           <div className="flex justify-end">
@@ -414,26 +421,32 @@ export function ConfiguracionView() {
 
       {tab === 'general' && (
         <div className="max-w-2xl space-y-5">
-          <FormSection title="Preferencias generales">
-            {[
-              ['Enviar notificaciones por email', true],
-              ['Alertas de stock bajo', true],
-              ['Recordatorios de citas', false],
-            ].map(([label, def], i) => (
-              <label key={i} className="flex cursor-pointer items-center gap-3">
-                <input
-                  type="checkbox"
-                  defaultChecked={def as boolean}
-                  className="accent-brand-morena h-4 w-4"
-                />
-                <span className="body">{label}</span>
-              </label>
-            ))}
+          <FormSection title="Apariencia y formato">
+            <FormField label="Formato de fecha">
+              <select className={inputBase} disabled>
+                <option>DD/MM/YYYY</option>
+                <option>MM/DD/YYYY</option>
+              </select>
+            </FormField>
+            <FormField label="Formato de hora">
+              <select className={inputBase} disabled>
+                <option>24 horas (14:30)</option>
+                <option>12 horas (2:30 PM)</option>
+              </select>
+            </FormField>
+            <FormField label="Moneda">
+              <select className={inputBase} disabled>
+                <option>Bs. (Bolivianos)</option>
+                <option>USD (Dólares)</option>
+              </select>
+            </FormField>
           </FormSection>
-          <div className="flex justify-end">
-            <Button type="button" variant="primary" size="sm">
-              Guardar preferencias
-            </Button>
+
+          <div className="rounded-md border border-neutral-200 bg-neutral-50 px-4 py-3">
+            <p className="text-sm text-neutral-600">
+              ⚙️ Esta sección está en desarrollo. Próximamente: notificaciones por email, alertas de
+              stock, recordatorios automáticos de citas.
+            </p>
           </div>
         </div>
       )}

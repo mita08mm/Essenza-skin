@@ -8,7 +8,7 @@ export class ConfiguracionController {
     private updateConfiguracionUseCase: UpdateConfiguracionUseCase
   ) {}
 
-  getConfiguracion = async (req: Request, res: Response) => {
+  getConfiguracion = async (_req: Request, res: Response) => {
     try {
       const configuracion = await this.getConfiguracionUseCase.execute();
       res.json(configuracion);
@@ -23,7 +23,7 @@ export class ConfiguracionController {
   updateConfiguracion = async (req: Request, res: Response) => {
     try {
       const configuracion = await this.updateConfiguracionUseCase.execute(req.body);
-      res.json(configuracion);
+      return res.json(configuracion);
     } catch (error: any) {
       console.error('Error al actualizar configuración:', error);
       
@@ -35,8 +35,9 @@ export class ConfiguracionController {
         return res.status(400).json({ message: error.message });
       }
       
-      res.status(500).json({ 
-        message: 'Error al actualizar la configuración de la clínica' 
+      return res.status(500).json({ 
+        message: 'Error al actualizar la configuración de la clínica',
+        ...(process.env.NODE_ENV === 'development' && { error: error.message }),
       });
     }
   };

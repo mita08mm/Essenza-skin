@@ -34,7 +34,7 @@ export class AuthService {
   verifyToken(token: string): JwtPayload {
     try {
       return jwt.verify(token, this.jwtSecret) as JwtPayload;
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Token invalido o expirado');
     }
   }

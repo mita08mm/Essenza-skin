@@ -56,7 +56,7 @@ export function usePacienteProtocolos(pacienteId: string) {
   const crearMut = useMutation({
     mutationFn: async (items: NuevaPrescripcionItem[]) => {
       if (items.length === 0) throw new Error('Agregue al menos un item');
-      await api.post('/protocolos', {
+      await api.post('/prescripciones', {
         pacienteId,
         nombre: buildPrescriptionName(items),
         items,
