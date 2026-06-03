@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   BottomSheet,
   Button,
@@ -83,6 +84,7 @@ interface CalendarioCitasProps {
 }
 
 export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCitasProps) {
+  const router = useRouter();
   const [vista, setVista] = useState<Vista>('month');
   const [cursor, setCursor] = useState(new Date());
   const [citaSeleccionada, setCitaSeleccionada] = useState<Cita | null>(null);
@@ -178,7 +180,7 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
       onDiaClick(fecha);
     } else {
       const key = dateKey(fecha);
-      window.location.href = `/citas/nueva?fecha=${key}`;
+      router.push(`/citas/nueva?fecha=${key}`);
     }
   }
 

@@ -6,6 +6,9 @@ import { CreatePrescripcionUseCase } from '../../application/use-cases/prescripc
 import { GetPrescripcionByIdUseCase } from '../../application/use-cases/prescripcion/GetPrescripcionByIdUseCase';
 import { GetPrescripcionsByPacienteUseCase } from '../../application/use-cases/prescripcion/GetPrescripcionsByPacienteUseCase';
 import { GetPrescripcionsUseCase } from '../../application/use-cases/prescripcion/GetPrescripcionsUseCase';
+import { DeletePrescripcionUseCase } from '../../application/use-cases/prescripcion/DeletePrescripcionUseCase';
+import { UpdatePrescripcionUseCase } from '../../application/use-cases/prescripcion/UpdatePrescripcionUseCase';
+import { DeleteItemPrescripcionUseCase } from '../../application/use-cases/prescripcion/DeleteItemPrescripcionUseCase';
 import type { AuthRequest } from '../middlewares/auth.middleware';
 
 const prisma = new PrismaClient();
@@ -144,6 +147,124 @@ export class PrescripcionController {
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : 'Error al obtener protocolos',
+      });
+    }
+  }
+
+  // DELETE /api/protocolos/:id
+  static async delete(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (Array.isArray(id)) {
+        res.status(400).json({ success: false, error: 'ID inválido' });
+        return;
+      }
+
+      const useCase = new DeletePrescripcionUseCase(prescripcionRepository);
+      await useCase.execute(id);
+
+      res.json({
+        success: true,
+        message: 'Prescripción eliminada exitosamente',
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message === 'Prescripción no encontrada') {
+        res.status(404).json({
+          success: false,
+          error: error.message,
+        });
+        return;
+      }
+
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Error al eliminar prescripción',
+      });
+    }
+  }
+
+  // PATCH /api/protocolos/:id
+  static async update(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { pacienteId, nombre, items } = req.body;
+
+      if (Array.isArray(id)) {
+        res.status(400).json({ success: false, error: 'ID inválido' });
+        return;
+      }
+
+      // Usar el método updateWithItems si se envían items
+      if (items && Array.isArray(items)) {
+        const prescripcion = await prescripcionRepository.updateWithItems(id, {
+          pacienteId,
+          nombre,
+          items,
+        });
+
+        res.json({
+          success: true,
+          data: prescripcion,
+        });
+      } else {
+        const useCase = new UpdatePrescripcionUseCase(prescripcionRepository);
+        await useCase.execute(id, { pacienteId, nombre });
+
+        res.json({
+          success: true,
+          message: 'Prescripción actualizada exitosamente',
+        });
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message === 'Prescripción no encontrada') {
+        res.status(404).json({
+          success: false,
+          error: error.message,
+        });
+        return;
+      }
+
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Error al actualizar prescripción',
+      });
+    }
+  }
+
+  // DELETE /api/protocolos/:id/items/:itemId
+  static async deleteItem(req: Request, res: Response): Promise<void> {
+    try {
+      const { id, itemId } = req.params;
+
+      if (Array.isArray(id) || Array.isArray(itemId)) {
+        res.status(400).json({ success: false, error: 'ID inválido' });
+        return;
+      }
+
+      const useCase = new DeleteItemPrescripcionUseCase(prescripcionRepository);
+      await useCase.execute(id, itemId);
+
+      res.json({
+        success: true,
+        message: 'Item eliminado exitosamente',
+      });
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        (error.message === 'Prescripción no encontrada' ||
+          error.message === 'Item no encontrado en la prescripción')
+      ) {
+        res.status(404).json({
+          success: false,
+          error: error.message,
+        });
+        return;
+      }
+
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Error al eliminar item',
       });
     }
   }

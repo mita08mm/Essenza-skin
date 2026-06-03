@@ -3,6 +3,7 @@ import { CreatePacienteUseCase } from '../../application/use-cases/paciente/Crea
 import { GetPacientesUseCase } from '../../application/use-cases/paciente/GetPacientesUseCase';
 import { GetPacienteByIdUseCase } from '../../application/use-cases/paciente/GetPacienteByIdUseCase';
 import { UpdatePacienteUseCase } from '../../application/use-cases/paciente/UpdatePacienteUseCase';
+import { DeletePacienteUseCase } from '../../application/use-cases/paciente/DeletePacienteUseCase';
 import { z } from 'zod';
 import { TipoDocumentoIdentidad } from '@clinica/database';
 
@@ -52,7 +53,8 @@ export class PacienteController {
     private createPacienteUseCase: CreatePacienteUseCase,
     private getPacientesUseCase: GetPacientesUseCase,
     private getPacienteByIdUseCase: GetPacienteByIdUseCase,
-    private updatePacienteUseCase: UpdatePacienteUseCase
+    private updatePacienteUseCase: UpdatePacienteUseCase,
+    private deletePacienteUseCase: DeletePacienteUseCase
   ) {}
 
   create = async (req: Request, res: Response): Promise<void> => {
@@ -98,7 +100,8 @@ export class PacienteController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 50;
-      const pacientes = await this.getPacientesUseCase.execute(page, limit);
+      const search = req.query.search as string | undefined;
+      const pacientes = await this.getPacientesUseCase.execute(page, limit, search);
 
       res.status(200).json({
         success: true,
@@ -176,6 +179,40 @@ export class PacienteController {
         return;
       }
 
+      if (error instanceof Error) {
+        res.status(404).json({
+          success: false,
+          error: error.message,
+        });
+        return;
+      }
+
+      res.status(500).json({
+        success: false,
+        error: 'Error interno del servidor',
+      });
+    }
+  };
+
+  delete = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      
+      if (typeof id !== 'string') {
+        res.status(400).json({
+          success: false,
+          error: 'ID invalido',
+        });
+        return;
+      }
+
+      await this.deletePacienteUseCase.execute(id);
+
+      res.status(200).json({
+        success: true,
+        data: { message: 'Paciente eliminado correctamente' },
+      });
+    } catch (error) {
       if (error instanceof Error) {
         res.status(404).json({
           success: false,

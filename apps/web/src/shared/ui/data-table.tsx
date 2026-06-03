@@ -37,9 +37,10 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   return (
     <div
-      className={`${desktopOnly ? 'hidden lg:block' : ''} rounded-lg overflow-hidden border border-neutral-200 bg-white`}
+      className={`${desktopOnly ? 'hidden lg:block' : ''} rounded-lg border border-neutral-200 bg-white overflow-hidden`}
     >
-      <table className="w-full">
+      <div className="overflow-x-auto">
+        <table className="w-full">
         <thead>
           <tr className="bg-neutral-25 border-b border-neutral-200">
             {columns.map((c) => (
@@ -71,6 +72,7 @@ export function DataTable<T>({
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

@@ -92,9 +92,8 @@ export class PacienteRepository {
   }
 
   async delete(id: string): Promise<Paciente> {
-    return this.prisma.paciente.update({
+    return this.prisma.paciente.delete({
       where: { id },
-      data: { estado: 'INACTIVO' },
     });
   }
 

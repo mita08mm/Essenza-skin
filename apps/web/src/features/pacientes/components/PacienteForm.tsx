@@ -6,7 +6,8 @@ import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';
 import DatePicker from '@/shared/ui/DatePicker';
 import { api, ApiError } from '@/shared/api';
-import { inputBase, textareaBase, alertError, Button, LinkButton } from '@/shared/ui';
+import { inputBase, textareaBase, alertError, Button, LinkButton, Modal } from '@/shared/ui';
+import { Trash2 } from 'lucide-react';
 type FormState = {
   nombre: string;
   apellido: string;
@@ -68,6 +69,9 @@ export function PacienteForm({
   const [isFetching, setIsFetching] = useState(isEdit);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState<FormState>(EMPTY);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     if (!isEdit || !pacienteId) return;
@@ -120,7 +124,7 @@ export function PacienteForm({
     try {
       console.log('Enviando datos:', formData);
       if (isEdit && pacienteId) {
-        await api.put(`/pacientes/${pacienteId}`, formData);
+        await api.patch(`/pacientes/${pacienteId}`, formData);
       } else {
         await api.post('/pacientes', formData);
       }
@@ -133,9 +137,9 @@ export function PacienteForm({
         errorMessage = err.message;
         // Si hay detalles de validación, agregarlos al mensaje
         if (err.details && typeof err.details === 'object' && 'details' in err.details) {
-          const validationErrors = (err.details as any).details;
+          const validationErrors = (err.details as { details?: unknown }).details;
           if (Array.isArray(validationErrors)) {
-            const errorList = validationErrors.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ');
+            const errorList = validationErrors.map((e: { path: string[]; message: string }) => `${e.path.join('.')}: ${e.message}`).join(', ');
             errorMessage += ` - ${errorList}`;
           }
         }
@@ -146,6 +150,21 @@ export function PacienteForm({
       setError(errorMessage);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!pacienteId) return;
+    try {
+      setIsDeleting(true);
+      setDeleteError('');
+      await api.delete(`/pacientes/${pacienteId}`);
+      router.push('/pacientes');
+    } catch (err) {
+      setDeleteError(
+        err instanceof ApiError ? err.message : 'Error al eliminar paciente'
+      );
+      setIsDeleting(false);
     }
   };
 
@@ -395,21 +414,80 @@ export function PacienteForm({
           </div>
         </FormSection>
 
-        <div className="flex items-center justify-end gap-3 pt-2">
-          <LinkButton href="/pacientes" variant="secondary" size="sm">
-            Cancelar
-          </LinkButton>
-          <Button type="submit" disabled={isLoading} variant="primary" size="sm">
-            {isLoading
-              ? isEdit
-                ? 'Actualizando...'
-                : 'Guardando...'
-              : isEdit
-                ? 'Actualizar paciente'
-                : 'Guardar paciente'}
-          </Button>
+        <div className="flex items-center justify-between gap-3 border-t border-neutral-100 pt-5">
+          {isEdit && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowDeleteModal(true)}
+              className="text-danger hover:bg-danger-bg hover:border-danger gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Eliminar paciente
+            </Button>
+          )}
+          <div className="flex items-center gap-3 ml-auto">
+            <LinkButton href="/pacientes" variant="secondary" size="sm">
+              Cancelar
+            </LinkButton>
+            <Button type="submit" disabled={isLoading} variant="primary" size="sm">
+              {isLoading
+                ? isEdit
+                  ? 'Actualizando...'
+                  : 'Guardando...'
+                : isEdit
+                  ? 'Actualizar paciente'
+                  : 'Guardar paciente'}
+            </Button>
+          </div>
         </div>
       </form>
+
+      {isEdit && (
+        <Modal
+          open={showDeleteModal}
+          onClose={() => !isDeleting && setShowDeleteModal(false)}
+          title="Eliminar paciente permanentemente"
+          description={`¿Estás seguro de que deseas eliminar a ${formData.nombre} ${formData.apellido}? Esta acción es PERMANENTE y no se puede deshacer.`}
+          footer={
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+                className="flex-1 sm:flex-none"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={handleDelete}
+                isLoading={isDeleting}
+                className="bg-danger hover:bg-danger/90 flex-1 sm:flex-none"
+              >
+                Eliminar permanentemente
+              </Button>
+            </>
+          }
+        >
+          {deleteError && (
+            <div className="alert-danger mb-4 text-sm">{deleteError}</div>
+          )}
+          <div className="text-sm text-neutral-600">
+            <p className="mb-2 font-medium text-neutral-900">Se eliminará permanentemente:</p>
+            <ul className="ml-5 list-disc space-y-1">
+              <li>Historia clínica completa</li>
+              <li>Todas las consultas y prescripciones</li>
+              <li>Todas las citas</li>
+              <li>Todos los cobros y pagos</li>
+              <li>Todos los documentos y archivos</li>
+            </ul>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

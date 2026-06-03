@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';
+import { PacienteAutocomplete } from '@/shared/forms/PacienteAutocomplete';
 import DatePicker from '@/shared/ui/DatePicker';
 import {
   inputBase,
   textareaBase,
-  inputConflict,
   alertError,
   alertWarning,
   Button,
@@ -18,15 +18,6 @@ import { api } from '@/shared/api';
 import { diaSemanaLabel, hayConflicto, toMinutes } from '../lib/horario';
 import { DisponibilidadTimeline, type CitaDelDia } from './DisponibilidadTimeline';
 import { TimePicker, addOneHour } from '@/shared/ui/TimePicker';
-
-interface Paciente {
-  id: string;
-  nombre: string;
-  apellido: string;
-  documento: string;
-  tipoDocumento: string;
-  estado: string;
-}
 
 const ESTADO_OPTIONS = [
   { value: 'PROGRAMADA', label: 'Programada' },
@@ -50,12 +41,9 @@ export function CitaForm({ mode, citaId }: Props) {
   const [isFetching, setIsFetching] = useState(isEdit);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [pacientes, setPacientes] = useState<Paciente[]>([]);
-  const [loadingPacientes, setLoadingPacientes] = useState(true);
   const [fechaLabel, setFechaLabel] = useState('');
   const [citasDelDia, setCitasDelDia] = useState<CitaDelDia[]>([]);
   const [loadingCitas, setLoadingCitas] = useState(false);
-  const [conflicto, setConflicto] = useState<CitaDelDia | null>(null);
   const initialized = useRef(false);
 
   const [formData, setFormData] = useState(() => {
@@ -79,7 +67,7 @@ export function CitaForm({ mode, citaId }: Props) {
       horaFin = addOneHour(horaInicio);
     }
     return {
-      pacienteId: '',
+      pacienteId: searchParams.get('pacienteId') || '',
       fecha: fechaParam,
       horaInicio,
       horaFin,
@@ -88,6 +76,16 @@ export function CitaForm({ mode, citaId }: Props) {
       notas: '',
     };
   });
+
+  const conflicto = useMemo(() => {
+    if (!formData.horaInicio || !formData.horaFin || citasDelDia.length === 0) {
+      return null;
+    }
+    const c = citasDelDia.find((x) =>
+      hayConflicto(formData.horaInicio, formData.horaFin, x.horaInicio, x.horaFin),
+    );
+    return c || null;
+  }, [formData.horaInicio, formData.horaFin, citasDelDia]);
 
   // Cargar cita en modo edición
   useEffect(() => {
@@ -111,20 +109,6 @@ export function CitaForm({ mode, citaId }: Props) {
       }
     })();
   }, [isEdit, citaId]);
-
-  // Cargar lista de pacientes activos
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await api.get<Paciente[]>('/pacientes');
-        setPacientes(data.filter((p) => p.estado === 'ACTIVO'));
-      } catch {
-        /* noop */
-      } finally {
-        setLoadingPacientes(false);
-      }
-    })();
-  }, []);
 
   // Cargar citas del día seleccionado
   useEffect(() => {
@@ -155,24 +139,6 @@ export function CitaForm({ mode, citaId }: Props) {
       initialized.current = true;
     }
   }, [formData.fecha, actualizarFechaLabel]);
-
-  useEffect(() => {
-    if (!formData.horaInicio || !formData.horaFin || citasDelDia.length === 0) {
-      setConflicto(null);
-      return;
-    }
-    const c = citasDelDia.find((x) =>
-      hayConflicto(formData.horaInicio, formData.horaFin, x.horaInicio, x.horaFin),
-    );
-    setConflicto(c || null);
-  }, [formData.horaInicio, formData.horaFin, citasDelDia]);
-
-  useEffect(() => {
-    const paramId = searchParams.get('pacienteId');
-    if (paramId && !isEdit && pacientes.length > 0) {
-      setFormData((prev) => ({ ...prev, pacienteId: paramId }));
-    }
-  }, [pacientes]);
 
   // handleChange unificado — también auto-calcula horaFin cuando cambia horaInicio
   const handleChange = (
@@ -252,25 +218,15 @@ export function CitaForm({ mode, citaId }: Props) {
       <form onSubmit={handleSubmit} className="space-y-5">
         <FormSection title="Datos de la cita">
           <FormField label="Paciente" required>
-            {loadingPacientes ? (
-              <div className="subtitle">Cargando pacientes...</div>
-            ) : (
-              <select
-                name="pacienteId"
-                value={formData.pacienteId}
-                onChange={handleChange}
-                className={inputBase}
-                required
-                disabled={isLoading}
-              >
-                <option value="">Seleccione un paciente</option>
-                {pacientes.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nombre} {p.apellido} — {p.tipoDocumento}: {p.documento}
-                  </option>
-                ))}
-              </select>
-            )}
+            <PacienteAutocomplete
+              value={formData.pacienteId}
+              onChange={(id) => {
+                setError('');
+                setFormData((prev) => ({ ...prev, pacienteId: id }));
+              }}
+              disabled={isLoading}
+              required
+            />
           </FormField>
 
           {isEdit && (

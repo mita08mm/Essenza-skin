@@ -46,13 +46,13 @@ export default function TratamientosList({ tratamientos }: TratamientosListProps
                   onClick={() => hasDetails && toggleExpanded(t.id)}
                   disabled={!hasDetails}
                   className={`bg-neutral-25 flex w-full items-baseline justify-between gap-4 border-b border-neutral-100 px-5 py-3 text-left ${
-                    hasDetails ? 'cursor-pointer transition-colors hover:bg-neutral-50' : 'cursor-default'
+                    hasDetails ? 'cursor-pointer rounded-t-md transition-colors hover:bg-[rgba(204,175,125,0.1)]' : 'cursor-default'
                   }`}
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-2">
                     {hasDetails && (
                       isExpanded ? (
-                        <ChevronDown className="h-4 w-4 shrink-0 text-neutral-500" />
+                        <ChevronDown className="h-4 w-4 shrink-0 text-brand-morena" />
                       ) : (
                         <ChevronRight className="h-4 w-4 shrink-0 text-neutral-500" />
                       )

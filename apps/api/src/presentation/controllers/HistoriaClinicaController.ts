@@ -28,9 +28,15 @@ export class HistoriaClinicaController {
       const useCase = new GetHistoriaClinicaByPacienteUseCase(historiaClinicaRepository);
       const historiaClinica = await useCase.execute(pacienteId);
 
+      // Transformar consultas a tratamientos para compatibilidad con frontend
+      const response = historiaClinica ? {
+        ...historiaClinica,
+        tratamientos: historiaClinica.consultas || [],
+      } : null;
+
       res.json({
         success: true,
-        data: historiaClinica,
+        data: response,
       });
     } catch (error) {
       res.status(500).json({

@@ -49,6 +49,7 @@ export {
   DocumentIcon,
   MoreVerticalIcon,
   CalendarIcon,
+  LogoIcon,
 } from './icons';
 export {
   Title,

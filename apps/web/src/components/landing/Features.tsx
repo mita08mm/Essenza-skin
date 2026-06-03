@@ -15,7 +15,7 @@ export function Features() {
     {
       icon: Heart,
       title: 'Nuestra Ubicación',
-      description: 'Atiendo en Cochabamba, en la calle Tumusla 561, entre calles México y Reza. Un espacio exclusivo diseñado para tu bienestar.',
+      description: 'Calle Tumusla 561, entre calles México y Reza, Cochabamba. Un espacio exclusivo diseñado para tu bienestar.',
     },
   ];
 

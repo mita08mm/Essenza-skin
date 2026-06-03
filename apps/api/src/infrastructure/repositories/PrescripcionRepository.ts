@@ -89,10 +89,62 @@ export class PrescripcionRepository {
     });
   }
 
+  async updateWithItems(
+    id: string,
+    data: {
+      pacienteId?: string;
+      nombre?: string;
+      items?: Array<{ nombre: string; indicaciones: string; cantidad?: number }>;
+    }
+  ): Promise<Prescripcion> {
+    // Si se envían items, primero eliminar todos los items existentes y crear los nuevos
+    const updateData: any = {
+      ...(data.nombre && { nombre: data.nombre }),
+      ...(data.pacienteId && {
+        paciente: {
+          connect: { id: data.pacienteId },
+        },
+      }),
+    };
+
+    if (data.items) {
+      updateData.items = {
+        deleteMany: {}, // Eliminar todos los items existentes
+        create: data.items.map((item) => ({
+          nombre: item.nombre,
+          cantidad: item.cantidad ?? 1,
+          aplicacion: item.indicaciones,
+        })),
+      };
+    }
+
+    return this.prisma.prescripcion.update({
+      where: { id },
+      data: updateData,
+      include: {
+        paciente: true,
+        usuario: true,
+        items: true,
+      },
+    });
+  }
+
   async updateItemEstado(itemId: string, estado: 'INDICADO' | 'ADQUIRIDO' | 'EN_USO' | 'COMPLETADO'): Promise<any> {
     return this.prisma.itemPrescripcion.update({
       where: { id: itemId },
       data: { estado },
+    });
+  }
+
+  async delete(id: string): Promise<Prescripcion> {
+    return this.prisma.prescripcion.delete({
+      where: { id },
+    });
+  }
+
+  async deleteItem(itemId: string): Promise<any> {
+    return this.prisma.itemPrescripcion.delete({
+      where: { id: itemId },
     });
   }
 }

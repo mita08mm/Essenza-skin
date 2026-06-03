@@ -8,28 +8,20 @@ export function Services() {
 
   const services = [
     {
-      title: 'Rejuvenecimiento Facial',
-      items: ['Botox & Rellenos Dérmicos', 'Hilos Tensores PDO', 'Plasma Rico en Plaquetas (PRP)'],
+      title: 'Toxina Botulínica (Botox)',
+      items: ['Tercio Superior / Medio / Inferior', 'Full Face', 'Bruxismo', 'Collar de Venus', 'Lifting Nefertiti'],
     },
     {
-      title: 'Tratamientos Corporales',
-      items: ['Criolipólisis CoolSculpting', 'Radiofrecuencia Corporal', 'Cavitación Ultrasónica'],
+      title: 'Ácido Hialurónico',
+      items: ['Ojeras & Nariz & Labios', 'Lifting Facial (Temporal y Malar)', 'Mentón', 'Definición de Ángulo Mandibular'],
     },
     {
-      title: 'Cuidado de la Piel',
-      items: ['HydraFacial MD®', 'Peeling Químico Profesional', 'Mesoterapia Facial'],
+      title: 'Bioestimuladores',
+      items: ['Cicatrices del Acné', 'Rejuvenecimiento Profundo', 'Estimulación de Colágeno'],
     },
     {
-      title: 'Medicina Preventiva',
-      items: ['Terapia de Vitaminas IV', 'Antioxidantes & Glutatión', 'Sueros Personalizados'],
-    },
-    {
-      title: 'Láseres Estéticos',
-      items: ['Depilación Láser Definitiva', 'Rejuvenecimiento con Láser', 'Tratamiento Manchas & Cicatrices'],
-    },
-    {
-      title: 'Protocolos Premium',
-      items: ['Rituales Faciales de Lujo', 'Tratamientos Combinados', 'Planes Mensuales VIP'],
+      title: 'Tratamientos Avanzados',
+      items: ['Peeling Químico', 'Plasma Glow (PRP Facial)', 'Protocolos Personalizados'],
     },
   ];
 
@@ -43,11 +35,11 @@ export function Services() {
             </span>
           </div>
           <h2 className="font-heading text-5xl font-bold lg:text-6xl" style={{ color: '#1a1a1a', letterSpacing: '-0.02em' }}>
-            Medicina estética facial, corporal y capilar
+            Tratamientos de medicina estética
           </h2>
         </div>
         
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {services.map((service, i) => (
             <div
               key={i}

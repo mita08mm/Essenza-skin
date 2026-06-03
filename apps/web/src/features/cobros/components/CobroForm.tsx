@@ -1,44 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';
+import { PacienteAutocomplete } from '@/shared/forms/PacienteAutocomplete';
 import { inputBase, alertError, Overline, Button, LinkButton } from '@/shared/ui';
 import { api } from '@/shared/api';
 import { formatMonto } from '@/shared/utils/money';
-
-interface Paciente {
-  id: string;
-  nombre: string;
-  apellido: string;
-  documento: string;
-  tipoDocumento: string;
-  estado: string;
-}
 
 export function CobroForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [pacientes, setPacientes] = useState<Paciente[]>([]);
-  const [loadingPacientes, setLoadingPacientes] = useState(true);
   const [pacienteId, setPacienteId] = useState('');
   const [titulo, setTitulo] = useState('');
   const [costo, setCosto] = useState('');
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await api.get<Paciente[]>('/pacientes');
-        setPacientes(data.filter((p) => p.estado === 'ACTIVO'));
-      } catch {
-        /* noop */
-      } finally {
-        setLoadingPacientes(false);
-      }
-    })();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,24 +59,12 @@ export function CobroForm() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <FormSection title="Paciente">
           <FormField label="Paciente" required>
-            {loadingPacientes ? (
-              <div className="subtitle">Cargando pacientes...</div>
-            ) : (
-              <select
-                value={pacienteId}
-                onChange={(e) => setPacienteId(e.target.value)}
-                className={inputBase}
-                required
-                disabled={isLoading}
-              >
-                <option value="">Seleccione un paciente</option>
-                {pacientes.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nombre} {p.apellido} — {p.tipoDocumento}: {p.documento}
-                  </option>
-                ))}
-              </select>
-            )}
+            <PacienteAutocomplete
+              value={pacienteId}
+              onChange={setPacienteId}
+              disabled={isLoading}
+              required
+            />
           </FormField>
         </FormSection>
 

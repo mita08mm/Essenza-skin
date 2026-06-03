@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 interface TimePickerProps {
   label: string;
   value: string; // "HH:MM" formato 24h
@@ -39,6 +41,13 @@ const MINUTES = Array.from({ length: 60 }, (_, i) => i);
 
 export function TimePicker({ label, value, onChange, disabled, required, hasConflict }: TimePickerProps) {
   const { hour, minute, ampm } = from24(value);
+
+  // Inicializar con valor por defecto si está vacío
+  useEffect(() => {
+    if (!value && !disabled) {
+      onChange('09:00');
+    }
+  }, [value, disabled, onChange]);
 
   const update = (h: number, m: number, ap: 'AM' | 'PM') => onChange(to24(h, m, ap));
 

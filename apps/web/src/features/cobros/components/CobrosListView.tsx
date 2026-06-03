@@ -6,12 +6,10 @@ import {
   Badge,
   Spinner,
   alertError,
-  DataTable,
   EmptyState,
   StatCard,
   SearchInput,
   PlusIcon,
-  type Column,
   Subtitle,
   Muted,
   Overline,
@@ -160,12 +158,30 @@ export function CobrosListView() {
         </div>
       ) : (
         <>
-          <DataTable<CobroConTotales>
-            desktopOnly
-            rows={filtrados}
-            getKey={(c) => c.id}
-            columns={cobrosCols}
-          />
+          {/* Desktop table */}
+          <div className="surface hidden lg:block">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-neutral-25 border-b border-neutral-200">
+                  <Overline as="th" className="px-5 py-2.5 text-left">Fecha</Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-left">Paciente</Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">Descripción</Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-right">Total</Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-right 2xl:table-cell">Abonado</Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-right 2xl:table-cell">Pendiente</Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">Estado</Overline>
+                  <th className="px-5 py-2.5"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-100">
+                {filtrados.map((c) => (
+                  <CobroRow key={c.id} cobro={c} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
           <div className="space-y-3 lg:hidden">
             {filtrados.map((c) => (
               <CobroCard key={c.id} cobro={c} />
@@ -177,82 +193,50 @@ export function CobrosListView() {
   );
 }
 
-const cobrosCols: Column<CobroConTotales>[] = [
-  {
-    key: 'fecha',
-    label: 'Fecha',
-    cellClassName: 'text-neutral-700 tabular-nums whitespace-nowrap',
-    render: (c) => formatFecha(c.fecha),
-  },
-  {
-    key: 'paciente',
-    label: 'Paciente',
-    render: (c) => (
-      <div>
+function CobroRow({ cobro }: { cobro: CobroConTotales }) {
+  return (
+    <tr className="hover:bg-neutral-25 group transition-colors">
+      <td className="px-5 py-3 whitespace-nowrap text-neutral-700 tabular-nums">
+        {formatFecha(cobro.fecha)}
+      </td>
+      <td className="px-5 py-3">
         <p className="font-medium text-neutral-900">
-          {c.paciente.nombre} {c.paciente.apellido}
+          {cobro.paciente.nombre} {cobro.paciente.apellido}
         </p>
-        <Muted>
-          {c.paciente.tipoDocumento} {c.paciente.documento}
-        </Muted>
-      </div>
-    ),
-  },
-  {
-    key: 'desc',
-    label: 'Descripción',
-    cellClassName: 'text-neutral-700',
-    render: (c) => buildTitle(c),
-  },
-  {
-    key: 'total',
-    label: 'Total',
-    align: 'right',
-    cellClassName: 'text-neutral-800 tabular-nums',
-    render: (c) => formatMonto(Number(c.total)),
-  },
-  {
-    key: 'abonado',
-    label: 'Abonado',
-    align: 'right',
-    cellClassName: 'text-neutral-700 tabular-nums',
-    render: (c) => formatMonto(c.abonado),
-  },
-  {
-    key: 'pendiente',
-    label: 'Pendiente',
-    align: 'right',
-    render: (c) => (
-      <span
-        className={`font-medium tabular-nums ${c.pendiente <= 0 ? 'text-neutral-400' : 'text-danger'}`}
-      >
-        {formatMonto(c.pendiente)}
-      </span>
-    ),
-  },
-  {
-    key: 'estado',
-    label: 'Estado',
-    render: (c) => (
-      <Badge variant={c.pendiente <= 0 ? 'success' : 'warning'} dot>
-        {c.pendiente <= 0 ? 'Pagado' : 'Pendiente'}
-      </Badge>
-    ),
-  },
-  {
-    key: 'acciones',
-    label: '',
-    align: 'right',
-    render: (c) => (
-      <Link
-        href={`/cobros/${c.id}`}
-        className="text-brand-morena inline-flex h-7 items-center rounded-md px-2.5 text-xs font-medium opacity-0 transition-colors group-hover:opacity-100 hover:bg-[rgba(204,175,125,0.18)]"
-      >
-        Ver
-      </Link>
-    ),
-  },
-];
+        <Muted className="text-xs xl:hidden">{buildTitle(cobro)}</Muted>
+      </td>
+      <td className="hidden px-5 py-3 text-neutral-700 xl:table-cell">
+        {buildTitle(cobro)}
+      </td>
+      <td className="px-5 py-3 text-right font-medium tabular-nums text-neutral-800">
+        {formatMonto(Number(cobro.total))}
+      </td>
+      <td className="hidden px-5 py-3 text-right tabular-nums text-neutral-700 2xl:table-cell">
+        {formatMonto(cobro.abonado)}
+      </td>
+      <td className="hidden px-5 py-3 text-right 2xl:table-cell">
+        <span
+          className={`font-medium tabular-nums ${cobro.pendiente <= 0 ? 'text-neutral-400' : 'text-danger'}`}
+        >
+          {formatMonto(cobro.pendiente)}
+        </span>
+      </td>
+      <td className="hidden px-5 py-3 xl:table-cell">
+        <Badge variant={cobro.pendiente <= 0 ? 'success' : 'warning'} dot>
+          {cobro.pendiente <= 0 ? 'Pagado' : 'Pendiente'}
+        </Badge>
+      </td>
+      <td className="px-5 py-3 text-right">
+        <Link
+          href={`/cobros/${cobro.id}`}
+          className="text-brand-morena inline-flex h-7 items-center rounded-md px-2.5 text-xs font-medium opacity-100 transition-colors lg:opacity-0 lg:group-hover:opacity-100 hover:bg-[rgba(204,175,125,0.18)]"
+        >
+          Ver
+        </Link>
+      </td>
+    </tr>
+  );
+}
 
 function CobroCard({ cobro }: { cobro: CobroConTotales }) {
   const pagado = cobro.pendiente <= 0;
