@@ -11,14 +11,22 @@ export function Products() {
       icon: Scissors,
       title: 'Essenza Hair Therapy',
       description: 'Línea profesional para el cuidado capilar',
-      products: ['Shampoos especializados', 'Serums regeneradores', 'Essenza Hair Fibers'],
+      products: [
+        'Shampoos',
+        'Serums',
+        'Essenza Hair Fibers',
+      ],
       color: '#c9a96e',
     },
     {
       icon: Droplet,
       title: 'Essenza Skin Therapy',
       description: 'Tratamiento dermatológico de alta gama',
-      products: ['Cremas faciales', 'Serums concentrados', 'Bloqueador solar SPF 50+'],
+      products: [
+        'Cremas',
+        'Serums',
+        'Bloqueador Solar',
+      ],
       color: '#c9a96e',
     },
   ];

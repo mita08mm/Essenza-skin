@@ -9,19 +9,44 @@ export function Services() {
   const services = [
     {
       title: 'Toxina Botulínica (Botox)',
-      items: ['Tercio Superior / Medio / Inferior', 'Full Face', 'Bruxismo', 'Collar de Venus', 'Lifting Nefertiti'],
+      items: [
+        'Tercio Superior / Medio / Inferior',
+        'Full Face',
+        'Bruxismo',
+        'Collar de Venus',
+        'Lifting Nefertiti',
+      ],
     },
     {
       title: 'Ácido Hialurónico',
-      items: ['Ojeras & Nariz & Labios', 'Lifting Facial (Temporal y Malar)', 'Mentón', 'Definición de Ángulo Mandibular'],
+      items: [
+        'Ojeras',
+        'Nariz',
+        'Labios',
+        'Lifting Facial (Temporal y Malar)',
+        'Mentón',
+        'Definición de Ángulo Mandibular',
+      ],
     },
     {
-      title: 'Bioestimuladores',
-      items: ['Cicatrices del Acné', 'Rejuvenecimiento Profundo', 'Estimulación de Colágeno'],
+      title: 'Bioestimuladores & Faciales',
+      items: [
+        'Bioestimuladores',
+        'Cicatrices del Acné',
+        'Limpieza Facial',
+        'Peeling',
+        'Plasma Glow (PRP Facial)',
+      ],
     },
     {
-      title: 'Tratamientos Avanzados',
-      items: ['Peeling Químico', 'Plasma Glow (PRP Facial)', 'Protocolos Personalizados'],
+      title: 'Tratamientos Capilares',
+      items: [
+        'Tricogen Intensive',
+        'Mesoterapia Nutritiva',
+        'PRP Hair Boost',
+        'Plasma Rico en Plaquetas',
+        'Factores de Crecimiento',
+      ],
     },
   ];
 
