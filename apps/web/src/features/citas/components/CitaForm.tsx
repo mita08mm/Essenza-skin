@@ -326,7 +326,8 @@ export function CitaForm({ mode, citaId }: Props) {
           </LinkButton>
           <Button
             type="submit"
-            disabled={isLoading || (!isEdit && pacientes.length === 0) || !!conflicto}
+            // disabled={isLoading || (!isEdit && pacientes.length === 0) || !!conflicto}
+            disabled={isLoading || (!isEdit && !formData.pacienteId) || !!conflicto}
             variant="primary"
             size="sm"
           >

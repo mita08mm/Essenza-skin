@@ -42,7 +42,6 @@ type Tab = 'clinica' | 'usuarios' | 'general';
 const TABS = [
   { value: 'clinica' as const, label: 'Clínica' },
   { value: 'usuarios' as const, label: 'Usuarios' },
-  { value: 'general' as const, label: 'General' },
 ];
 
 export function ConfiguracionView() {
