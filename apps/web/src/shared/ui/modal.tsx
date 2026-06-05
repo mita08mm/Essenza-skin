@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { cn } from '@/shared/utils';
-import { CloseIcon } from './icons';
+import { CloseIcon } from '@/shared/icons';
 
 interface ModalProps {
   open: boolean;

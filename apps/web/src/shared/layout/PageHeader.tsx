@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
-import { ChevronLeftIcon, Subtitle, Overline } from '@/shared/ui';
+import { Subtitle, Overline } from '@/shared/ui';
+import { ChevronLeftIcon } from '@/shared/icons';
 interface PageHeaderProps {
   overline?: string;
   title: string;

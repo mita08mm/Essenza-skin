@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import PanelFrame, { PanelActionButton } from './PanelFrame';
-import { Button, Input, Label, Modal, Spinner, PlusIcon, CloseIcon, BodyStrong } from '@/shared/ui';
+import { Button, Input, Label, Modal, Spinner, BodyStrong } from '@/shared/ui';
+import { PlusIcon, CloseIcon } from '@/shared/icons';
 import { usePacienteProtocolos, NuevaPrescripcionItem } from '@/features/pacientes';
 import { formatFecha } from '@/shared/utils/date';
 

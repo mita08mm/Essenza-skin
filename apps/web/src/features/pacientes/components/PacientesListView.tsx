@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Badge, Spinner, PlusIcon, SearchInput, Overline, Subtitle, BodyStrong } from '@/shared/ui';
+import { Badge, Spinner, SearchInput, Overline, Subtitle, BodyStrong } from '@/shared/ui';
+import { PlusIcon } from '@/shared/icons';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { usePacientes, type Paciente } from '../hooks/usePacientes';
 import { calcularEdad } from '../lib/paciente';

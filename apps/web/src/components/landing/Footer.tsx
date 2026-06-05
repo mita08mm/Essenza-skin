@@ -1,5 +1,6 @@
 'use client';
 
+import { Logo } from '@/shared/icons';
 import type { ConfigClinica } from './types';
 
 interface FooterProps {
@@ -53,6 +54,16 @@ export function Footer({ config }: FooterProps) {
       style={{ backgroundColor: '#1a1a1a', borderTop: '1px solid #c9a96e' }}
     >
       <div className="mx-auto max-w-7xl">
+        {/* Logo Complete - Centrado y Grande */}
+        <div className="mb-12 flex justify-center">
+          <div 
+            className="w-full max-w-lg" 
+            style={{ aspectRatio: '1176 / 1077' }}
+          >
+            <Logo/>
+          </div>
+        </div>
+
         <div className="grid gap-12 md:grid-cols-3">
           {/* Column 1: Brand */}
           <div>

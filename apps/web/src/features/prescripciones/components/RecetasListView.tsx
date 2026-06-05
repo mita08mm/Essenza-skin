@@ -8,13 +8,13 @@ import {
   alertError,
   EmptyState,
   SearchInput,
-  PlusIcon,
   Subtitle,
   Overline,
   LinkButton,
   Modal,
   Button,
 } from '@/shared/ui';
+import { PlusIcon } from '@/shared/icons';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { formatFecha } from '@/shared/utils/date';
 import { usePrescripciones, type Prescripcion, recetasKeys } from '../hooks/usePrescripciones';

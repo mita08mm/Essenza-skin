@@ -7,11 +7,11 @@ import {
   Spinner,
   EmptyState,
   SearchInput,
-  PlusIcon,
   Subtitle,
   Overline,
   LinkButton,
 } from '@/shared/ui';
+import { PlusIcon } from '@/shared/icons';
 import { useProductos, type Producto, type ProductoTipo } from '@/features/productos';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { formatMonto } from '@/shared/utils/money';

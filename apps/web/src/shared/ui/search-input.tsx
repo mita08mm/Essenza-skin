@@ -1,7 +1,7 @@
 'use client';
 
 import type { InputHTMLAttributes } from 'react';
-import { SearchIcon, CloseIcon } from './icons';
+import { SearchIcon, CloseIcon } from '@/shared/icons';
 
 interface SearchInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   containerClassName?: string;

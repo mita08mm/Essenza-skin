@@ -1,5 +1,4 @@
 export { Hero } from './Hero';
-export { Brand } from './Brand';
 export { Features } from './Features';
 export { Services } from './Services';
 export { Products } from './Products';

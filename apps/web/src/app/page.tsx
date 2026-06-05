@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import {
   Hero,
-  Brand,
   Features,
   Services,
   Products,
@@ -55,7 +54,6 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f5f0e8' }}>
       <Hero config={config} />
-      <Brand config={config} />
       <Features />
       <Services />
       <Products />

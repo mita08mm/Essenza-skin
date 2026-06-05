@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowRight } from 'lucide-react';
+import { Logo } from '@/shared/icons';
 import type { ConfigClinica } from './types';
 
 interface HeroProps {
@@ -28,7 +29,13 @@ export function Hero({ config }: HeroProps) {
       
       {/* Floating Navigation */}
       <nav className="absolute top-0 left-0 right-0 z-50">
-        <div className="mx-auto flex max-w-7xl items-center px-6 py-4 lg:px-16">
+        <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-4 lg:px-16">
+          {/* Logo Symbol */}
+          <div className="flex-shrink-0" style={{ width: '80px', height: '80px' }}>
+            <Logo />
+          </div>
+          
+          {/* Brand Text */}
           <div>
             <div className="font-heading text-xl font-bold lg:text-2xl" style={{ color: '#ffffff' }}>
               {config?.nombre || 'Essenza Skin & Hair Clinic Spa'}

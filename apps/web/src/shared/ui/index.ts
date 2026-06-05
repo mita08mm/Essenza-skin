@@ -38,6 +38,19 @@ export type { StatTone } from './stat-card';
 export { Surface } from './surface';
 export { SearchInput } from './search-input';
 export {
+  Title,
+  SectionTitle,
+  CardTitle,
+  Subtitle,
+  Body,
+  BodyStrong,
+  Muted,
+  Caption,
+  Overline,
+} from './typography';
+
+// Re-export icons for backward compatibility
+export {
   PlusIcon,
   CloseIcon,
   SearchIcon,
@@ -49,18 +62,6 @@ export {
   DocumentIcon,
   MoreVerticalIcon,
   CalendarIcon,
-  LogoIcon,
-} from './icons';
-export {
-  Title,
-  SectionTitle,
-  CardTitle,
-  Subtitle,
-  Body,
-  BodyStrong,
-  Muted,
-  Caption,
-  Overline,
-} from './typography';
+} from '@/shared/icons';
 
 export { inputBase, textareaBase, inputConflict, alertError, alertWarning } from './form-styles';
