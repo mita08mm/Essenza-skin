@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';

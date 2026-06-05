@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { alertError, Overline, Button, Modal, LinkButton } from '@/shared/ui';
@@ -57,7 +57,7 @@ export function RecetaDetailView({ recetaId }: { recetaId: string }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
 
-  const loadPrescripcion = async () => {
+  const loadPrescripcion = useCallback(async () => {
     try {
       const data = await api.get(`/prescripciones/${recetaId}`);
       setPrescripcion(normalize(data));
@@ -66,11 +66,12 @@ export function RecetaDetailView({ recetaId }: { recetaId: string }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [recetaId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadPrescripcion();
-  }, [recetaId]);
+  }, [loadPrescripcion]);
 
   const handleDeletePrescripcion = async () => {
     try {

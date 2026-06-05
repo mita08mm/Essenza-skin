@@ -17,6 +17,20 @@ interface Prescripcion {
   }>;
 }
 
+interface ApiPrescripcionItem {
+  id: string;
+  nombre: string;
+  indicaciones?: string;
+  aplicacion?: string;
+}
+
+interface ApiPrescripcion {
+  id: string;
+  pacienteId: string;
+  nombre: string;
+  items: ApiPrescripcionItem[];
+}
+
 export function EditRecetaView({ recetaId }: { recetaId: string }) {
   const [prescripcion, setPrescripcion] = useState<Prescripcion | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,12 +39,12 @@ export function EditRecetaView({ recetaId }: { recetaId: string }) {
   useEffect(() => {
     (async () => {
       try {
-        const data = await api.get(`/prescripciones/${recetaId}`);
+        const data = await api.get<ApiPrescripcion>(`/prescripciones/${recetaId}`);
         setPrescripcion({
           id: data.id,
           pacienteId: data.pacienteId,
           nombre: data.nombre,
-          items: data.items.map((item: any) => ({
+          items: data.items.map((item) => ({
             id: item.id,
             nombre: item.nombre,
             indicaciones: item.indicaciones || item.aplicacion || '',

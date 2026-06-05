@@ -55,7 +55,15 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
 
 
   useEffect(() => {
-    if (!proximaConsulta) { setCitasDelDia([]); setHoraInicio(''); setHoraFin(''); return; }
+    if (!proximaConsulta) {
+      // Reset states when no date selected
+      (async () => {
+        setCitasDelDia([]);
+        setHoraInicio('');
+        setHoraFin('');
+      })();
+      return;
+    }
     (async () => {
       setLoadingCitas(true);
       try {
