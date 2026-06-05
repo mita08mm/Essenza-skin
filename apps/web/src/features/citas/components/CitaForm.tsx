@@ -6,7 +6,14 @@ import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';
 import { PacienteAutocomplete } from '@/shared/forms/PacienteAutocomplete';
 import DatePicker from '@/shared/ui/DatePicker';
-import { inputBase, textareaBase, alertError, alertWarning, Button, LinkButton } from '@/shared/ui';
+import {
+  inputBase,
+  textareaBase,
+  alertError,
+  alertWarning,
+  Button,
+  LinkButton,
+} from '@/shared/ui';
 import { api } from '@/shared/api';
 import { diaSemanaLabel, hayConflicto, toMinutes } from '../lib/horario';
 import { DisponibilidadTimeline, type CitaDelDia } from './DisponibilidadTimeline';
@@ -256,9 +263,7 @@ export function CitaForm({ mode, citaId }: Props) {
               label="Hora inicio"
               value={formData.horaInicio}
               onChange={(v) =>
-                handleChange({
-                  target: { name: 'horaInicio', value: v },
-                } as React.ChangeEvent<HTMLInputElement>)
+                handleChange({ target: { name: 'horaInicio', value: v } } as React.ChangeEvent<HTMLInputElement>)
               }
               required
               disabled={isLoading}
@@ -269,9 +274,7 @@ export function CitaForm({ mode, citaId }: Props) {
               label="Hora fin"
               value={formData.horaFin}
               onChange={(v) =>
-                handleChange({
-                  target: { name: 'horaFin', value: v },
-                } as React.ChangeEvent<HTMLInputElement>)
+                handleChange({ target: { name: 'horaFin', value: v } } as React.ChangeEvent<HTMLInputElement>)
               }
               required
               disabled={isLoading}
