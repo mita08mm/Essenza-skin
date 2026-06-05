@@ -1,5 +1,10 @@
 import { PrismaClient, HistoriaClinica, Prisma } from '@clinica/database';
 
+// Tipo para HistoriaClinica con consultas incluidas (sin especificar el include exacto)
+type HistoriaClinicaConConsultas = HistoriaClinica & {
+  consultas: any[];
+};
+
 export class HistoriaClinicaRepository {
   constructor(private prisma: PrismaClient) {}
 
@@ -12,7 +17,7 @@ export class HistoriaClinicaRepository {
     });
   }
 
-  async findById(id: string): Promise<HistoriaClinica | null> {
+  async findById(id: string): Promise<HistoriaClinicaConConsultas | null> {
     return this.prisma.historiaClinica.findUnique({
       where: { id },
       include: {
@@ -41,7 +46,7 @@ export class HistoriaClinicaRepository {
     });
   }
 
-  async findByPaciente(pacienteId: string): Promise<HistoriaClinica | null> {
+  async findByPaciente(pacienteId: string): Promise<HistoriaClinicaConConsultas | null> {
     return this.prisma.historiaClinica.findUnique({
       where: { pacienteId },
       include: {

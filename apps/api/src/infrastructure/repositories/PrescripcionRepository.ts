@@ -1,5 +1,10 @@
 import { PrismaClient, Prescripcion, Prisma } from '@clinica/database';
 
+// Tipo para Prescripcion con items incluidos
+type PrescripcionConItems = Prescripcion & {
+  items: any[];
+};
+
 interface CreateItemProtocoloInput {
   nombre: string;
   indicaciones: string;
@@ -16,7 +21,7 @@ interface CreateProtocoloInput {
 export class PrescripcionRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async create(data: CreateProtocoloInput): Promise<Prescripcion> {
+  async create(data: CreateProtocoloInput): Promise<PrescripcionConItems> {
     return this.prisma.prescripcion.create({
       data: {
         paciente: {
@@ -42,7 +47,7 @@ export class PrescripcionRepository {
     });
   }
 
-  async findAll(): Promise<Prescripcion[]> {
+  async findAll(): Promise<PrescripcionConItems[]> {
     return this.prisma.prescripcion.findMany({
       include: {
         paciente: true,
@@ -55,7 +60,7 @@ export class PrescripcionRepository {
     });
   }
 
-  async findById(id: string): Promise<Prescripcion | null> {
+  async findById(id: string): Promise<PrescripcionConItems | null> {
     return this.prisma.prescripcion.findUnique({
       where: { id },
       include: {
@@ -66,7 +71,7 @@ export class PrescripcionRepository {
     });
   }
 
-  async findByPaciente(pacienteId: string): Promise<Prescripcion[]> {
+  async findByPaciente(pacienteId: string): Promise<PrescripcionConItems[]> {
     return this.prisma.prescripcion.findMany({
       where: { pacienteId },
       include: {
@@ -79,12 +84,14 @@ export class PrescripcionRepository {
     });
   }
 
-  async update(id: string, data: Prisma.PrescripcionUpdateInput): Promise<Prescripcion> {
+  async update(id: string, data: Prisma.PrescripcionUpdateInput): Promise<PrescripcionConItems> {
     return this.prisma.prescripcion.update({
       where: { id },
       data,
       include: {
         items: true,
+        paciente: true,
+        usuario: true,
       },
     });
   }
@@ -96,7 +103,7 @@ export class PrescripcionRepository {
       nombre?: string;
       items?: Array<{ nombre: string; indicaciones: string; cantidad?: number }>;
     }
-  ): Promise<Prescripcion> {
+  ): Promise<PrescripcionConItems> {
     // Si se envían items, primero eliminar todos los items existentes y crear los nuevos
     const updateData: any = {
       ...(data.nombre && { nombre: data.nombre }),

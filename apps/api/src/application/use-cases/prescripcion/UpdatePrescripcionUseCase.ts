@@ -24,6 +24,7 @@ export class UpdatePrescripcionUseCase {
       throw new Error('Prescripción no encontrada');
     }
 
-    await this.prescripcionRepository.update(id, data);
+    // Usar updateWithItems que acepta la estructura con items
+    await this.prescripcionRepository.updateWithItems(id, data);
   }
 }

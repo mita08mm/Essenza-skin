@@ -13,7 +13,7 @@ export class DeleteItemPrescripcionUseCase {
       throw new Error('Prescripción no encontrada');
     }
 
-    const itemExists = prescripcion.items?.some((item: any) => item.id === itemId);
+    const itemExists = prescripcion.items?.some((item) => item.id === itemId);
     if (!itemExists) {
       throw new Error('Item no encontrado en la prescripción');
     }
