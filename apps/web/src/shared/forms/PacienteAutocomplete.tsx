@@ -31,7 +31,7 @@ export function PacienteAutocomplete({
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState<Paciente | null>(null);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   // Cerrar dropdown al hacer click fuera
@@ -45,22 +45,18 @@ export function PacienteAutocomplete({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Buscar pacientes con debounce
   useEffect(() => {
-    if (debounceRef.current) {
+    if (debounceRef.current !== null) {
       clearTimeout(debounceRef.current);
-    }
-
-    if (!query.trim()) {
-      setResultados([]);
-      setIsOpen(false);
-      return;
     }
 
     debounceRef.current = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const data = await api.get<Paciente[]>(`/pacientes?search=${encodeURIComponent(query)}`);
+        const url = query.trim()
+          ? `/pacientes?search=${encodeURIComponent(query)}`
+          : `/pacientes`;
+        const data = await api.get<Paciente[]>(url);
         const activos = data.filter((p) => p.estado === 'ACTIVO');
         setResultados(activos);
         setIsOpen(activos.length > 0);
@@ -110,6 +106,10 @@ export function PacienteAutocomplete({
         type="text"
         value={query}
         onChange={handleInputChange}
+        onFocus={() => {
+          if (resultados.length > 0) setIsOpen(true);
+          else setQuery(query); // dispara el useEffect
+        }}
         placeholder="Buscar por nombre o carnet..."
         className={inputBase}
         disabled={disabled}

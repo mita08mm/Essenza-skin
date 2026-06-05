@@ -431,7 +431,6 @@ export default function UpcomingToday({ citas, onCitaEliminada }: UpcomingTodayP
                     >
                       {labelFecha(diaKey)}
                     </span>
-                    {esHoy && <Badge variant="brand">HOY</Badge>}
                     <div className="h-px flex-1 bg-neutral-100" />
                     <span className="text-[10px] text-neutral-400">
                       {citasDia.length} cita{citasDia.length > 1 ? 's' : ''}
@@ -445,8 +444,7 @@ export default function UpcomingToday({ citas, onCitaEliminada }: UpcomingTodayP
                         <div
                           key={cita.id}
                           onClick={() => {
-                            setCitaSeleccionada(cita);
-                            setModalTodas(false);
+                            window.location.href = `/pacientes/${cita.pacienteId}/historia`;
                           }}
                           className="group flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-neutral-50"
                         >

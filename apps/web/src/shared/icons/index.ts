@@ -21,8 +21,5 @@ export { default as DocumentIcon } from './DocumentIcon';
 export { default as MoreVerticalIcon } from './MoreVerticalIcon';
 export { default as CalendarIcon } from './CalendarIcon';
 
-// Logo y componentes de marca
+// Logo
 export { default as Logo } from './Logo';
-export { default as LogoComplete } from './LogoComplete';
-export { default as CompanyName } from './CompanyName';
-export { default as DoctorName } from './DoctorName';
