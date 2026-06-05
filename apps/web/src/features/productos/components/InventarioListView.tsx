@@ -5,16 +5,13 @@ import Link from 'next/link';
 import {
   Badge,
   Spinner,
-  DataTable,
   EmptyState,
   SearchInput,
-  PlusIcon,
-  type Column,
   Subtitle,
-  Muted,
   Overline,
   LinkButton,
 } from '@/shared/ui';
+import { PlusIcon } from '@/shared/icons';
 import { useProductos, type Producto, type ProductoTipo } from '@/features/productos';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { formatMonto } from '@/shared/utils/money';
@@ -50,7 +47,6 @@ export function InventarioListView() {
     () => productos.reduce((sum, p) => sum + p.precio * p.stock, 0),
     [productos],
   );
-  
 
   const handleSaveStock = async () => {
     if (!editing) return;
@@ -161,44 +157,34 @@ export function InventarioListView() {
           />
         </div>
       ) : (
-        <DataTable<Producto>
-          rows={filtrados}
-          getKey={(p) => p.id}
-          columns={
-            [
-              {
-                key: 'producto',
-                label: 'Producto',
-                render: (p) => (
-                  <div>
-                    <p className="font-medium text-neutral-900">{p.nombre}</p>
-                    {p.descripcion && (
-                      <p className="muted mt-0.5 max-w-xs truncate">{p.descripcion}</p>
-                    )}
-                  </div>
-                ),
-              },
-              {
-                key: 'tipo',
-                label: 'Tipo',
-                render: (p) => <Badge variant="default">{TIPO_LABELS[p.tipo]}</Badge>,
-              },
-              {
-                key: 'precio',
-                label: 'Precio',
-                align: 'right',
-                render: (p) => (
-                  <div>
-                    <p className="text-neutral-800 tabular-nums">{formatMonto(p.precio)}</p>
-                  </div>
-                ),
-              },
-              {
-                key: 'stock',
-                label: 'Stock',
-                align: 'center',
-                render: (p) => (
-                  <StockCell
+        <>
+          {/* Desktop table */}
+          <div className="surface hidden lg:block">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-neutral-25 border-b border-neutral-200">
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Producto
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left 2xl:table-cell">
+                    Tipo
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-right xl:table-cell">
+                    Precio
+                  </Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-center">
+                    Stock
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-right 2xl:table-cell">
+                    Valor
+                  </Overline>
+                  <th className="px-5 py-2.5"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-100">
+                {filtrados.map((p) => (
+                  <ProductoRow
+                    key={p.id}
                     producto={p}
                     editing={editing?.id === p.id ? editing : null}
                     onEdit={(v) => setEditing({ id: p.id, value: v })}
@@ -206,33 +192,112 @@ export function InventarioListView() {
                     onCancel={() => setEditing(null)}
                     onSave={handleSaveStock}
                   />
-                ),
-              },
-              {
-                key: 'valor',
-                label: 'Valor',
-                align: 'right',
-                cellClassName: 'font-medium text-neutral-800 tabular-nums',
-                render: (p) => formatMonto(p.precio * p.stock),
-              },
-              {
-                key: 'acciones',
-                label: '',
-                align: 'right',
-                render: (p) => (
-                  <Link
-                    href={`/productos/${p.id}/editar`}
-                    className="text-brand-morena inline-flex h-7 items-center rounded-md px-2.5 text-xs font-medium opacity-0 transition-colors group-hover:opacity-100 hover:bg-[rgba(204,175,125,0.18)]"
-                  >
-                    Editar
-                  </Link>
-                ),
-              },
-            ] as Column<Producto>[]
-          }
-        />
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="space-y-3 lg:hidden">
+            {filtrados.map((p) => (
+              <ProductoCard key={p.id} producto={p} />
+            ))}
+          </div>
+        </>
       )}
     </div>
+  );
+}
+
+type ProductoRowProps = {
+  producto: Producto;
+  editing: { id: string; value: string } | null;
+  onEdit: (value: string) => void;
+  onChange: (value: string) => void;
+  onCancel: () => void;
+  onSave: () => void;
+};
+
+function ProductoRow({ producto, editing, onEdit, onChange, onCancel, onSave }: ProductoRowProps) {
+  return (
+    <tr className="hover:bg-neutral-25 group transition-colors">
+      <td className="px-5 py-3">
+        <p className="font-medium text-neutral-900">{producto.nombre}</p>
+        {producto.descripcion && (
+          <p className="muted mt-0.5 max-w-xs truncate text-xs">{producto.descripcion}</p>
+        )}
+      </td>
+      <td className="hidden px-5 py-3 2xl:table-cell">
+        <Badge variant="default">{TIPO_LABELS[producto.tipo]}</Badge>
+      </td>
+      <td className="hidden px-5 py-3 text-right xl:table-cell">
+        <p className="text-sm text-neutral-800 tabular-nums">{formatMonto(producto.precio)}</p>
+      </td>
+      <td className="px-5 py-3 text-center">
+        <StockCell
+          producto={producto}
+          editing={editing}
+          onEdit={onEdit}
+          onChange={onChange}
+          onCancel={onCancel}
+          onSave={onSave}
+        />
+      </td>
+      <td className="hidden px-5 py-3 text-right font-medium text-neutral-800 tabular-nums 2xl:table-cell">
+        {formatMonto(producto.precio * producto.stock)}
+      </td>
+      <td className="px-5 py-3 text-right">
+        <Link
+          href={`/productos/${producto.id}/editar`}
+          className="text-brand-morena inline-flex h-7 items-center rounded-md px-2.5 text-xs font-medium opacity-100 transition-colors hover:bg-[rgba(204,175,125,0.18)] lg:opacity-0 lg:group-hover:opacity-100"
+        >
+          Editar
+        </Link>
+      </td>
+    </tr>
+  );
+}
+
+function ProductoCard({ producto }: { producto: Producto }) {
+  const stockBajo = producto.stock <= producto.stockMinimo;
+  return (
+    <Link
+      href={`/productos/${producto.id}/editar`}
+      className="surface block p-4 transition-colors hover:border-neutral-300"
+    >
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="body-strong truncate text-neutral-900">{producto.nombre}</p>
+          {producto.descripcion && (
+            <p className="muted mt-0.5 line-clamp-2 text-xs">{producto.descripcion}</p>
+          )}
+        </div>
+        <Badge variant="default">{TIPO_LABELS[producto.tipo]}</Badge>
+      </div>
+      <div className="grid grid-cols-3 gap-3 border-t border-neutral-100 pt-3">
+        <div>
+          <p className="text-[10px] tracking-wide text-neutral-500 uppercase">Precio</p>
+          <p className="text-sm font-medium text-neutral-800 tabular-nums">
+            {formatMonto(producto.precio)}
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] tracking-wide text-neutral-500 uppercase">Stock</p>
+          <p
+            className={`text-sm font-medium tabular-nums ${stockBajo ? 'text-orange-600' : 'text-neutral-800'}`}
+          >
+            {producto.stock}
+            {stockBajo && <span className="ml-1 text-[10px]">⚠️</span>}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] tracking-wide text-neutral-500 uppercase">Valor</p>
+          <p className="text-sm font-medium text-neutral-800 tabular-nums">
+            {formatMonto(producto.precio * producto.stock)}
+          </p>
+        </div>
+      </div>
+    </Link>
   );
 }
 

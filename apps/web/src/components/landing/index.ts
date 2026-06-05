@@ -1,6 +1,7 @@
 export { Hero } from './Hero';
 export { Features } from './Features';
 export { Services } from './Services';
+export { Products } from './Products';
 export { Process } from './Process';
 export { ContactCTA } from './ContactCTA';
 export { Footer } from './Footer';

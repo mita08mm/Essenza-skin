@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/shared/layout/PageHeader';
-import { alertError, Overline, Button } from '@/shared/ui';
-import { api } from '@/shared/api';
+import { alertError, Overline, Button, Modal, LinkButton } from '@/shared/ui';
+import { api, ApiError } from '@/shared/api';
 import { formatFecha } from '@/shared/utils/date';
+import { Pencil, Trash2 } from 'lucide-react';
 
 interface Prescripcion {
   id: string;
@@ -46,22 +48,58 @@ function normalize(entry: unknown): Prescripcion {
 }
 
 export function RecetaDetailView({ recetaId }: { recetaId: string }) {
+  const router = useRouter();
   const [prescripcion, setPrescripcion] = useState<Prescripcion | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  const loadPrescripcion = useCallback(async () => {
+    try {
+      const data = await api.get(`/prescripciones/${recetaId}`);
+      setPrescripcion(normalize(data));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [recetaId]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await api.get(`/protocolos/${recetaId}`);
-        setPrescripcion(normalize(data));
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error desconocido');
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [recetaId]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadPrescripcion();
+  }, [loadPrescripcion]);
+
+  const handleDeletePrescripcion = async () => {
+    try {
+      setIsDeleting(true);
+      setDeleteError('');
+      await api.delete(`/prescripciones/${recetaId}`);
+      router.push('/prescripciones');
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? err.message : 'Error al eliminar prescripción');
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteItem = async () => {
+    if (!deleteItemId) return;
+    try {
+      setIsDeleting(true);
+      setDeleteError('');
+      await api.delete(`/prescripciones/${recetaId}/items/${deleteItemId}`);
+      setDeleteItemId(null);
+      // Recargar la prescripción
+      await loadPrescripcion();
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? err.message : 'Error al eliminar item');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -81,11 +119,32 @@ export function RecetaDetailView({ recetaId }: { recetaId: string }) {
         overline="Recetas"
         title="Prescripción"
         subtitle={prescripcion.nombre}
-        backHref="/recetas"
+        backHref="/prescripciones"
         actions={
-          <Button type="button" variant="secondary" size="sm" onClick={() => window.print()}>
-            Imprimir
-          </Button>
+          <div className="flex items-center gap-2">
+            <LinkButton
+              href={`/prescripciones/${recetaId}/editar`}
+              variant="secondary"
+              size="sm"
+              className="gap-1.5"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              Editar
+            </LinkButton>
+            <Button
+              type="button"
+              variant="danger"
+              size="sm"
+              onClick={() => setDeleteModalOpen(true)}
+              className="gap-1.5"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Eliminar
+            </Button>
+            <Button type="button" variant="secondary" size="sm" onClick={() => window.print()}>
+              Imprimir
+            </Button>
+          </div>
         }
       />
 
@@ -120,16 +179,26 @@ export function RecetaDetailView({ recetaId }: { recetaId: string }) {
                 <Overline as="th" className="px-6 py-2.5 text-left">
                   Indicaciones
                 </Overline>
+                <th className="px-6 py-2.5"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
               {prescripcion.items.map((item) => (
-                <tr key={item.id}>
+                <tr key={item.id} className="group hover:bg-neutral-25">
                   <td className="body-strong px-6 py-3 text-neutral-900">{item.nombre}</td>
                   <td className="body px-6 py-3">
                     {item.indicaciones || (
                       <span className="text-neutral-400 italic">Sin indicaciones</span>
                     )}
+                  </td>
+                  <td className="px-6 py-3 text-right">
+                    <button
+                      onClick={() => setDeleteItemId(item.id)}
+                      className="text-danger hover:bg-danger/10 inline-flex h-7 items-center gap-1 rounded-md px-2.5 text-xs font-medium opacity-100 transition-all lg:opacity-0 lg:group-hover:opacity-100"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -137,6 +206,78 @@ export function RecetaDetailView({ recetaId }: { recetaId: string }) {
           </table>
         </section>
       </div>
+
+      {/* Modal para eliminar prescripción completa */}
+      <Modal
+        open={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setDeleteError('');
+        }}
+        title="Eliminar prescripción"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-neutral-700">
+            ¿Estás seguro de que deseas eliminar esta prescripción completa? Esta acción no se puede
+            deshacer.
+          </p>
+          {deleteError && <div className={alertError}>{deleteError}</div>}
+          <div className="flex justify-end gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setDeleteModalOpen(false);
+                setDeleteError('');
+              }}
+              disabled={isDeleting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              onClick={handleDeletePrescripcion}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Eliminando...' : 'Eliminar prescripción'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal para eliminar item individual */}
+      <Modal
+        open={deleteItemId !== null}
+        onClose={() => {
+          setDeleteItemId(null);
+          setDeleteError('');
+        }}
+        title="Eliminar item"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-neutral-700">
+            ¿Estás seguro de que deseas eliminar este item de la prescripción?
+          </p>
+          {deleteError && <div className={alertError}>{deleteError}</div>}
+          <div className="flex justify-end gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setDeleteItemId(null);
+                setDeleteError('');
+              }}
+              disabled={isDeleting}
+            >
+              Cancelar
+            </Button>
+            <Button type="button" variant="danger" onClick={handleDeleteItem} disabled={isDeleting}>
+              {isDeleting ? 'Eliminando...' : 'Eliminar item'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

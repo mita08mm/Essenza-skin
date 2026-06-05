@@ -1,32 +1,16 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';
+import { PacienteAutocomplete } from '@/shared/forms/PacienteAutocomplete';
 import DatePicker from '@/shared/ui/DatePicker';
-import {
-  inputBase,
-  textareaBase,
-  inputConflict,
-  alertError,
-  alertWarning,
-  Button,
-  LinkButton,
-} from '@/shared/ui';
+import { inputBase, textareaBase, alertError, alertWarning, Button, LinkButton } from '@/shared/ui';
 import { api } from '@/shared/api';
 import { diaSemanaLabel, hayConflicto, toMinutes } from '../lib/horario';
 import { DisponibilidadTimeline, type CitaDelDia } from './DisponibilidadTimeline';
-
-interface Paciente {
-  id: string;
-  nombre: string;
-  apellido: string;
-  documento: string;
-  tipoDocumento: string;
-  estado: string;
-}
+import { TimePicker, addOneHour } from '@/shared/ui/TimePicker';
 
 const ESTADO_OPTIONS = [
   { value: 'PROGRAMADA', label: 'Programada' },
@@ -43,7 +27,6 @@ interface Props {
 }
 
 export function CitaForm({ mode, citaId }: Props) {
-  
   const router = useRouter();
   const searchParams = useSearchParams();
   const isEdit = mode === 'edit';
@@ -51,12 +34,9 @@ export function CitaForm({ mode, citaId }: Props) {
   const [isFetching, setIsFetching] = useState(isEdit);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [pacientes, setPacientes] = useState<Paciente[]>([]);
-  const [loadingPacientes, setLoadingPacientes] = useState(true);
   const [fechaLabel, setFechaLabel] = useState('');
   const [citasDelDia, setCitasDelDia] = useState<CitaDelDia[]>([]);
   const [loadingCitas, setLoadingCitas] = useState(false);
-  const [conflicto, setConflicto] = useState<CitaDelDia | null>(null);
   const initialized = useRef(false);
 
   const [formData, setFormData] = useState(() => {
@@ -77,11 +57,10 @@ export function CitaForm({ mode, citaId }: Props) {
     let horaFin = '';
     if (horaParam) {
       horaInicio = horaParam.slice(0, 5);
-      const [h, m] = horaInicio.split(':').map(Number);
-      horaFin = `${String((h + 1) % 24).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      horaFin = addOneHour(horaInicio);
     }
     return {
-      pacienteId: '',
+      pacienteId: searchParams.get('pacienteId') || '',
       fecha: fechaParam,
       horaInicio,
       horaFin,
@@ -90,6 +69,16 @@ export function CitaForm({ mode, citaId }: Props) {
       notas: '',
     };
   });
+
+  const conflicto = useMemo(() => {
+    if (!formData.horaInicio || !formData.horaFin || citasDelDia.length === 0) {
+      return null;
+    }
+    const c = citasDelDia.find((x) =>
+      hayConflicto(formData.horaInicio, formData.horaFin, x.horaInicio, x.horaFin),
+    );
+    return c || null;
+  }, [formData.horaInicio, formData.horaFin, citasDelDia]);
 
   // Cargar cita en modo edición
   useEffect(() => {
@@ -113,20 +102,6 @@ export function CitaForm({ mode, citaId }: Props) {
       }
     })();
   }, [isEdit, citaId]);
-
-  // Cargar lista de pacientes activos
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await api.get<Paciente[]>('/pacientes');
-        setPacientes(data.filter((p) => p.estado === 'ACTIVO'));
-      } catch {
-        /* noop */
-      } finally {
-        setLoadingPacientes(false);
-      }
-    })();
-  }, []);
 
   // Cargar citas del día seleccionado
   useEffect(() => {
@@ -158,29 +133,17 @@ export function CitaForm({ mode, citaId }: Props) {
     }
   }, [formData.fecha, actualizarFechaLabel]);
 
-  useEffect(() => {
-    if (!formData.horaInicio || !formData.horaFin || citasDelDia.length === 0) {
-      setConflicto(null);
-      return;
-    }
-    const c = citasDelDia.find((x) =>
-      hayConflicto(formData.horaInicio, formData.horaFin, x.horaInicio, x.horaFin),
-    );
-    setConflicto(c || null);
-  }, [formData.horaInicio, formData.horaFin, citasDelDia]);
-
-  useEffect(() => {
-    const paramId = searchParams.get('pacienteId');
-    if (paramId && !isEdit && pacientes.length > 0) {
-      setFormData((prev) => ({ ...prev, pacienteId: paramId }));
-    }
-  }, [pacientes]);
+  // handleChange unificado — también auto-calcula horaFin cuando cambia horaInicio
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     setError('');
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const next = { ...prev, [name]: value };
+      if (name === 'horaInicio') next.horaFin = addOneHour(value);
+      return next;
+    });
     if (name === 'fecha') actualizarFechaLabel(value);
   };
 
@@ -248,25 +211,15 @@ export function CitaForm({ mode, citaId }: Props) {
       <form onSubmit={handleSubmit} className="space-y-5">
         <FormSection title="Datos de la cita">
           <FormField label="Paciente" required>
-            {loadingPacientes ? (
-              <div className="subtitle">Cargando pacientes...</div>
-            ) : (
-              <select
-                name="pacienteId"
-                value={formData.pacienteId}
-                onChange={handleChange}
-                className={inputBase}
-                required
-                disabled={isLoading}
-              >
-                <option value="">Seleccione un paciente</option>
-                {pacientes.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nombre} {p.apellido} — {p.tipoDocumento}: {p.documento}
-                  </option>
-                ))}
-              </select>
-            )}
+            <PacienteAutocomplete
+              value={formData.pacienteId}
+              onChange={(id) => {
+                setError('');
+                setFormData((prev) => ({ ...prev, pacienteId: id }));
+              }}
+              disabled={isLoading}
+              required
+            />
           </FormField>
 
           {isEdit && (
@@ -298,28 +251,32 @@ export function CitaForm({ mode, citaId }: Props) {
                 minDate={isEdit ? undefined : new Date()}
               />
             </FormField>
-            <FormField label="Hora inicio" required>
-              <input
-                type="time"
-                name="horaInicio"
-                value={formData.horaInicio}
-                onChange={handleChange}
-                className={conflicto ? inputConflict : inputBase}
-                required
-                disabled={isLoading}
-              />
-            </FormField>
-            <FormField label="Hora fin" required>
-              <input
-                type="time"
-                name="horaFin"
-                value={formData.horaFin}
-                onChange={handleChange}
-                className={conflicto ? inputConflict : inputBase}
-                required
-                disabled={isLoading}
-              />
-            </FormField>
+
+            <TimePicker
+              label="Hora inicio"
+              value={formData.horaInicio}
+              onChange={(v) =>
+                handleChange({
+                  target: { name: 'horaInicio', value: v },
+                } as React.ChangeEvent<HTMLInputElement>)
+              }
+              required
+              disabled={isLoading}
+              hasConflict={!!conflicto}
+            />
+
+            <TimePicker
+              label="Hora fin"
+              value={formData.horaFin}
+              onChange={(v) =>
+                handleChange({
+                  target: { name: 'horaFin', value: v },
+                } as React.ChangeEvent<HTMLInputElement>)
+              }
+              required
+              disabled={isLoading}
+              hasConflict={!!conflicto}
+            />
           </div>
 
           {formData.fecha && (
@@ -366,7 +323,8 @@ export function CitaForm({ mode, citaId }: Props) {
           </LinkButton>
           <Button
             type="submit"
-            disabled={isLoading || (!isEdit && pacientes.length === 0) || !!conflicto}
+            // disabled={isLoading || (!isEdit && pacientes.length === 0) || !!conflicto}
+            disabled={isLoading || (!isEdit && !formData.pacienteId) || !!conflicto}
             variant="primary"
             size="sm"
           >

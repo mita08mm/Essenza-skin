@@ -1,20 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';
+import { PacienteAutocomplete } from '@/shared/forms/PacienteAutocomplete';
 import { inputBase, textareaBase, alertError, Overline, Button, LinkButton } from '@/shared/ui';
-import { api } from '@/shared/api';
-
-interface Paciente {
-  id: string;
-  nombre: string;
-  apellido: string;
-  documento: string;
-  tipoDocumento: string;
-  estado: string;
-}
+import { api, ApiError } from '@/shared/api';
 
 interface Item {
   id: string;
@@ -22,34 +14,29 @@ interface Item {
   indicaciones: string;
 }
 
+interface RecetaFormProps {
+  recetaId?: string;
+  initialData?: {
+    pacienteId: string;
+    nombre: string;
+    items: Item[];
+  };
+}
+
 function buildName(items: Item[]) {
   if (items.length === 1) return items[0].nombre;
   return `${items[0].nombre} y ${items.length - 1} mas`;
 }
 
-export function RecetaForm() {
+export function RecetaForm({ recetaId, initialData }: RecetaFormProps = {}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [pacientes, setPacientes] = useState<Paciente[]>([]);
-  const [loadingPacientes, setLoadingPacientes] = useState(true);
-  const [pacienteId, setPacienteId] = useState('');
-  const [items, setItems] = useState<Item[]>([]);
+  const [pacienteId, setPacienteId] = useState(initialData?.pacienteId || '');
+  const [items, setItems] = useState<Item[]>(initialData?.items || []);
   const [nombreItem, setNombreItem] = useState('');
   const [indicaciones, setIndicaciones] = useState('');
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await api.get<Paciente[]>('/pacientes');
-        setPacientes(data.filter((p) => p.estado === 'ACTIVO'));
-      } catch {
-        /* noop */
-      } finally {
-        setLoadingPacientes(false);
-      }
-    })();
-  }, []);
+  const isEditMode = Boolean(recetaId);
 
   const agregarItem = () => {
     if (!nombreItem.trim() || !indicaciones.trim()) {
@@ -76,14 +63,21 @@ export function RecetaForm() {
     }
     setIsLoading(true);
     try {
-      await api.post('/prescripciones', {
+      const payload = {
         pacienteId,
         nombre: buildName(items),
         items: items.map((i) => ({ nombre: i.nombre, indicaciones: i.indicaciones })),
-      });
+      };
+
+      if (isEditMode) {
+        await api.patch(`/prescripciones/${recetaId}`, payload);
+      } else {
+        await api.post('/prescripciones', payload);
+      }
+
       router.push('/prescripciones');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
+      setError(err instanceof ApiError ? err.message : 'Error desconocido');
     } finally {
       setIsLoading(false);
     }
@@ -93,9 +87,13 @@ export function RecetaForm() {
     <div className="max-w-4xl">
       <PageHeader
         overline="Recetas"
-        title="Nueva prescripción"
-        subtitle="Registra los productos indicados al paciente con sus indicaciones"
-        backHref="/recetas"
+        title={isEditMode ? 'Editar prescripción' : 'Nueva prescripción'}
+        subtitle={
+          isEditMode
+            ? 'Modifica los productos indicados y sus indicaciones'
+            : 'Registra los productos indicados al paciente con sus indicaciones'
+        }
+        backHref="/prescripciones"
       />
 
       {error && <div className={`mb-5 ${alertError}`}>{error}</div>}
@@ -103,24 +101,12 @@ export function RecetaForm() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <FormSection title="Paciente">
           <FormField label="Paciente" required>
-            {loadingPacientes ? (
-              <div className="subtitle">Cargando pacientes...</div>
-            ) : (
-              <select
-                value={pacienteId}
-                onChange={(e) => setPacienteId(e.target.value)}
-                className={inputBase}
-                required
-                disabled={isLoading}
-              >
-                <option value="">Seleccione un paciente</option>
-                {pacientes.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nombre} {p.apellido} — {p.tipoDocumento}: {p.documento}
-                  </option>
-                ))}
-              </select>
-            )}
+            <PacienteAutocomplete
+              value={pacienteId}
+              onChange={setPacienteId}
+              disabled={isLoading}
+              required
+            />
           </FormField>
         </FormSection>
 
@@ -210,7 +196,13 @@ export function RecetaForm() {
             variant="primary"
             size="sm"
           >
-            {isLoading ? 'Guardando...' : 'Guardar prescripción'}
+            {isLoading
+              ? isEditMode
+                ? 'Actualizando...'
+                : 'Guardando...'
+              : isEditMode
+                ? 'Actualizar prescripción'
+                : 'Guardar prescripción'}
           </Button>
         </div>
       </form>

@@ -8,7 +8,13 @@ interface NavbarProps {
 
 export function Navbar({ config }: NavbarProps) {
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md" style={{ backgroundColor: 'rgba(245, 240, 232, 0.95)', borderBottom: '1px solid rgba(201, 169, 110, 0.2)' }}>
+    <nav
+      className="sticky top-0 z-50 backdrop-blur-md"
+      style={{
+        backgroundColor: 'rgba(245, 240, 232, 0.95)',
+        borderBottom: '1px solid rgba(201, 169, 110, 0.2)',
+      }}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-12">
         <div>
           <div className="font-heading text-xl font-bold" style={{ color: '#1a1a1a' }}>

@@ -69,6 +69,17 @@ docker compose down              # Detener
 docker compose logs -f           # Ver logs
 ```
 
+### Calidad de Código
+```bash
+# Lint
+pnpm lint                        # Todo el workspace
+pnpm --filter @clinica/web lint  # Solo frontend
+pnpm --filter @clinica/api lint  # Solo backend
+
+# TypeScript - detecta variables no usadas y errores de tipos
+pnpm --filter @clinica/web typecheck  # Solo frontend
+```
+
 ---
 
 ## ¿Dónde Trabajar?

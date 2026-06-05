@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';
-import { api, ApiError } from '@/shared/api';
+import { api } from '@/shared/api';
 import { inputBase, textareaBase, alertError, Button, LinkButton } from '@/shared/ui';
 type Tipo = 'COSMECEUTICO' | 'DERMOCOSMETICO' | 'EQUIPO' | 'INSUMO';
 

@@ -3,7 +3,10 @@ import { PacienteRepository } from '../../../infrastructure/repositories/Pacient
 export class GetPacientesUseCase {
   constructor(private pacienteRepository: PacienteRepository) {}
 
-  async execute(page: number = 1, limit: number = 50) {
+  async execute(page: number = 1, limit: number = 50, search?: string) {
+    if (search && search.trim()) {
+      return this.pacienteRepository.search(search.trim());
+    }
     return this.pacienteRepository.findAll(page, limit);
   }
 }

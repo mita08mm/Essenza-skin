@@ -5,5 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".open-next/worker"
 
 # Environment variables
+# IMPORTANTE: Configurar NEXT_PUBLIC_API_URL en Cloudflare Pages Dashboard
+# NO hardcodear URLs aquí - usar variables de entorno del proyecto
 [vars]
-NEXT_PUBLIC_API_URL = "https://essenza-skin-api.onrender.com"
+# NEXT_PUBLIC_API_URL = "https://essenza-skin-api.onrender.com"  # REMOVER - usar env vars de Cloudflare

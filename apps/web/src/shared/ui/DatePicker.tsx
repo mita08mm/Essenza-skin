@@ -4,8 +4,18 @@ import { useState, useRef, useEffect, useId } from 'react';
 import { cn } from '@/shared/utils';
 
 const MESES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
 ];
 
 const DIAS = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'];
@@ -87,12 +97,8 @@ export default function DatePicker({
   const todayISO = toISO(today);
 
   // Límites efectivos con defaults sensatos
-  const effectiveMin = minDate
-    ? startOfDay(minDate)
-    : new Date(today.getFullYear() - 120, 0, 1);
-  const effectiveMax = maxDate
-    ? startOfDay(maxDate)
-    : new Date(today.getFullYear() + 10, 11, 31);
+  const effectiveMin = minDate ? startOfDay(minDate) : new Date(today.getFullYear() - 120, 0, 1);
+  const effectiveMax = maxDate ? startOfDay(maxDate) : new Date(today.getFullYear() + 10, 11, 31);
 
   const minYear = effectiveMin.getFullYear();
   const maxYear = effectiveMax.getFullYear();
@@ -103,9 +109,11 @@ export default function DatePicker({
   const getInitialView = () => {
     if (selected) return { year: selected.getFullYear(), month: selected.getMonth() };
     // Cita → abrir en minDate (hoy o futuro)
-    if (minDate && minDate >= today) return { year: minDate.getFullYear(), month: minDate.getMonth() };
+    if (minDate && minDate >= today)
+      return { year: minDate.getFullYear(), month: minDate.getMonth() };
     // Nacimiento → abrir en maxDate (hoy)
-    if (maxDate && maxDate <= today) return { year: maxDate.getFullYear(), month: maxDate.getMonth() };
+    if (maxDate && maxDate <= today)
+      return { year: maxDate.getFullYear(), month: maxDate.getMonth() };
     return { year: today.getFullYear(), month: today.getMonth() };
   };
 
@@ -142,14 +150,18 @@ export default function DatePicker({
 
   const prevMonth = () => {
     if (!canGoPrev) return;
-    if (viewMonth === 0) { setViewMonth(11); setViewYear(viewYear - 1); }
-    else setViewMonth(viewMonth - 1);
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear(viewYear - 1);
+    } else setViewMonth(viewMonth - 1);
   };
 
   const nextMonth = () => {
     if (!canGoNext) return;
-    if (viewMonth === 11) { setViewMonth(0); setViewYear(viewYear + 1); }
-    else setViewMonth(viewMonth + 1);
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear(viewYear + 1);
+    } else setViewMonth(viewMonth + 1);
   };
 
   const handleYearChange = (year: number) => {
@@ -207,7 +219,7 @@ export default function DatePicker({
             ? 'border-red-300 bg-red-50/40'
             : open
               ? 'border-morena ring-piel/20 ring-2'
-              : 'border-[#D7C5B9] hover:border-morena/50',
+              : 'hover:border-morena/50 border-[#D7C5B9]',
           disabled && 'cursor-not-allowed opacity-60',
         )}
       >
@@ -228,7 +240,6 @@ export default function DatePicker({
 
       {open && (
         <div className="absolute top-full left-0 z-50 mt-2 w-[310px] rounded-2xl border border-[#E5DDD6] bg-white p-4 shadow-xl">
-
           {/* Navegación mes / año */}
           <div className="mb-3 flex items-center gap-1">
             <button
@@ -237,10 +248,16 @@ export default function DatePicker({
               disabled={!canGoPrev}
               className={cn(
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors',
-                canGoPrev ? 'text-marengo hover:bg-piel/20' : 'cursor-not-allowed text-marengo/25',
+                canGoPrev ? 'text-marengo hover:bg-piel/20' : 'text-marengo/25 cursor-not-allowed',
               )}
             >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M15 18l-6-6 6-6" />
               </svg>
             </button>
@@ -250,7 +267,7 @@ export default function DatePicker({
               <select
                 value={viewMonth}
                 onChange={(e) => setViewMonth(Number(e.target.value))}
-                className="text-concreto min-w-0 flex-1 cursor-pointer rounded-lg border border-[#D7C5B9] bg-white px-2 py-1 text-xs font-semibold outline-none hover:border-morena/50 focus:border-morena"
+                className="text-concreto hover:border-morena/50 focus:border-morena min-w-0 flex-1 cursor-pointer rounded-lg border border-[#D7C5B9] bg-white px-2 py-1 text-xs font-semibold outline-none"
               >
                 {availableMonths.map(({ label, index, isDisabled }) => (
                   <option key={index} value={index} disabled={isDisabled}>
@@ -263,10 +280,12 @@ export default function DatePicker({
               <select
                 value={viewYear}
                 onChange={(e) => handleYearChange(Number(e.target.value))}
-                className="text-concreto w-[70px] shrink-0 cursor-pointer rounded-lg border border-[#D7C5B9] bg-white px-2 py-1 text-xs font-semibold outline-none hover:border-morena/50 focus:border-morena"
+                className="text-concreto hover:border-morena/50 focus:border-morena w-[70px] shrink-0 cursor-pointer rounded-lg border border-[#D7C5B9] bg-white px-2 py-1 text-xs font-semibold outline-none"
               >
                 {years.map((y) => (
-                  <option key={y} value={y}>{y}</option>
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
                 ))}
               </select>
             </div>
@@ -277,10 +296,16 @@ export default function DatePicker({
               disabled={!canGoNext}
               className={cn(
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors',
-                canGoNext ? 'text-marengo hover:bg-piel/20' : 'cursor-not-allowed text-marengo/25',
+                canGoNext ? 'text-marengo hover:bg-piel/20' : 'text-marengo/25 cursor-not-allowed',
               )}
             >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M9 18l6-6-6-6" />
               </svg>
             </button>
@@ -289,7 +314,10 @@ export default function DatePicker({
           {/* Días de la semana */}
           <div className="mb-1 grid grid-cols-7">
             {DIAS.map((d) => (
-              <div key={d} className="text-marengo flex h-8 items-center justify-center text-xs font-bold">
+              <div
+                key={d}
+                className="text-marengo flex h-8 items-center justify-center text-xs font-bold"
+              >
                 {d}
               </div>
             ))}
@@ -313,7 +341,7 @@ export default function DatePicker({
                   onClick={() => selectDay(day)}
                   className={cn(
                     'h-9 w-full rounded-lg text-sm transition-all',
-                    isDisabled && 'cursor-not-allowed text-marengo/25',
+                    isDisabled && 'text-marengo/25 cursor-not-allowed',
                     !isDisabled && isSelected && 'bg-morena font-bold text-white',
                     !isDisabled && !isSelected && isToday && 'text-morena font-bold underline',
                     !isDisabled && !isSelected && !isToday && 'text-concreto hover:bg-piel/25',

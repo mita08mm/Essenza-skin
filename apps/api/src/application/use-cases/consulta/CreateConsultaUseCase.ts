@@ -26,11 +26,17 @@ export class CreateConsultaUseCase {
     let historiaClinica = await this.historiaClinicaRepository.findByPaciente(data.pacienteId);
 
     if (!historiaClinica) {
-      historiaClinica = await this.historiaClinicaRepository.create({
+      await this.historiaClinicaRepository.create({
         paciente: {
           connect: { id: data.pacienteId },
         },
       });
+      // Cargar la historia clínica recién creada para tener el tipo correcto
+      historiaClinica = await this.historiaClinicaRepository.findByPaciente(data.pacienteId);
+    }
+
+    if (!historiaClinica) {
+      throw new Error('Error al obtener o crear historia clínica');
     }
 
     // Crear tratamiento

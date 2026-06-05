@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Badge, Spinner, PlusIcon, SearchInput, Overline, Subtitle, BodyStrong } from '@/shared/ui';
+import { Badge, Spinner, SearchInput, Overline, Subtitle, BodyStrong } from '@/shared/ui';
+import { PlusIcon } from '@/shared/icons';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { usePacientes, type Paciente } from '../hooks/usePacientes';
 import { calcularEdad } from '../lib/paciente';
@@ -88,15 +89,26 @@ export function PacientesListView() {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="surface hidden overflow-hidden lg:block">
+          <div className="surface hidden lg:block">
             <table className="w-full">
               <thead>
                 <tr className="bg-neutral-25 border-b border-neutral-200">
-                  {['Paciente', 'Documento', 'Edad', 'Teléfono', 'Estado', ''].map((col) => (
-                    <Overline as="th" key={col} className="px-5 py-2.5 text-left">
-                      {col}
-                    </Overline>
-                  ))}
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Paciente
+                  </Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Documento
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">
+                    Edad
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">
+                    Teléfono
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left 2xl:table-cell">
+                    Estado
+                  </Overline>
+                  <th className="px-5 py-2.5"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
@@ -132,23 +144,24 @@ function PacienteRow({ paciente }: { paciente: Paciente }) {
             <p className="body-strong group-hover:text-brand-morena truncate text-neutral-900 transition-colors">
               {paciente.nombre} {paciente.apellido}
             </p>
-            {paciente.email && <p className="muted truncate">{paciente.email}</p>}
+            {paciente.email && <p className="muted truncate text-xs">{paciente.email}</p>}
           </div>
         </Link>
       </td>
       <td className="px-5 py-3">
-        <p className="text-xs tracking-wide text-neutral-500 uppercase">{paciente.tipoDocumento}</p>
         <p className="text-sm text-neutral-800 tabular-nums">{paciente.documento}</p>
       </td>
-      <td className="px-5 py-3 text-sm text-neutral-800 tabular-nums">
-        {calcularEdad(paciente.fechaNacimiento)} <span className="text-neutral-500">años</span>
+      <td className="hidden px-5 py-3 text-sm text-neutral-800 tabular-nums xl:table-cell">
+        {calcularEdad(paciente.fechaNacimiento)}
       </td>
-      <td className="body px-5 py-3">{paciente.telefono || '—'}</td>
-      <td className="px-5 py-3">
+      <td className="hidden px-5 py-3 xl:table-cell">
+        <p className="text-sm text-neutral-800">{paciente.telefono || '—'}</p>
+      </td>
+      <td className="hidden px-5 py-3 2xl:table-cell">
         <EstadoBadge estado={paciente.estado} />
       </td>
       <td className="px-5 py-3 text-right">
-        <div className="inline-flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="inline-flex items-center gap-1 opacity-100 transition-opacity lg:opacity-0 lg:group-hover:opacity-100">
           <ActionLink href={`/pacientes/${paciente.id}/historia`} label="Historia" />
           <ActionLink href={`/pacientes/${paciente.id}`} label="Editar" subtle />
         </div>

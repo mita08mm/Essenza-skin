@@ -6,6 +6,29 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Iniciando seed de base de datos...');
 
+  console.log('\nCreando configuración de la clínica...');
+  const configuracion = await prisma.configuracionClinica.upsert({
+    where: { id: 'singleton' },
+    update: {
+      nombre: 'Essenza Skin & Hair Clinic Spa',
+      direccion: 'Calle Tumusla 561, entre calles México y Reza',
+      telefono: '+591 72226431',
+      email: 'contacto@essenza.clinic',
+      ciudad: 'Cochabamba',
+      pais: 'Bolivia',
+    },
+    create: {
+      id: 'singleton',
+      nombre: 'Essenza Skin & Hair Clinic Spa',
+      direccion: 'Calle Tumusla 561, entre calles México y Reza',
+      telefono: '+591 72226431',
+      email: 'contacto@essenza.clinic',
+      ciudad: 'Cochabamba',
+      pais: 'Bolivia',
+    },
+  });
+  console.log('Configuración creada:', configuracion.nombre);
+
   console.log('\nCreando usuarios del sistema...');
 
   const adminEmail = process.env.SEED_ADMIN_EMAIL || '';
@@ -54,12 +77,11 @@ async function main() {
       activo: true,
     },
   });
-  console.log('✅ Recepcionista creada:', recepcionista.email);
+  console.log(' Recepcionista creada:', recepcionista.email);
 
   console.log('\n¡Seed completado exitosamente!\n');
-  console.log('Resumen:');
-  console.log('  - 3 usuarios (Admin, Médico, Recepcionista)');
-  console.log('\n🔑 Credenciales de acceso:');
+  console.log('  Configuración de clínica creada');
+  console.log('  3 usuarios (Admin, Médico, Recepcionista)');
   console.log('  Admin:        ', process.env.SEED_ADMIN_EMAIL, '/', process.env.SEED_ADMIN_PASSWORD);
   console.log('  Médico:       ', process.env.SEED_MEDICO_EMAIL, '/', process.env.SEED_MEDICO_PASSWORD);
   console.log('  Recepcionista:', process.env.SEED_RECEP_EMAIL, '/', process.env.SEED_RECEP_PASSWORD);

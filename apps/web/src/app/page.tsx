@@ -5,6 +5,7 @@ import {
   Hero,
   Features,
   Services,
+  Products,
   Process,
   ContactCTA,
   Footer,
@@ -22,7 +23,7 @@ export default function LandingPage() {
         // Agregar timestamp para evitar cache del navegador
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/configuracion/public?_t=${Date.now()}`,
-          { cache: 'no-store' }
+          { cache: 'no-store' },
         );
         if (response.ok) {
           const data = await response.json();
@@ -55,6 +56,7 @@ export default function LandingPage() {
       <Hero config={config} />
       <Features />
       <Services />
+      <Products />
       <Process />
       <ContactCTA config={config} />
       <Footer config={config} />

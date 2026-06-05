@@ -36,7 +36,12 @@ export default function TratamientosList({ tratamientos }: TratamientosListProps
       <ol className="relative space-y-5 before:absolute before:top-2 before:bottom-2 before:left-[7px] before:w-px before:bg-neutral-200">
         {tratamientos.map((t) => {
           const isExpanded = expandedIds.has(t.id);
-          const hasDetails = !!(t.evaluacionInicial || t.protocolo || t.observaciones || t.proximaSesion);
+          const hasDetails = !!(
+            t.evaluacionInicial ||
+            t.protocolo ||
+            t.observaciones ||
+            t.proximaSesion
+          );
 
           return (
             <li key={t.id} className="relative pl-7">
@@ -46,17 +51,18 @@ export default function TratamientosList({ tratamientos }: TratamientosListProps
                   onClick={() => hasDetails && toggleExpanded(t.id)}
                   disabled={!hasDetails}
                   className={`bg-neutral-25 flex w-full items-baseline justify-between gap-4 border-b border-neutral-100 px-5 py-3 text-left ${
-                    hasDetails ? 'cursor-pointer transition-colors hover:bg-neutral-50' : 'cursor-default'
+                    hasDetails
+                      ? 'cursor-pointer rounded-t-md transition-colors hover:bg-[rgba(204,175,125,0.1)]'
+                      : 'cursor-default'
                   }`}
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-2">
-                    {hasDetails && (
-                      isExpanded ? (
-                        <ChevronDown className="h-4 w-4 shrink-0 text-neutral-500" />
+                    {hasDetails &&
+                      (isExpanded ? (
+                        <ChevronDown className="text-brand-morena h-4 w-4 shrink-0" />
                       ) : (
                         <ChevronRight className="h-4 w-4 shrink-0 text-neutral-500" />
-                      )
-                    )}
+                      ))}
                     <CardTitle className="truncate">{t.nombreTratamiento}</CardTitle>
                   </div>
                   <Overline as="time" className="shrink-0">

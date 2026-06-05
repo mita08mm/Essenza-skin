@@ -1,5 +1,6 @@
 'use client';
 
+import { Logo } from '@/shared/icons';
 import type { ConfigClinica } from './types';
 
 interface FooterProps {
@@ -53,6 +54,13 @@ export function Footer({ config }: FooterProps) {
       style={{ backgroundColor: '#1a1a1a', borderTop: '1px solid #c9a96e' }}
     >
       <div className="mx-auto max-w-7xl">
+        {/* Logo Complete - Centrado y Grande */}
+        <div className="mb-12 flex justify-center">
+          <div className="w-full max-w-lg" style={{ aspectRatio: '1176 / 1077' }}>
+            <Logo />
+          </div>
+        </div>
+
         <div className="grid gap-12 md:grid-cols-3">
           {/* Column 1: Brand */}
           <div>
@@ -63,7 +71,8 @@ export function Footer({ config }: FooterProps) {
               DRA. CECILE ARCE DERPIC
             </p>
             <p className="mb-2 leading-relaxed" style={{ color: '#888' }}>
-              La fusión perfecta entre medicina estética y arte{config?.ciudad ? ` en ${config.ciudad}` : ' en Cochabamba'}.
+              La fusión perfecta entre medicina estética y arte
+              {config?.ciudad ? ` en ${config.ciudad}` : ' en Cochabamba'}.
             </p>
             <a
               href="https://maps.app.goo.gl/2HqrPerLqgoHks9P9"
@@ -153,8 +162,8 @@ export function Footer({ config }: FooterProps) {
           className="mt-12 border-t pt-8 text-center text-sm"
           style={{ borderColor: 'rgba(255, 255, 255, 0.1)', color: '#666' }}
         >
-          © {new Date().getFullYear()} {config?.nombre || 'Essenza Skin & Hair Clinic Spa'} - DRA. CECILE ARCE DERPIC.
-          Todos los derechos reservados.
+          © {new Date().getFullYear()} {config?.nombre || 'Essenza Skin & Hair Clinic Spa'} - DRA.
+          CECILE ARCE DERPIC. Todos los derechos reservados.
         </div>
       </div>
     </footer>

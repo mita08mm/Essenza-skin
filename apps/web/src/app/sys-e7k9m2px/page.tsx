@@ -24,7 +24,7 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="to-piel/10 flex min-h-screen items-center justify-center bg-gradient-to-br from-white px-4">
       <div className="w-full max-w-md">

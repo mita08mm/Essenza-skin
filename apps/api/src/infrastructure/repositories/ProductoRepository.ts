@@ -43,7 +43,8 @@ export class ProductoRepository {
         principioActivo: data.principioActivo,
       },
     });
-    appCache.del('productos_all');
+    appCache.del('productos_all_false');
+    appCache.del('productos_all_true');
     return producto;
   }
 
