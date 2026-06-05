@@ -5,7 +5,8 @@ export function Process() {
     {
       number: '01',
       title: 'Consulta',
-      description: 'Evaluación completa de tu piel y objetivos estéticos con nuestros especialistas.',
+      description:
+        'Evaluación completa de tu piel y objetivos estéticos con nuestros especialistas.',
     },
     {
       number: '02',
@@ -20,19 +21,34 @@ export function Process() {
   ];
 
   return (
-    <section className="relative overflow-hidden px-6 py-20 lg:px-12 lg:py-32" style={{ backgroundColor: '#1a1a1a' }}>
+    <section
+      className="relative overflow-hidden px-6 py-20 lg:px-12 lg:py-32"
+      style={{ backgroundColor: '#1a1a1a' }}
+    >
       <div className="mx-auto max-w-7xl">
         <div className="mb-16 text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2" style={{ backgroundColor: 'rgba(201, 169, 110, 0.15)', border: '1px solid rgba(201, 169, 110, 0.3)' }}>
-            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#c9a96e' }}>
+          <div
+            className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2"
+            style={{
+              backgroundColor: 'rgba(201, 169, 110, 0.15)',
+              border: '1px solid rgba(201, 169, 110, 0.3)',
+            }}
+          >
+            <span
+              className="text-xs font-semibold tracking-wider uppercase"
+              style={{ color: '#c9a96e' }}
+            >
               Nuestro Proceso
             </span>
           </div>
-          <h2 className="font-heading text-5xl font-bold lg:text-6xl" style={{ color: '#ffffff', letterSpacing: '-0.02em' }}>
+          <h2
+            className="font-heading text-5xl font-bold lg:text-6xl"
+            style={{ color: '#ffffff', letterSpacing: '-0.02em' }}
+          >
             Tu transformación en 3 pasos
           </h2>
         </div>
-        
+
         <div className="relative grid gap-12 md:grid-cols-3">
           {/* Connecting line */}
           <div
@@ -43,7 +59,7 @@ export function Process() {
               right: '16.666%',
             }}
           />
-          
+
           {steps.map((step, i) => (
             <div key={i} className="relative text-center">
               <div

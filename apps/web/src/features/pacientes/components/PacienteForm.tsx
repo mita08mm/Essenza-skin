@@ -132,21 +132,23 @@ export function PacienteForm({
     } catch (err) {
       console.error('Error al guardar paciente:', err);
       let errorMessage = isEdit ? 'Error al actualizar paciente' : 'Error al crear paciente';
-      
+
       if (err instanceof ApiError) {
         errorMessage = err.message;
         // Si hay detalles de validación, agregarlos al mensaje
         if (err.details && typeof err.details === 'object' && 'details' in err.details) {
           const validationErrors = (err.details as { details?: unknown }).details;
           if (Array.isArray(validationErrors)) {
-            const errorList = validationErrors.map((e: { path: string[]; message: string }) => `${e.path.join('.')}: ${e.message}`).join(', ');
+            const errorList = validationErrors
+              .map((e: { path: string[]; message: string }) => `${e.path.join('.')}: ${e.message}`)
+              .join(', ');
             errorMessage += ` - ${errorList}`;
           }
         }
       } else if (err instanceof Error) {
         errorMessage = err.message;
       }
-      
+
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -161,9 +163,7 @@ export function PacienteForm({
       await api.delete(`/pacientes/${pacienteId}`);
       router.push('/pacientes');
     } catch (err) {
-      setDeleteError(
-        err instanceof ApiError ? err.message : 'Error al eliminar paciente'
-      );
+      setDeleteError(err instanceof ApiError ? err.message : 'Error al eliminar paciente');
       setIsDeleting(false);
     }
   };
@@ -427,7 +427,7 @@ export function PacienteForm({
               Eliminar paciente
             </Button>
           )}
-          <div className="flex items-center gap-3 ml-auto">
+          <div className="ml-auto flex items-center gap-3">
             <LinkButton href="/pacientes" variant="secondary" size="sm">
               Cancelar
             </LinkButton>
@@ -473,9 +473,7 @@ export function PacienteForm({
             </>
           }
         >
-          {deleteError && (
-            <div className="alert-danger mb-4 text-sm">{deleteError}</div>
-          )}
+          {deleteError && <div className="alert-danger mb-4 text-sm">{deleteError}</div>}
           <div className="text-sm text-neutral-600">
             <p className="mb-2 font-medium text-neutral-900">Se eliminará permanentemente:</p>
             <ul className="ml-5 list-disc space-y-1">

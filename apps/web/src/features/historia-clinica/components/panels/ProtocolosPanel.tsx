@@ -134,9 +134,9 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
             const isPinned = pinnedIds.has(p.id);
             const firstItem = p.items[0];
             const remainingItems = p.items.slice(1);
-            
+
             return (
-              <li 
+              <li
                 key={p.id}
                 onMouseEnter={() => handleMouseEnter(p.id)}
                 onMouseLeave={() => handleMouseLeave(p.id)}
@@ -165,21 +165,20 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
                       </span>
                     </div>
                   </div>
-                  
+
                   {!isExpanded && remainingItems.length > 0 && (
-                    <div className="pointer-events-none ml-5 mt-0.5">
+                    <div className="pointer-events-none mt-0.5 ml-5">
                       <p className="truncate text-[10px] text-neutral-500">
-                        {remainingItems.length === 1 
+                        {remainingItems.length === 1
                           ? `+ ${remainingItems[0].nombre}`
-                          : `+${remainingItems.length} más`
-                        }
+                          : `+${remainingItems.length} más`}
                       </p>
                     </div>
                   )}
                 </button>
 
                 {isExpanded && remainingItems.length > 0 && (
-                  <div className="animate-in fade-in slide-in-from-top-1 border-t border-neutral-100 bg-neutral-25 px-3 py-1.5 duration-200">
+                  <div className="animate-in fade-in slide-in-from-top-1 bg-neutral-25 border-t border-neutral-100 px-3 py-1.5 duration-200">
                     <ul className="ml-5 space-y-0.5">
                       {remainingItems.map((item) => (
                         <li key={item.id} className="text-[11px]">
@@ -195,9 +194,9 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
               </li>
             );
           })}
-          <li className="border-t border-neutral-100 bg-neutral-25 px-3 py-1.5 text-center">
-            <Link 
-              href="/prescripciones" 
+          <li className="bg-neutral-25 border-t border-neutral-100 px-3 py-1.5 text-center">
+            <Link
+              href="/prescripciones"
               className="text-brand-morena inline-flex items-center gap-1 text-[10px] font-medium transition-colors hover:underline"
             >
               Ver todas →

@@ -74,7 +74,7 @@ export function RecetaForm({ recetaId, initialData }: RecetaFormProps = {}) {
       } else {
         await api.post('/prescripciones', payload);
       }
-      
+
       router.push('/prescripciones');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Error desconocido');
@@ -88,7 +88,11 @@ export function RecetaForm({ recetaId, initialData }: RecetaFormProps = {}) {
       <PageHeader
         overline="Recetas"
         title={isEditMode ? 'Editar prescripción' : 'Nueva prescripción'}
-        subtitle={isEditMode ? 'Modifica los productos indicados y sus indicaciones' : 'Registra los productos indicados al paciente con sus indicaciones'}
+        subtitle={
+          isEditMode
+            ? 'Modifica los productos indicados y sus indicaciones'
+            : 'Registra los productos indicados al paciente con sus indicaciones'
+        }
         backHref="/prescripciones"
       />
 
@@ -192,10 +196,13 @@ export function RecetaForm({ recetaId, initialData }: RecetaFormProps = {}) {
             variant="primary"
             size="sm"
           >
-            {isLoading 
-              ? (isEditMode ? 'Actualizando...' : 'Guardando...') 
-              : (isEditMode ? 'Actualizar prescripción' : 'Guardar prescripción')
-            }
+            {isLoading
+              ? isEditMode
+                ? 'Actualizando...'
+                : 'Guardando...'
+              : isEditMode
+                ? 'Actualizar prescripción'
+                : 'Guardar prescripción'}
           </Button>
         </div>
       </form>

@@ -7,7 +7,10 @@ import { FormSection, FormField } from '@/shared/forms/FormSection';
 import { api } from '@/shared/api/client';
 import { inputBase, textareaBase, alertError, Button, LinkButton } from '@/shared/ui';
 import { TimePicker, addOneHour } from '@/shared/ui/TimePicker';
-import { DisponibilidadTimeline, type CitaDelDia } from '@/features/citas/components/DisponibilidadTimeline';
+import {
+  DisponibilidadTimeline,
+  type CitaDelDia,
+} from '@/features/citas/components/DisponibilidadTimeline';
 import { hayConflicto, toMinutes } from '@/features/citas/lib/horario';
 import { useMemo } from 'react';
 import DatePicker from '@/shared/ui/DatePicker';
@@ -53,7 +56,6 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
   const [citasDelDia, setCitasDelDia] = useState<CitaDelDia[]>([]);
   const [loadingCitas, setLoadingCitas] = useState(false);
 
-
   useEffect(() => {
     if (!proximaConsulta) {
       // Reset states when no date selected
@@ -68,14 +70,22 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
       setLoadingCitas(true);
       try {
         const data = await api.get<CitaDelDia[]>('/citas', { params: { fecha: proximaConsulta } });
-        setCitasDelDia(data.filter((c) => c.estado !== 'CANCELADA' && toMinutes(c.horaInicio) >= 6 * 60));
-      } catch { setCitasDelDia([]); } finally { setLoadingCitas(false); }
+        setCitasDelDia(
+          data.filter((c) => c.estado !== 'CANCELADA' && toMinutes(c.horaInicio) >= 6 * 60),
+        );
+      } catch {
+        setCitasDelDia([]);
+      } finally {
+        setLoadingCitas(false);
+      }
     })();
   }, [proximaConsulta]);
 
   const conflicto = useMemo(() => {
     if (!horaInicio || !horaFin || citasDelDia.length === 0) return null;
-    return citasDelDia.find((x) => hayConflicto(horaInicio, horaFin, x.horaInicio, x.horaFin)) ?? null;
+    return (
+      citasDelDia.find((x) => hayConflicto(horaInicio, horaFin, x.horaInicio, x.horaFin)) ?? null
+    );
   }, [horaInicio, horaFin, citasDelDia]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,7 +95,9 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
       return;
     }
     if (proximaConsulta && horaInicio && horaFin && conflicto) {
-      setError(`El horario de ${conflicto.horaInicio} a ${conflicto.horaFin} ya está ocupado con ${conflicto.paciente?.nombre} ${conflicto.paciente?.apellido}`);
+      setError(
+        `El horario de ${conflicto.horaInicio} a ${conflicto.horaFin} ya está ocupado con ${conflicto.paciente?.nombre} ${conflicto.paciente?.apellido}`,
+      );
       return;
     }
     if (proximaConsulta && (!horaInicio || !horaFin)) {
@@ -148,8 +160,6 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
         backHref={`/pacientes/${pacienteId}/historia`}
       />
 
-     
-    
       <form onSubmit={handleSubmit} className="space-y-5">
         <FormSection title="Datos de la sesión">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -235,30 +245,50 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
             </FormField>
             {proximaConsulta && (
               <>
-                <TimePicker label="Hora inicio" value={horaInicio}
-                  onChange={(v) => { setHoraInicio(v); setHoraFin(addOneHour(v)); }}
-                  required disabled={isSaving} hasConflict={!!conflicto} />
-                <TimePicker label="Hora fin" value={horaFin}
-                  onChange={setHoraFin} required disabled={isSaving} hasConflict={!!conflicto} />
+                <TimePicker
+                  label="Hora inicio"
+                  value={horaInicio}
+                  onChange={(v) => {
+                    setHoraInicio(v);
+                    setHoraFin(addOneHour(v));
+                  }}
+                  required
+                  disabled={isSaving}
+                  hasConflict={!!conflicto}
+                />
+                <TimePicker
+                  label="Hora fin"
+                  value={horaFin}
+                  onChange={setHoraFin}
+                  required
+                  disabled={isSaving}
+                  hasConflict={!!conflicto}
+                />
               </>
             )}
           </div>
 
           {proximaConsulta && (
-            <DisponibilidadTimeline citas={citasDelDia} loading={loadingCitas}
-              nuevaInicio={horaInicio} nuevaFin={horaFin} conflicto={!!conflicto} selectionLabel="Nueva" />
+            <DisponibilidadTimeline
+              citas={citasDelDia}
+              loading={loadingCitas}
+              nuevaInicio={horaInicio}
+              nuevaFin={horaFin}
+              conflicto={!!conflicto}
+              selectionLabel="Nueva"
+            />
           )}
         </FormSection>
 
         <div className="space-y-4">
           {error && <div className={alertError}>{error}</div>}
           <div className="flex items-center justify-end gap-3">
-          <LinkButton href={`/pacientes/${pacienteId}/historia`} variant="secondary" size="sm">
-            Cancelar
-          </LinkButton>
-          <Button type="submit" disabled={isSaving} variant="primary" size="sm">
-            {isSaving ? 'Guardando...' : 'Guardar consulta'}
-          </Button>
+            <LinkButton href={`/pacientes/${pacienteId}/historia`} variant="secondary" size="sm">
+              Cancelar
+            </LinkButton>
+            <Button type="submit" disabled={isSaving} variant="primary" size="sm">
+              {isSaving ? 'Guardando...' : 'Guardar consulta'}
+            </Button>
           </div>
         </div>
       </form>

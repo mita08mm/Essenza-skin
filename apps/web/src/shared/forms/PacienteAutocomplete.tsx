@@ -53,9 +53,7 @@ export function PacienteAutocomplete({
     debounceRef.current = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const url = query.trim()
-          ? `/pacientes?search=${encodeURIComponent(query)}`
-          : `/pacientes`;
+        const url = query.trim() ? `/pacientes?search=${encodeURIComponent(query)}` : `/pacientes`;
         const data = await api.get<Paciente[]>(url);
         const activos = data.filter((p) => p.estado === 'ACTIVO');
         setResultados(activos);
@@ -118,8 +116,8 @@ export function PacienteAutocomplete({
       />
 
       {isLoading && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-brand-morena" />
+        <div className="absolute top-1/2 right-3 -translate-y-1/2">
+          <div className="border-t-brand-morena h-4 w-4 animate-spin rounded-full border-2 border-neutral-300" />
         </div>
       )}
 

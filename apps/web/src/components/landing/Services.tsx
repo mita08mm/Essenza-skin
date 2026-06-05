@@ -51,19 +51,35 @@ export function Services() {
   ];
 
   return (
-    <section id="servicios" className="relative overflow-hidden px-6 py-20 lg:px-12 lg:py-32" style={{ backgroundColor: '#e8e0d5' }}>
+    <section
+      id="servicios"
+      className="relative overflow-hidden px-6 py-20 lg:px-12 lg:py-32"
+      style={{ backgroundColor: '#e8e0d5' }}
+    >
       <div className="mx-auto max-w-7xl">
         <div className="mb-16 text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2" style={{ backgroundColor: 'rgba(201, 169, 110, 0.15)', border: '1px solid rgba(201, 169, 110, 0.3)' }}>
-            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#c9a96e' }}>
+          <div
+            className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2"
+            style={{
+              backgroundColor: 'rgba(201, 169, 110, 0.15)',
+              border: '1px solid rgba(201, 169, 110, 0.3)',
+            }}
+          >
+            <span
+              className="text-xs font-semibold tracking-wider uppercase"
+              style={{ color: '#c9a96e' }}
+            >
               Nuestros Servicios
             </span>
           </div>
-          <h2 className="font-heading text-5xl font-bold lg:text-6xl" style={{ color: '#1a1a1a', letterSpacing: '-0.02em' }}>
+          <h2
+            className="font-heading text-5xl font-bold lg:text-6xl"
+            style={{ color: '#1a1a1a', letterSpacing: '-0.02em' }}
+          >
             Tratamientos de medicina estética
           </h2>
         </div>
-        
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {services.map((service, i) => (
             <div
@@ -84,8 +100,14 @@ export function Services() {
               <ul className="mb-6 space-y-3">
                 {service.items.map((item, j) => (
                   <li key={j} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: '#c9a96e' }} strokeWidth={2.5} />
-                    <span className="text-sm" style={{ color: '#d0d0d0' }}>{item}</span>
+                    <Check
+                      className="mt-0.5 h-4 w-4 flex-shrink-0"
+                      style={{ color: '#c9a96e' }}
+                      strokeWidth={2.5}
+                    />
+                    <span className="text-sm" style={{ color: '#d0d0d0' }}>
+                      {item}
+                    </span>
                   </li>
                 ))}
               </ul>

@@ -48,9 +48,7 @@ export function RecetasListView() {
       // Invalidar la query para refrescar la lista
       await queryClient.invalidateQueries({ queryKey: recetasKeys.list() });
     } catch (err) {
-      setDeleteError(
-        err instanceof ApiError ? err.message : 'Error al eliminar prescripción'
-      );
+      setDeleteError(err instanceof ApiError ? err.message : 'Error al eliminar prescripción');
       setIsDeleting(false);
     }
   };
@@ -119,20 +117,24 @@ export function RecetasListView() {
             <table className="w-full">
               <thead>
                 <tr className="bg-neutral-25 border-b border-neutral-200">
-                  <Overline as="th" className="px-5 py-2.5 text-left">Fecha</Overline>
-                  <Overline as="th" className="px-5 py-2.5 text-left">Paciente</Overline>
-                  <Overline as="th" className="px-5 py-2.5 text-left">Prescripción</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">Indicaciones</Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Fecha
+                  </Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Paciente
+                  </Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Prescripción
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">
+                    Indicaciones
+                  </Overline>
                   <th className="px-5 py-2.5"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {filtradas.map((p) => (
-                  <PrescripcionRow 
-                    key={p.id} 
-                    prescripcion={p} 
-                    onDelete={() => setDeleteId(p.id)}
-                  />
+                  <PrescripcionRow key={p.id} prescripcion={p} onDelete={() => setDeleteId(p.id)} />
                 ))}
               </tbody>
             </table>
@@ -158,7 +160,8 @@ export function RecetasListView() {
       >
         <div className="space-y-4">
           <p className="text-sm text-neutral-700">
-            ¿Estás seguro de que deseas eliminar esta prescripción? Esta acción no se puede deshacer.
+            ¿Estás seguro de que deseas eliminar esta prescripción? Esta acción no se puede
+            deshacer.
           </p>
           {deleteError && <div className={alertError}>{deleteError}</div>}
           <div className="flex justify-end gap-3">
@@ -173,12 +176,7 @@ export function RecetasListView() {
             >
               Cancelar
             </Button>
-            <Button
-              type="button"
-              variant="danger"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
+            <Button type="button" variant="danger" onClick={handleDelete} disabled={isDeleting}>
               {isDeleting ? 'Eliminando...' : 'Eliminar'}
             </Button>
           </div>
@@ -188,10 +186,10 @@ export function RecetasListView() {
   );
 }
 
-function PrescripcionRow({ 
+function PrescripcionRow({
   prescripcion,
-  onDelete 
-}: { 
+  onDelete,
+}: {
   prescripcion: Prescripcion;
   onDelete: () => void;
 }) {
@@ -229,7 +227,7 @@ function PrescripcionRow({
               e.stopPropagation();
               onDelete();
             }}
-            className="inline-flex h-7 items-center rounded-md px-2.5 text-xs font-medium text-danger transition-colors hover:bg-danger/10"
+            className="text-danger hover:bg-danger/10 inline-flex h-7 items-center rounded-md px-2.5 text-xs font-medium transition-colors"
           >
             Eliminar
           </button>

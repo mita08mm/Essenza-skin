@@ -163,13 +163,27 @@ export function CobrosListView() {
             <table className="w-full">
               <thead>
                 <tr className="bg-neutral-25 border-b border-neutral-200">
-                  <Overline as="th" className="px-5 py-2.5 text-left">Fecha</Overline>
-                  <Overline as="th" className="px-5 py-2.5 text-left">Paciente</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">Descripción</Overline>
-                  <Overline as="th" className="px-5 py-2.5 text-right">Total</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-right 2xl:table-cell">Abonado</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-right 2xl:table-cell">Pendiente</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">Estado</Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Fecha
+                  </Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Paciente
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">
+                    Descripción
+                  </Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-right">
+                    Total
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-right 2xl:table-cell">
+                    Abonado
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-right 2xl:table-cell">
+                    Pendiente
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">
+                    Estado
+                  </Overline>
                   <th className="px-5 py-2.5"></th>
                 </tr>
               </thead>
@@ -205,13 +219,11 @@ function CobroRow({ cobro }: { cobro: CobroConTotales }) {
         </p>
         <Muted className="text-xs xl:hidden">{buildTitle(cobro)}</Muted>
       </td>
-      <td className="hidden px-5 py-3 text-neutral-700 xl:table-cell">
-        {buildTitle(cobro)}
-      </td>
-      <td className="px-5 py-3 text-right font-medium tabular-nums text-neutral-800">
+      <td className="hidden px-5 py-3 text-neutral-700 xl:table-cell">{buildTitle(cobro)}</td>
+      <td className="px-5 py-3 text-right font-medium text-neutral-800 tabular-nums">
         {formatMonto(Number(cobro.total))}
       </td>
-      <td className="hidden px-5 py-3 text-right tabular-nums text-neutral-700 2xl:table-cell">
+      <td className="hidden px-5 py-3 text-right text-neutral-700 tabular-nums 2xl:table-cell">
         {formatMonto(cobro.abonado)}
       </td>
       <td className="hidden px-5 py-3 text-right 2xl:table-cell">
@@ -229,7 +241,7 @@ function CobroRow({ cobro }: { cobro: CobroConTotales }) {
       <td className="px-5 py-3 text-right">
         <Link
           href={`/cobros/${cobro.id}`}
-          className="text-brand-morena inline-flex h-7 items-center rounded-md px-2.5 text-xs font-medium opacity-100 transition-colors lg:opacity-0 lg:group-hover:opacity-100 hover:bg-[rgba(204,175,125,0.18)]"
+          className="text-brand-morena inline-flex h-7 items-center rounded-md px-2.5 text-xs font-medium opacity-100 transition-colors hover:bg-[rgba(204,175,125,0.18)] lg:opacity-0 lg:group-hover:opacity-100"
         >
           Ver
         </Link>

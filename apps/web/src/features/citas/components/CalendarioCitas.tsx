@@ -2,13 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  BottomSheet,
-  Button,
-  CardTitle,
-  CloseIcon,
-  LinkButton,
-} from '@/shared/ui';
+import { BottomSheet, Button, CardTitle, CloseIcon, LinkButton } from '@/shared/ui';
 import { api } from '@/shared/api';
 import EditIcon from '@/shared/icons/EditIcon';
 import TrashIcon from '@/shared/icons/TrashIcon';
@@ -208,17 +202,15 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
             const citasDia = citasPorDia[key] || [];
             const esHoy = key === hoyKey;
             const otroMes = dia.getMonth() !== mesActual;
-            const hoyInicio = new Date(); hoyInicio.setHours(0,0,0,0);
+            const hoyInicio = new Date();
+            hoyInicio.setHours(0, 0, 0, 0);
             const esPasado = dia < hoyInicio;
 
             return (
               <div
                 key={i}
                 onClick={() => !esPasado && abrirDia(dia)}
-                className={`relative flex min-h-[60px] flex-col border-r border-b border-gray-100/80 p-1 transition-colors sm:min-h-[110px] sm:p-2
-                  ${esPasado ? 'cursor-not-allowed bg-gray-50 opacity-50' : 'cursor-pointer'}
-                  ${esHoy ? 'z-10 bg-[#FBF7F4]/40 ring-1 ring-[#60412B]/30' : !esPasado ? 'bg-white hover:bg-[#FBF7F4]/20' : ''}
-                `}
+                className={`relative flex min-h-[60px] flex-col border-r border-b border-gray-100/80 p-1 transition-colors sm:min-h-[110px] sm:p-2 ${esPasado ? 'cursor-not-allowed bg-gray-50 opacity-50' : 'cursor-pointer'} ${esHoy ? 'z-10 bg-[#FBF7F4]/40 ring-1 ring-[#60412B]/30' : !esPasado ? 'bg-white hover:bg-[#FBF7F4]/20' : ''} `}
               >
                 <div className="flex items-start justify-between">
                   <span
@@ -488,10 +480,7 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
             <div className="bg-neutral-25 px-6 pt-5 pb-4">
               <div className="flex items-center justify-between">
                 <span
-                  className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium
-                    ${ESTADO_COLORS[citaSeleccionada.estado]?.bg ?? ''}
-                    ${ESTADO_COLORS[citaSeleccionada.estado]?.text ?? ''}
-                    ${ESTADO_COLORS[citaSeleccionada.estado]?.border ?? ''}`}
+                  className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${ESTADO_COLORS[citaSeleccionada.estado]?.bg ?? ''} ${ESTADO_COLORS[citaSeleccionada.estado]?.text ?? ''} ${ESTADO_COLORS[citaSeleccionada.estado]?.border ?? ''}`}
                 >
                   {citaSeleccionada.estado}
                 </span>
@@ -535,7 +524,9 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
                 </div>
               )}
               {errorEliminar && (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{errorEliminar}</p>
+                <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
+                  {errorEliminar}
+                </p>
               )}
             </div>
 
@@ -546,7 +537,7 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
                   <Button
                     variant="secondary"
                     size="md"
-                    className="flex-1 h-10"
+                    className="h-10 flex-1"
                     onClick={cerrarDetalleCita}
                   >
                     Cerrar
@@ -555,7 +546,7 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
                     href={`/citas/${citaSeleccionada.id}/editar`}
                     variant="primary"
                     size="md"
-                    className="flex-1 h-10 justify-center"
+                    className="h-10 flex-1 justify-center"
                   >
                     <EditIcon />
                     Editar
@@ -563,7 +554,7 @@ export default function CalendarioCitas({ citas = [], onDiaClick }: CalendarioCi
                   <Button
                     variant="danger"
                     size="md"
-                    className="flex-1 h-10"
+                    className="h-10 flex-1"
                     onClick={() => setConfirmandoEliminar(true)}
                   >
                     <TrashIcon color="currentColor" />

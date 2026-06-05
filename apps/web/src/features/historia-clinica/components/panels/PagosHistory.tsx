@@ -81,7 +81,7 @@ function ProductoCombobox({ value, onChange, onSelect }: ProductoComboboxProps) 
       />
 
       {showDropdown && (
-        <div className="absolute z-50 mt-1 w-full overflow-auto rounded-md border border-neutral-200 bg-white shadow-lg max-h-56">
+        <div className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-md border border-neutral-200 bg-white shadow-lg">
           {isFetching ? (
             <div className="flex items-center justify-center py-4">
               <Spinner />
@@ -90,14 +90,14 @@ function ProductoCombobox({ value, onChange, onSelect }: ProductoComboboxProps) 
             // No match → inform user they can keep typing freely
             <div className="px-3 py-2.5 text-sm text-neutral-500">
               No encontrado en inventario —{' '}
-              <span className="text-neutral-700 font-medium">se guardará como texto libre</span>
+              <span className="font-medium text-neutral-700">se guardará como texto libre</span>
             </div>
           ) : (
             filtered.map((p) => (
               <button
                 key={p.id}
                 type="button"
-                className="flex w-full items-center justify-between px-3 py-2.5 text-left hover:bg-neutral-50 transition-colors"
+                className="flex w-full items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-neutral-50"
                 onMouseDown={(e) => {
                   // Prevent input blur before we handle the click
                   e.preventDefault();

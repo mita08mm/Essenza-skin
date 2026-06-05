@@ -39,7 +39,14 @@ export function addOneHour(value: string): string {
 const HOURS = Array.from({ length: 12 }, (_, i) => i + 1);
 const MINUTES = Array.from({ length: 60 }, (_, i) => i);
 
-export function TimePicker({ label, value, onChange, disabled, required, hasConflict }: TimePickerProps) {
+export function TimePicker({
+  label,
+  value,
+  onChange,
+  disabled,
+  required,
+  hasConflict,
+}: TimePickerProps) {
   const { hour, minute, ampm } = from24(value);
 
   // Inicializar con valor por defecto si está vacío
@@ -85,8 +92,6 @@ export function TimePicker({ label, value, onChange, disabled, required, hasConf
       </label>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        
-
         {/* Horas */}
         <select
           value={hour}
@@ -97,11 +102,15 @@ export function TimePicker({ label, value, onChange, disabled, required, hasConf
           aria-label={`${label} hora`}
         >
           {HOURS.map((h) => (
-            <option key={h} value={h}>{String(h).padStart(2, '0')}</option>
+            <option key={h} value={h}>
+              {String(h).padStart(2, '0')}
+            </option>
           ))}
         </select>
 
-        <span style={{ color: 'var(--color-text-secondary)', fontWeight: 600, fontSize: 16 }}>:</span>
+        <span style={{ color: 'var(--color-text-secondary)', fontWeight: 600, fontSize: 16 }}>
+          :
+        </span>
 
         {/* Minutos */}
         <select
@@ -112,7 +121,9 @@ export function TimePicker({ label, value, onChange, disabled, required, hasConf
           aria-label={`${label} minutos`}
         >
           {MINUTES.map((m) => (
-            <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
+            <option key={m} value={m}>
+              {String(m).padStart(2, '0')}
+            </option>
           ))}
         </select>
 
@@ -130,7 +141,12 @@ export function TimePicker({ label, value, onChange, disabled, required, hasConf
       </div>
 
       {readable && (
-        <span style={{ fontSize: 12, color: hasConflict ? 'var(--color-text-warning)' : 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontSize: 12,
+            color: hasConflict ? 'var(--color-text-warning)' : 'var(--color-text-tertiary)',
+          }}
+        >
           Hora actual: {readable}
         </span>
       )}

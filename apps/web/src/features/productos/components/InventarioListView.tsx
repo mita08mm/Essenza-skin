@@ -47,7 +47,6 @@ export function InventarioListView() {
     () => productos.reduce((sum, p) => sum + p.precio * p.stock, 0),
     [productos],
   );
-  
 
   const handleSaveStock = async () => {
     if (!editing) return;
@@ -164,19 +163,29 @@ export function InventarioListView() {
             <table className="w-full">
               <thead>
                 <tr className="bg-neutral-25 border-b border-neutral-200">
-                  <Overline as="th" className="px-5 py-2.5 text-left">Producto</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-left 2xl:table-cell">Tipo</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-right xl:table-cell">Precio</Overline>
-                  <Overline as="th" className="px-5 py-2.5 text-center">Stock</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-right 2xl:table-cell">Valor</Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Producto
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left 2xl:table-cell">
+                    Tipo
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-right xl:table-cell">
+                    Precio
+                  </Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-center">
+                    Stock
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-right 2xl:table-cell">
+                    Valor
+                  </Overline>
                   <th className="px-5 py-2.5"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {filtrados.map((p) => (
-                  <ProductoRow 
-                    key={p.id} 
-                    producto={p} 
+                  <ProductoRow
+                    key={p.id}
+                    producto={p}
                     editing={editing?.id === p.id ? editing : null}
                     onEdit={(v) => setEditing({ id: p.id, value: v })}
                     onChange={(v) => setEditing({ id: p.id, value: v })}
@@ -222,7 +231,7 @@ function ProductoRow({ producto, editing, onEdit, onChange, onCancel, onSave }: 
         <Badge variant="default">{TIPO_LABELS[producto.tipo]}</Badge>
       </td>
       <td className="hidden px-5 py-3 text-right xl:table-cell">
-        <p className="text-sm tabular-nums text-neutral-800">{formatMonto(producto.precio)}</p>
+        <p className="text-sm text-neutral-800 tabular-nums">{formatMonto(producto.precio)}</p>
       </td>
       <td className="px-5 py-3 text-center">
         <StockCell
@@ -234,13 +243,13 @@ function ProductoRow({ producto, editing, onEdit, onChange, onCancel, onSave }: 
           onSave={onSave}
         />
       </td>
-      <td className="hidden px-5 py-3 text-right font-medium tabular-nums text-neutral-800 2xl:table-cell">
+      <td className="hidden px-5 py-3 text-right font-medium text-neutral-800 tabular-nums 2xl:table-cell">
         {formatMonto(producto.precio * producto.stock)}
       </td>
       <td className="px-5 py-3 text-right">
         <Link
           href={`/productos/${producto.id}/editar`}
-          className="text-brand-morena inline-flex h-7 items-center rounded-md px-2.5 text-xs font-medium opacity-100 transition-colors lg:opacity-0 lg:group-hover:opacity-100 hover:bg-[rgba(204,175,125,0.18)]"
+          className="text-brand-morena inline-flex h-7 items-center rounded-md px-2.5 text-xs font-medium opacity-100 transition-colors hover:bg-[rgba(204,175,125,0.18)] lg:opacity-0 lg:group-hover:opacity-100"
         >
           Editar
         </Link>
@@ -267,20 +276,22 @@ function ProductoCard({ producto }: { producto: Producto }) {
       </div>
       <div className="grid grid-cols-3 gap-3 border-t border-neutral-100 pt-3">
         <div>
-          <p className="text-[10px] uppercase tracking-wide text-neutral-500">Precio</p>
+          <p className="text-[10px] tracking-wide text-neutral-500 uppercase">Precio</p>
           <p className="text-sm font-medium text-neutral-800 tabular-nums">
             {formatMonto(producto.precio)}
           </p>
         </div>
         <div>
-          <p className="text-[10px] uppercase tracking-wide text-neutral-500">Stock</p>
-          <p className={`text-sm font-medium tabular-nums ${stockBajo ? 'text-orange-600' : 'text-neutral-800'}`}>
+          <p className="text-[10px] tracking-wide text-neutral-500 uppercase">Stock</p>
+          <p
+            className={`text-sm font-medium tabular-nums ${stockBajo ? 'text-orange-600' : 'text-neutral-800'}`}
+          >
             {producto.stock}
             {stockBajo && <span className="ml-1 text-[10px]">⚠️</span>}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] uppercase tracking-wide text-neutral-500">Valor</p>
+          <p className="text-[10px] tracking-wide text-neutral-500 uppercase">Valor</p>
           <p className="text-sm font-medium text-neutral-800 tabular-nums">
             {formatMonto(producto.precio * producto.stock)}
           </p>

@@ -37,41 +37,41 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   return (
     <div
-      className={`${desktopOnly ? 'hidden lg:block' : ''} rounded-lg border border-neutral-200 bg-white overflow-hidden`}
+      className={`${desktopOnly ? 'hidden lg:block' : ''} overflow-hidden rounded-lg border border-neutral-200 bg-white`}
     >
       <div className="overflow-x-auto">
         <table className="w-full">
-        <thead>
-          <tr className="bg-neutral-25 border-b border-neutral-200">
-            {columns.map((c) => (
-              <Overline
-                as="th"
-                key={c.key}
-                className={`px-4 py-2.5 ${alignCls[c.align ?? 'left']}`}
-              >
-                {c.label}
-              </Overline>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-neutral-100">
-          {rows.map((row) => (
-            <tr
-              key={getKey(row)}
-              className={`hover:bg-neutral-25 group transition-colors ${rowClassName?.(row) ?? ''}`}
-            >
+          <thead>
+            <tr className="bg-neutral-25 border-b border-neutral-200">
               {columns.map((c) => (
-                <td
+                <Overline
+                  as="th"
                   key={c.key}
-                  className={`px-4 py-3 text-sm ${alignCls[c.align ?? 'left']} ${c.cellClassName ?? ''}`}
+                  className={`px-4 py-2.5 ${alignCls[c.align ?? 'left']}`}
                 >
-                  {c.render(row)}
-                </td>
+                  {c.label}
+                </Overline>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-neutral-100">
+            {rows.map((row) => (
+              <tr
+                key={getKey(row)}
+                className={`hover:bg-neutral-25 group transition-colors ${rowClassName?.(row) ?? ''}`}
+              >
+                {columns.map((c) => (
+                  <td
+                    key={c.key}
+                    className={`px-4 py-3 text-sm ${alignCls[c.align ?? 'left']} ${c.cellClassName ?? ''}`}
+                  >
+                    {c.render(row)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

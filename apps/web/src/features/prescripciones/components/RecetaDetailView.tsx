@@ -194,7 +194,7 @@ export function RecetaDetailView({ recetaId }: { recetaId: string }) {
                   <td className="px-6 py-3 text-right">
                     <button
                       onClick={() => setDeleteItemId(item.id)}
-                      className="inline-flex h-7 items-center gap-1 rounded-md px-2.5 text-xs font-medium text-danger opacity-100 transition-all hover:bg-danger/10 lg:opacity-0 lg:group-hover:opacity-100"
+                      className="text-danger hover:bg-danger/10 inline-flex h-7 items-center gap-1 rounded-md px-2.5 text-xs font-medium opacity-100 transition-all lg:opacity-0 lg:group-hover:opacity-100"
                     >
                       <Trash2 className="h-3 w-3" />
                       Eliminar
@@ -218,7 +218,8 @@ export function RecetaDetailView({ recetaId }: { recetaId: string }) {
       >
         <div className="space-y-4">
           <p className="text-sm text-neutral-700">
-            ¿Estás seguro de que deseas eliminar esta prescripción completa? Esta acción no se puede deshacer.
+            ¿Estás seguro de que deseas eliminar esta prescripción completa? Esta acción no se puede
+            deshacer.
           </p>
           {deleteError && <div className={alertError}>{deleteError}</div>}
           <div className="flex justify-end gap-3">
@@ -271,12 +272,7 @@ export function RecetaDetailView({ recetaId }: { recetaId: string }) {
             >
               Cancelar
             </Button>
-            <Button
-              type="button"
-              variant="danger"
-              onClick={handleDeleteItem}
-              disabled={isDeleting}
-            >
+            <Button type="button" variant="danger" onClick={handleDeleteItem} disabled={isDeleting}>
               {isDeleting ? 'Eliminando...' : 'Eliminar item'}
             </Button>
           </div>

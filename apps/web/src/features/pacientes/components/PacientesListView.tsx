@@ -93,11 +93,21 @@ export function PacientesListView() {
             <table className="w-full">
               <thead>
                 <tr className="bg-neutral-25 border-b border-neutral-200">
-                  <Overline as="th" className="px-5 py-2.5 text-left">Paciente</Overline>
-                  <Overline as="th" className="px-5 py-2.5 text-left">Documento</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">Edad</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">Teléfono</Overline>
-                  <Overline as="th" className="hidden px-5 py-2.5 text-left 2xl:table-cell">Estado</Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Paciente
+                  </Overline>
+                  <Overline as="th" className="px-5 py-2.5 text-left">
+                    Documento
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">
+                    Edad
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left xl:table-cell">
+                    Teléfono
+                  </Overline>
+                  <Overline as="th" className="hidden px-5 py-2.5 text-left 2xl:table-cell">
+                    Estado
+                  </Overline>
                   <th className="px-5 py-2.5"></th>
                 </tr>
               </thead>
@@ -139,9 +149,9 @@ function PacienteRow({ paciente }: { paciente: Paciente }) {
         </Link>
       </td>
       <td className="px-5 py-3">
-        <p className="text-sm tabular-nums text-neutral-800">{paciente.documento}</p>
+        <p className="text-sm text-neutral-800 tabular-nums">{paciente.documento}</p>
       </td>
-      <td className="hidden px-5 py-3 text-sm tabular-nums text-neutral-800 xl:table-cell">
+      <td className="hidden px-5 py-3 text-sm text-neutral-800 tabular-nums xl:table-cell">
         {calcularEdad(paciente.fechaNacimiento)}
       </td>
       <td className="hidden px-5 py-3 xl:table-cell">
