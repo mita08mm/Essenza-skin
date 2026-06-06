@@ -6,7 +6,15 @@ import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';
 import { PacienteAutocomplete } from '@/shared/forms/PacienteAutocomplete';
 import DatePicker from '@/shared/ui/DatePicker';
-import { inputBase, textareaBase, alertError, alertWarning, Button, LinkButton } from '@/shared/ui';
+import {
+  inputBase,
+  textareaBase,
+  inputConflict,
+  alertError,
+  alertWarning,
+  Button,
+  LinkButton,
+} from '@/shared/ui';
 import { api } from '@/shared/api';
 import { diaSemanaLabel, hayConflicto, toMinutes } from '../lib/horario';
 import { DisponibilidadTimeline, type CitaDelDia } from './DisponibilidadTimeline';
