@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useState } from 'react';
 
 export function Features() {
@@ -8,16 +8,10 @@ export function Features() {
 
   const features = [
     {
-      icon: Sparkles,
-      title: 'Arte y Medicina Estética',
-      description:
-        'Fusión perfecta entre medicina estética y arte, diseñado para realzar tu belleza con elegancia y naturalidad.',
-    },
-    {
       icon: Heart,
       title: 'Nuestra Ubicación',
       description:
-        'Calle Tumusla 561, entre calles México y Reza, Cochabamba. Un espacio exclusivo diseñado para tu bienestar.',
+        'Calle Tumusla N. 561 (entre calles México y José de la Reza), Cochabamba. Un espacio exclusivo diseñado para tu bienestar.',
     },
   ];
 
@@ -55,14 +49,14 @@ export function Features() {
           </h2>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* Feature cards */}
+        <div className="flex justify-center">
+          {/* Feature card */}
           {features.map((feature, i) => {
             const Icon = feature.icon;
             return (
               <div
                 key={i}
-                className="rounded-2xl p-8 transition-all duration-300"
+                className="rounded-2xl p-8 transition-all duration-300 max-w-2xl"
                 style={{
                   background:
                     hoveredCard === i

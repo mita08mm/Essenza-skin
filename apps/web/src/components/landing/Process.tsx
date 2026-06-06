@@ -6,7 +6,7 @@ export function Process() {
       number: '01',
       title: 'Consulta',
       description:
-        'Evaluación completa de tu piel y objetivos estéticos con nuestros especialistas.',
+        'Evaluación completa de tu piel, cuero cabelludo y cabello con nuestros especialistas.',
     },
     {
       number: '02',

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import PanelFrame, { PanelActionButton } from './PanelFrame';
 import {
   Button,
@@ -332,24 +333,29 @@ function Totals({
 
 function CobroLi({ cobro }: { cobro: CobroRow }) {
   return (
-    <li className="flex items-center gap-3 px-5 py-3">
-      <div className="min-w-0 flex-1">
-        <p className="body-strong truncate text-neutral-900">{cobro.titulo}</p>
-        <p className="mt-0.5 text-[11px] tracking-wide text-neutral-500 uppercase">
-          {cobro.tipo === 'PRODUCTO' ? 'Producto' : 'Servicio'} · {fmt(cobro.costo)}
-        </p>
-      </div>
-      {cobro.pendiente > 0 ? (
-        <div className="text-right">
-          <Muted>Pendiente</Muted>
-          <p className="text-warning text-sm font-semibold">{fmt(cobro.pendiente)}</p>
+    <li>
+      <Link
+        href={`/cobros/${cobro.cobroId}`}
+        className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-neutral-50"
+      >
+        <div className="min-w-0 flex-1">
+          <p className="body-strong truncate text-neutral-900">{cobro.titulo}</p>
+          <p className="mt-0.5 text-[11px] tracking-wide text-neutral-500 uppercase">
+            {cobro.tipo === 'PRODUCTO' ? 'Producto' : 'Servicio'} · {fmt(cobro.costo)}
+          </p>
         </div>
-      ) : (
-        <div className="text-right">
-          <Muted>Pagado</Muted>
-          <p className="text-success text-sm font-semibold">{fmt(cobro.pagado)}</p>
-        </div>
-      )}
+        {cobro.pendiente > 0 ? (
+          <div className="text-right">
+            <Muted>Pendiente</Muted>
+            <p className="text-warning text-sm font-semibold">{fmt(cobro.pendiente)}</p>
+          </div>
+        ) : (
+          <div className="text-right">
+            <Muted>Pagado</Muted>
+            <p className="text-success text-sm font-semibold">{fmt(cobro.pagado)}</p>
+          </div>
+        )}
+      </Link>
     </li>
   );
 }

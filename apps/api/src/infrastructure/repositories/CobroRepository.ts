@@ -15,6 +15,8 @@ export interface CreateCobroInput {
 
 export interface UpdateCobroInput {
   estado?: EstadoCobro;
+  notas?: string | null;
+  fechaRecordatorio?: Date | string | null;
 }
 
 export interface CreatePagoInput {
@@ -124,9 +126,15 @@ export class CobroRepository {
   }
 
   async update(id: string, input: UpdateCobroInput): Promise<any> {
+    // Convertir fechaRecordatorio a Date si viene como string
+    const data: any = { ...input };
+    if (data.fechaRecordatorio && typeof data.fechaRecordatorio === 'string') {
+      data.fechaRecordatorio = new Date(data.fechaRecordatorio);
+    }
+    
     return this.prisma.cobro.update({
       where: { id },
-      data: input,
+      data,
       include: {
         paciente: {
           select: {

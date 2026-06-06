@@ -23,6 +23,8 @@ const createCobroSchema = z.object({
 
 const updateCobroSchema = z.object({
   estado: z.enum(['PENDIENTE', 'PARCIAL', 'PAGADO', 'CANCELADO']).optional(),
+  notas: z.string().optional().nullable(),
+  fechaRecordatorio: z.string().datetime().optional().nullable(),
 });
 
 const registrarPagoSchema = z.object({

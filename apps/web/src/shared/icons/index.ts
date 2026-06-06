@@ -22,4 +22,5 @@ export { default as MoreVerticalIcon } from './MoreVerticalIcon';
 export { default as CalendarIcon } from './CalendarIcon';
 
 // Logo
-export { default as Logo } from './Logo';
+export { default as VectorSymbol } from './VectorSymbol';
+export { default as LogoSymbol } from './LogoSymbol';

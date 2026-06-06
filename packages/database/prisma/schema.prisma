@@ -209,14 +209,16 @@ enum TipoProducto {
 }
 
 model Cobro {
-  id         String      @id @default(uuid())
-  pacienteId String
-  fecha      DateTime    @default(now())
-  subtotal   Decimal     @default(0) @db.Decimal(10, 2)
-  total      Decimal     @default(0) @db.Decimal(10, 2)
-  estado     EstadoCobro @default(PENDIENTE)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id                String      @id @default(uuid())
+  pacienteId        String
+  fecha             DateTime    @default(now())
+  subtotal          Decimal     @default(0) @db.Decimal(10, 2)
+  total             Decimal     @default(0) @db.Decimal(10, 2)
+  estado            EstadoCobro @default(PENDIENTE)
+  notas             String?
+  fechaRecordatorio DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
   paciente   Paciente    @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
   items      ItemCobro[]
@@ -227,6 +229,7 @@ model Cobro {
   @@index([pacienteId])
   @@index([estado])
   @@index([fecha])
+  @@index([fechaRecordatorio])
   @@map("cobros")
 }
 
