@@ -10,8 +10,9 @@ export class UpdateCobroUseCase {
       throw new Error('Cobro no encontrado');
     }
 
-    if (cobro.estado === 'PAGADO') {
-      throw new Error('No se puede modificar un cobro que ya está pagado');
+    // Solo validar estado PAGADO si se intenta cambiar el estado
+    if (input.estado && cobro.estado === 'PAGADO') {
+      throw new Error('No se puede modificar el estado de un cobro que ya está pagado');
     }
 
     return this.cobroRepository.update(id, input);

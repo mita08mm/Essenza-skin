@@ -41,11 +41,8 @@ export function Services() {
     {
       title: 'Tratamientos Capilares',
       items: [
-        'Tricogen Intensive',
-        'Mesoterapia Nutritiva',
-        'PRP Hair Boost',
-        'Plasma Rico en Plaquetas',
-        'Factores de Crecimiento',
+        'Tricogen Intensive (Mesoterapia Nutritiva)',
+        'PRP Hair Boost (Plasma Rico en Plaquetas con Factores de Crecimiento)',
       ],
     },
   ];

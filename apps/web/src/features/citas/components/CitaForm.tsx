@@ -263,7 +263,9 @@ export function CitaForm({ mode, citaId }: Props) {
               label="Hora inicio"
               value={formData.horaInicio}
               onChange={(v) =>
-                handleChange({ target: { name: 'horaInicio', value: v } } as React.ChangeEvent<HTMLInputElement>)
+                handleChange({
+                  target: { name: 'horaInicio', value: v },
+                } as React.ChangeEvent<HTMLInputElement>)
               }
               required
               disabled={isLoading}
@@ -274,7 +276,9 @@ export function CitaForm({ mode, citaId }: Props) {
               label="Hora fin"
               value={formData.horaFin}
               onChange={(v) =>
-                handleChange({ target: { name: 'horaFin', value: v } } as React.ChangeEvent<HTMLInputElement>)
+                handleChange({
+                  target: { name: 'horaFin', value: v },
+                } as React.ChangeEvent<HTMLInputElement>)
               }
               required
               disabled={isLoading}

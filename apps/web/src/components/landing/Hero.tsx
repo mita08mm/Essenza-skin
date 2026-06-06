@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowRight } from 'lucide-react';
-import { Logo } from '@/shared/icons';
+import { LogoSymbol, VectorSymbol } from '@/shared/icons';
 import type { ConfigClinica } from './types';
 
 interface HeroProps {
@@ -28,12 +28,25 @@ export function Hero({ config }: HeroProps) {
       {/* Dark Overlay */}
       <div className="absolute inset-0" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }} />
 
+      {/* Watermark Symbol - Right Side */}
+      <div
+        className="pointer-events-none absolute top-1/4 right-4 w-64 -translate-y-1/2 md:w-72 lg:right-12 lg:w-80 xl:w-96 2xl:w-[32rem]"
+        style={{
+          color: '#ffffff',
+        }}
+      >
+        <LogoSymbol />
+      </div>
+
       {/* Floating Navigation */}
       <nav className="absolute top-0 right-0 left-0 z-50">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-4 lg:px-16">
           {/* Logo Symbol */}
-          <div className="flex-shrink-0" style={{ width: '80px', height: '80px' }}>
-            <Logo />
+          <div
+            className="flex-shrink-0"
+            style={{ width: '80px', height: '80px', color: '#c9a96e' }}
+          >
+            <LogoSymbol />
           </div>
 
           {/* Brand Text */}
@@ -85,8 +98,8 @@ export function Hero({ config }: HeroProps) {
             </h1>
 
             <p className="mb-8 text-lg leading-relaxed lg:text-xl" style={{ color: '#e0e0e0' }}>
-              La fusión perfecta entre medicina estética y arte. Un espacio donde cada detalle está
-              diseñado para realzar tu belleza con elegancia, equilibrio y naturalidad.
+              La clínica Essenza fusiona medicina estética y arte. Un espacio donde cada detalle
+              está diseñado para realzar tu belleza con elegancia, equilibrio y naturalidad.
             </p>
 
             <div className="flex flex-wrap gap-4">

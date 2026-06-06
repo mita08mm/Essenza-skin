@@ -45,7 +45,7 @@ export function ContactCTA({ config }: ContactCTAProps) {
           className="font-heading mb-6 text-5xl font-bold lg:text-6xl xl:text-7xl"
           style={{ color: '#ffffff', letterSpacing: '-0.02em' }}
         >
-          ¿Lista para transformar tu piel?
+          ¿List@ para tu tratamiento estético?
         </h2>
 
         <p className="mx-auto mb-12 max-w-2xl text-lg leading-relaxed" style={{ color: '#b0b0b0' }}>
@@ -82,8 +82,11 @@ export function ContactCTA({ config }: ContactCTAProps) {
             >
               Nuestra Ubicación
             </div>
-            <div className="text-lg leading-tight font-bold" style={{ color: '#ffffff' }}>
-              {config.direccion || 'Calle Tumusla 561'}
+            <div className="text-base leading-tight font-bold" style={{ color: '#ffffff' }}>
+              Calle Tumusla N. 561
+            </div>
+            <div className="text-sm mt-1" style={{ color: '#b0b0b0' }}>
+              (entre calles México y José de la Reza)
             </div>
             <div
               className="mt-3 flex items-center justify-center gap-2 text-sm font-semibold"
@@ -123,18 +126,27 @@ export function ContactCTA({ config }: ContactCTAProps) {
               />
             </svg>
             <div
-              className="mb-2 text-xs font-semibold tracking-wider uppercase"
+              className="mb-3 text-xs font-semibold tracking-wider uppercase"
               style={{ color: '#888' }}
             >
-              Teléfono
+              Teléfonos
             </div>
-            <a
-              href={`tel:${config.telefono}`}
-              className="text-base font-bold transition-colors hover:opacity-80"
-              style={{ color: '#c9a96e' }}
-            >
-              {config.telefono}
-            </a>
+            <div className="space-y-2">
+              <a
+                href="tel:+59172226431"
+                className="block text-sm font-bold transition-colors hover:opacity-80"
+                style={{ color: '#c9a96e' }}
+              >
+                +591 7222 6431
+              </a>
+              <a
+                href="tel:+591 44555328"
+                className="block text-sm font-bold transition-colors hover:opacity-80"
+                style={{ color: '#c9a96e' }}
+              >
+                +591 4 455 5328
+              </a>
+            </div>
           </div>
 
           <div
@@ -159,7 +171,7 @@ export function ContactCTA({ config }: ContactCTAProps) {
               />
             </svg>
             <div
-              className="mb-2 text-xs font-semibold tracking-wider uppercase"
+              className="mb-3 text-xs font-semibold tracking-wider uppercase"
               style={{ color: '#888' }}
             >
               Email

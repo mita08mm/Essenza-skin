@@ -1,6 +1,5 @@
 'use client';
 
-import { Logo } from '@/shared/icons';
 import type { ConfigClinica } from './types';
 
 interface FooterProps {
@@ -54,13 +53,6 @@ export function Footer({ config }: FooterProps) {
       style={{ backgroundColor: '#1a1a1a', borderTop: '1px solid #c9a96e' }}
     >
       <div className="mx-auto max-w-7xl">
-        {/* Logo Complete - Centrado y Grande */}
-        <div className="mb-12 flex justify-center">
-          <div className="w-full max-w-lg" style={{ aspectRatio: '1176 / 1077' }}>
-            <Logo />
-          </div>
-        </div>
-
         <div className="grid gap-12 md:grid-cols-3">
           {/* Column 1: Brand */}
           <div>
@@ -81,7 +73,7 @@ export function Footer({ config }: FooterProps) {
               className="mb-6 block text-sm leading-relaxed font-medium transition-opacity hover:opacity-80"
               style={{ color: '#c9a96e' }}
             >
-              {config?.direccion || 'Calle Tumusla 561, entre calles México y Reza'}
+              Calle Tumusla N. 561 (entre calles México y José de la Reza)
             </a>
             <div className="flex gap-3">
               {socialLinks.map((social, i) => (
@@ -124,37 +116,47 @@ export function Footer({ config }: FooterProps) {
           </div>
 
           {/* Column 3: Contact */}
-          {config && (
-            <div>
-              <h4
-                className="mb-4 text-sm font-bold tracking-wider uppercase"
-                style={{ color: '#888' }}
-              >
-                Contacto
-              </h4>
-              <ul className="space-y-3">
-                <li style={{ color: '#b0b0b0' }}>{config.direccion}</li>
-                <li>
-                  <a
-                    href={`tel:${config.telefono}`}
-                    className="transition-colors hover:opacity-80"
-                    style={{ color: '#c9a96e' }}
-                  >
-                    {config.telefono}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={`mailto:${config.email}`}
-                    className="transition-colors hover:opacity-80"
-                    style={{ color: '#c9a96e' }}
-                  >
-                    {config.email}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          )}
+          <div>
+            <h4
+              className="mb-4 text-sm font-bold tracking-wider uppercase"
+              style={{ color: '#888' }}
+            >
+              Contacto
+            </h4>
+            <ul className="space-y-3">
+              <li style={{ color: '#b0b0b0' }}>
+                Calle Tumusla N. 561<br />
+                (entre calles México y José de la Reza)
+              </li>
+              <li>
+                <a
+                  href="tel:+59172226431"
+                  className="block transition-colors hover:opacity-80"
+                  style={{ color: '#c9a96e' }}
+                >
+                  +591 7222 6431
+                </a>
+              </li>
+              <li>
+                <a
+                  href="tel:+59144555328"
+                  className="block transition-colors hover:opacity-80"
+                  style={{ color: '#c9a96e' }}
+                >
+                  +591 4 455 5328
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:essenzaclinic@gmail.com"
+                  className="transition-colors hover:opacity-80"
+                  style={{ color: '#c9a96e' }}
+                >
+                  essenzaclinic@gmail.com
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Copyright */}

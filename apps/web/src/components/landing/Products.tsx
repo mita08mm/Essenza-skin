@@ -18,7 +18,7 @@ export function Products() {
       icon: Droplet,
       title: 'Essenza Skin Therapy',
       description: 'Tratamiento dermatológico de alta gama',
-      products: ['Cremas', 'Serums', 'Bloqueador Solar'],
+      products: ['Cremas', 'Serums', 'Bloqueador Solar', 'Maquillaje efecto Lifting Facial'],
       color: '#c9a96e',
     },
   ];
