@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart } from 'lucide-react';
+import { Heart, Clock } from 'lucide-react';
 import { useState } from 'react';
 
 export function Features() {
@@ -12,6 +12,12 @@ export function Features() {
       title: 'Nuestra Ubicación',
       description:
         'Calle Tumusla N. 561 (entre calles México y José de la Reza), Cochabamba. Un espacio exclusivo diseñado para tu bienestar.',
+    },
+    {
+      icon: Clock,
+      title: 'Días y Horarios',
+      description:
+        'Atención de Lunes a Viernes de 9 am a 12 pm y de 14 a 19 hrs. Sábados de 9 am a 13 hrs.',
     },
   ];
 
@@ -27,29 +33,26 @@ export function Features() {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="mb-16 text-center">
-          <div
-            className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2"
-            style={{
-              backgroundColor: 'rgba(201, 169, 110, 0.15)',
-              border: '1px solid rgba(201, 169, 110, 0.3)',
-            }}
-          >
-            <span
-              className="text-xs font-semibold tracking-wider uppercase"
-              style={{ color: '#c9a96e' }}
-            >
-              ¿Por qué elegirnos?
-            </span>
-          </div>
           <h2
             className="font-heading text-5xl font-bold lg:text-6xl"
             style={{ color: '#ffffff', letterSpacing: '-0.02em' }}
           >
-            Excelencia en cada detalle
+            Un espacio exclusivo diseñado para tu bienestar.
           </h2>
+
+          <p
+            className="mt-6 text-xl max-w-3xl mx-auto font-light"
+            style={{ color: '#d4d4d4' }}
+          >
+            Agenda tu consulta{' '}
+            <span className="font-bold" style={{ color: '#c9a96e' }}>
+              GRATUITA
+            </span>{' '}
+            y recibe una atención personalizada diseñada para resaltar tu belleza y bienestar.
+          </p>
         </div>
 
-        <div className="flex justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* Feature card */}
           {features.map((feature, i) => {
             const Icon = feature.icon;

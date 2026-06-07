@@ -53,7 +53,7 @@ export function Footer({ config }: FooterProps) {
       style={{ backgroundColor: '#1a1a1a', borderTop: '1px solid #c9a96e' }}
     >
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-12 md:grid-cols-3">
+        <div className="grid gap-12 md:grid-cols-2">
           {/* Column 1: Brand */}
           <div>
             <h3 className="font-heading mb-4 text-2xl font-bold" style={{ color: '#ffffff' }}>
@@ -92,30 +92,7 @@ export function Footer({ config }: FooterProps) {
             </div>
           </div>
 
-          {/* Column 2: Links */}
-          <div>
-            <h4
-              className="mb-4 text-sm font-bold tracking-wider uppercase"
-              style={{ color: '#888' }}
-            >
-              Enlaces
-            </h4>
-            <ul className="space-y-3">
-              {['Servicios', 'Contacto'].map((link, i) => (
-                <li key={i}>
-                  <a
-                    href={`#${link.toLowerCase()}`}
-                    className="transition-colors hover:opacity-80"
-                    style={{ color: '#b0b0b0' }}
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3: Contact */}
+          {/* Column 2: Contact */}
           <div>
             <h4
               className="mb-4 text-sm font-bold tracking-wider uppercase"
