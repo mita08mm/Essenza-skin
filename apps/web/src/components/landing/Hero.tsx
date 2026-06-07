@@ -30,8 +30,9 @@ export function Hero({ config }: HeroProps) {
 
       {/* Watermark Symbol - Right Side */}
       <div
-        className="pointer-events-none absolute top-1/4 right-4 w-64 -translate-y-1/2 md:w-72 lg:right-12 lg:w-80 xl:w-96 2xl:w-[32rem]"
+        className="pointer-events-none absolute top-1/4 right-32 w-64 -translate-y-1/2 md:w-72 lg:right-12 lg:w-80 xl:w-96 2xl:w-[32rem]"
         style={{
+          right: '100px',
           color: '#ffffff',
         }}
       >

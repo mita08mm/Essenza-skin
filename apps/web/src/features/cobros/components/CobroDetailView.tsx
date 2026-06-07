@@ -139,7 +139,7 @@ export function CobroDetailView({ cobroId }: { cobroId: string }) {
         overline="Cobros"
         title="Registro de cobro"
         subtitle={formatFecha(cobro.fecha)}
-        backHref="/cobros"
+        backHref={`/pacientes/${cobro.paciente.id}/historia`}
       />
 
       {error && <div className={`mb-5 ${alertError}`}>{error}</div>}
