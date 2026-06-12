@@ -49,7 +49,7 @@ export function Products() {
             className="font-heading text-5xl font-bold lg:text-6xl"
             style={{ color: '#ffffff', letterSpacing: '-0.02em' }}
           >
-            Líneas de productos profesionales
+            Líneas de Productos Profesionales
           </h2>
           <p
             className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed"

@@ -125,25 +125,25 @@ export function Footer({ config }: FooterProps) {
               </li>
               <li>
                 <a
-                  href="mailto:essenzaclinic@gmail.com"
+                  href="mailto:dracecilearcederpic@gmail.com"
                   className="transition-colors hover:opacity-80"
                   style={{ color: '#c9a96e' }}
                 >
-                  essenzaclinic@gmail.com
+                  dracecilearcederpic@gmail.com
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Copyright */}
+        {/* Copyright
         <div
           className="mt-12 border-t pt-8 text-center text-sm"
           style={{ borderColor: 'rgba(255, 255, 255, 0.1)', color: '#666' }}
         >
           © {new Date().getFullYear()} {config?.nombre || 'Essenza Skin & Hair Clinic Spa'} - DRA.
           CECILE ARCE DERPIC. Todos los derechos reservados.
-        </div>
+        </div> */}
       </div>
     </footer>
   );

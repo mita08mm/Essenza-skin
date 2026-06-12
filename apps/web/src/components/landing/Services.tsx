@@ -73,7 +73,7 @@ export function Services() {
             className="font-heading text-5xl font-bold lg:text-6xl"
             style={{ color: '#1a1a1a', letterSpacing: '-0.02em' }}
           >
-            Tratamientos de medicina estética
+            Tratamientos de Medicina Estética
           </h2>
         </div>
 

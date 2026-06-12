@@ -99,7 +99,7 @@ export function Hero({ config }: HeroProps) {
             </h1>
 
             <p className="mb-8 text-lg leading-relaxed lg:text-xl" style={{ color: '#e0e0e0' }}>
-              La clínica Essenza fusiona medicina estética y arte. Un espacio donde cada detalle
+              La clínica Essenza fusiona medicina estética y arte. Un lugar donde cada detalle
               está diseñado para realzar tu belleza con elegancia, equilibrio y naturalidad.
             </p>
 

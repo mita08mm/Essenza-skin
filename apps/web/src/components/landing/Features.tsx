@@ -11,7 +11,7 @@ export function Features() {
       icon: Heart,
       title: 'Nuestra Ubicación',
       description:
-        'Calle Tumusla N. 561 (entre calles México y José de la Reza), Cochabamba. Un espacio exclusivo diseñado para tu bienestar.',
+        'Calle Tumusla N. 561 (entre calles México y José de la Reza), Cochabamba.',
     },
     {
       icon: Clock,
@@ -44,11 +44,13 @@ export function Features() {
             className="mt-6 text-xl max-w-3xl mx-auto font-light"
             style={{ color: '#d4d4d4' }}
           >
-            Agenda tu consulta{' '}
+            Agenda tu consulta presencial{' '}
             <span className="font-bold" style={{ color: '#c9a96e' }}>
               GRATUITA
             </span>{' '}
             y recibe una atención personalizada diseñada para resaltar tu belleza y bienestar.
+            <br />
+            También ofrecemos consultas virtuales para pacientes del interior del país.
           </p>
         </div>
 
