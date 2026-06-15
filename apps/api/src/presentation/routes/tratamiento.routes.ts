@@ -16,4 +16,7 @@ router.get('/:id', ConsultaController.getById);
 // PUT /api/tratamientos/:id - Actualizar tratamiento
 router.put('/:id', ConsultaController.update);
 
+// DELETE /api/tratamientos/:id - Eliminar tratamiento
+router.delete('/:id', ConsultaController.delete);
+
 export default router;

@@ -40,8 +40,8 @@ export function Features() {
             Un espacio exclusivo diseñado para tu bienestar.
           </h2>
 
-          <p
-            className="mt-6 text-xl max-w-3xl mx-auto font-light"
+         <p
+            className="mt-6 text-xl max-w-4xl mx-auto font-light text-balance"
             style={{ color: '#d4d4d4' }}
           >
             Agenda tu consulta{' '}
@@ -49,6 +49,8 @@ export function Features() {
               GRATUITA
             </span>{' '}
             y recibe una atención personalizada diseñada para resaltar tu belleza y bienestar.
+            {' '}
+            <br></br>¡Ofrecemos también consultas virtuales para pacientes del interior del país!
           </p>
         </div>
 

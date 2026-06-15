@@ -117,6 +117,10 @@ app.use('/api/productos', productoRoutes);
 import consultaRoutes from './presentation/routes/consulta.routes';
 app.use('/api/consultas', consultaRoutes);
 
+// Rutas de tratamientos (alias de consultas para coherencia semántica)
+import tratamientoRoutes from './presentation/routes/tratamiento.routes';
+app.use('/api/tratamientos', tratamientoRoutes);
+
 // Rutas de historia clínica (montadas sobre pacientes)
 import pacienteHistoriaRoutes from './presentation/routes/paciente-historia.routes';
 app.use('/api/pacientes', pacienteHistoriaRoutes);

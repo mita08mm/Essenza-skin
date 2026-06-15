@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';
 import { api } from '@/shared/api/client';
@@ -14,6 +15,7 @@ import {
 import { hayConflicto, toMinutes } from '@/features/citas/lib/horario';
 import { useMemo } from 'react';
 import DatePicker from '@/shared/ui/DatePicker';
+import { historiaClinicaKeys } from '@/features/historia-clinica';
 
 interface Paciente {
   id: string;
@@ -24,6 +26,7 @@ interface Paciente {
 
 export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [paciente, setPaciente] = useState<Paciente | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -107,7 +110,7 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
     setIsSaving(true);
     setError('');
     try {
-      await api.post('/consultas', {
+      const res = await api.post('/consultas', {
         pacienteId,
         tipoTratamiento,
         nombreTratamiento: procedimiento.trim() || `Consulta ${tipoTratamiento.toLowerCase()}`,
@@ -120,6 +123,8 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
           ? new Date(`${proximaConsulta}T00:00:00`).toISOString()
           : undefined,
       });
+      console.log('POST /consultas OK:', res);
+
       if (proximaConsulta && horaInicio && horaFin) {
         await api.post('/citas', {
           pacienteId,
@@ -130,9 +135,18 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
           estado: 'PROGRAMADA',
           notas: '',
         });
+        console.log('POST /citas OK');
       }
+      
+      console.log('Antes de invalidar');
+      await queryClient.invalidateQueries({ 
+        queryKey: historiaClinicaKeys.detail(pacienteId) 
+      });
+      console.log('Después de invalidar');
+      
       router.push(`/pacientes/${pacienteId}/historia`);
     } catch (err) {
+      console.error('ERROR EN CATCH:', err);
       setError(err instanceof Error ? err.message : 'Error al guardar tratamiento');
     } finally {
       setIsSaving(false);
