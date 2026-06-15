@@ -77,6 +77,7 @@ async function main() {
       activo: true,
     },
   });
+  console.log('Recepcionista creada:', recepcionista.email);
 }
 
 main()
