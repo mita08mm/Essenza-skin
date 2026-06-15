@@ -20,6 +20,10 @@ export { default as UploadIcon } from './UploadIcon';
 export { default as DocumentIcon } from './DocumentIcon';
 export { default as MoreVerticalIcon } from './MoreVerticalIcon';
 export { default as CalendarIcon } from './CalendarIcon';
+export { default as TrashIcon } from './TrashIcon';
+export { default as EditIcon } from './EditIcon';
+export { default as LogoutIcon } from './LogoutIcon';
+export { default as ClipboardIcon } from './ClipboardIcon';
 
 // Logo
 export { default as VectorSymbol } from './VectorSymbol';

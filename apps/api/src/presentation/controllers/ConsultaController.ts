@@ -7,6 +7,7 @@ import { CreateConsultaUseCase } from '../../application/use-cases/consulta/Crea
 import { GetConsultaByIdUseCase } from '../../application/use-cases/consulta/GetConsultaByIdUseCase';
 import { GetConsultasByPacienteUseCase } from '../../application/use-cases/consulta/GetConsultasByPacienteUseCase';
 import { UpdateConsultaUseCase } from '../../application/use-cases/consulta/UpdateConsultaUseCase';
+import { DeleteConsultaUseCase } from '../../application/use-cases/consulta/DeleteConsultaUseCase';
 import type { AuthRequest } from '../middlewares/auth.middleware';
 
 const prisma = new PrismaClient();
@@ -189,6 +190,39 @@ export class ConsultaController {
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : 'Error al actualizar tratamiento',
+      });
+    }
+  }
+
+  // DELETE /api/tratamientos/:id
+  static async delete(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (Array.isArray(id)) {
+        res.status(400).json({ success: false, error: 'ID inválido' });
+        return;
+      }
+
+      const useCase = new DeleteConsultaUseCase(consultaRepository);
+      await useCase.execute(id);
+
+      res.json({
+        success: true,
+        message: 'Tratamiento eliminado correctamente',
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message === 'Tratamiento no encontrado') {
+        res.status(404).json({
+          success: false,
+          error: error.message,
+        });
+        return;
+      }
+
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Error al eliminar tratamiento',
       });
     }
   }

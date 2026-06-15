@@ -63,7 +63,7 @@ export function Footer({ config }: FooterProps) {
               DRA. CECILE ARCE DERPIC
             </p>
             <p className="mb-2 leading-relaxed" style={{ color: '#888' }}>
-              La fusión perfecta entre medicina estética y arte
+              Fusión perfecta entre medicina estética y arte
               {config?.ciudad ? ` en ${config.ciudad}` : ' en Cochabamba'}.
             </p>
             <a

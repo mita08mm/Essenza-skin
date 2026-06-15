@@ -45,7 +45,7 @@ export function PacienteHistoriaView({ pacienteId }: { pacienteId: string }) {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
           <section className="lg:col-span-7 xl:col-span-8">
             {tieneTratamientos ? (
-              <TratamientosList tratamientos={historia.tratamientos!} />
+              <TratamientosList tratamientos={historia.tratamientos!} pacienteId={pacienteId} />
             ) : (
               <EmptyState pacienteId={pacienteId} />
             )}
