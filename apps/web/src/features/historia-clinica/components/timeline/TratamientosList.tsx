@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Tratamiento } from '@/features/historia-clinica/types';
 import { useEliminarTratamiento } from '@/features/historia-clinica';
-import { Overline, SectionTitle, CardTitle, Modal, Button } from '@/shared/ui';
+import { Overline, SectionTitle, CardTitle, Modal, Button, RichTextView } from '@/shared/ui';
+import { stripHtmlTags } from '@/shared/utils';
 import { TrashIcon, MoreVerticalIcon } from '@/shared/icons';
 
 interface TratamientosListProps {
@@ -88,7 +89,9 @@ export default function TratamientosList({ tratamientos, pacienteId }: Tratamien
                     ) : (
                       <ChevronRight className="h-4 w-4 shrink-0 text-neutral-500" />
                     )}
-                    <CardTitle className="truncate">{t.nombreTratamiento}</CardTitle>
+                    <CardTitle className="truncate">
+                      {stripHtmlTags(t.nombreTratamiento)}
+                    </CardTitle>
                   </button>
                   <div className="flex items-center gap-3">
                     <Overline as="time" className="shrink-0">
@@ -113,7 +116,7 @@ export default function TratamientosList({ tratamientos, pacienteId }: Tratamien
                             <button
                               onClick={() => {
                                 setOpenMenuId(null);
-                                openDeleteModal(t.id, t.nombreTratamiento);
+                                openDeleteModal(t.id, stripHtmlTags(t.nombreTratamiento));
                               }}
                               className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-danger transition-colors hover:bg-danger-bg"
                             >
@@ -134,8 +137,8 @@ export default function TratamientosList({ tratamientos, pacienteId }: Tratamien
                     <Field label="Zona tratada" value={t.zonaTratada} />
                     <Field label="Objetivo" value={t.objetivo} wide />
                     <Field label="Nota clínica" value={t.evaluacionInicial} wide />
-                    <Field label="Procedimiento" value={t.protocolo} wide />
-                    <Field label="Observaciones" value={t.observaciones} wide />
+                    <Field label="Procedimiento" value={t.protocolo} wide richText />
+                    <Field label="Observaciones" value={t.observaciones} wide richText />
                     <Field label="Próxima consulta" value={formatOptionalDate(t.proximaSesion)} />
                   </div>
                 )}
@@ -193,12 +196,28 @@ export default function TratamientosList({ tratamientos, pacienteId }: Tratamien
   );
 }
 
-function Field({ label, value, wide }: { label: string; value?: string; wide?: boolean }) {
+function Field({
+  label,
+  value,
+  wide,
+  richText,
+}: {
+  label: string;
+  value?: string;
+  wide?: boolean;
+  richText?: boolean;
+}) {
   if (!value) return null;
   return (
     <div className={wide ? 'sm:col-span-2' : ''}>
       <Overline>{label}</Overline>
-      <p className="mt-1 text-sm leading-relaxed text-neutral-800">{value}</p>
+      {richText ? (
+        <RichTextView value={value} className="mt-1 text-sm leading-relaxed text-neutral-800" />
+      ) : (
+        <p className="mt-1 text-sm leading-relaxed whitespace-pre-wrap text-neutral-800">
+          {value}
+        </p>
+      )}
     </div>
   );
 }

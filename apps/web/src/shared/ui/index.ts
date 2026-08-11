@@ -1,6 +1,8 @@
 // Exportación centralizada de componentes UI (Átomos)
 export { Button } from './button';
 export type { ButtonProps } from './button';
+export { IconButton } from './icon-button';
+export type { IconButtonProps } from './icon-button';
 export { LinkButton } from './link-button';
 export { ProgressBar } from './progress-bar';
 
@@ -19,6 +21,8 @@ export type { SelectProps } from './select';
 
 export { Textarea } from './textarea';
 export type { TextareaProps } from './textarea';
+export { RichTextEditor, sanitizeRichText } from './RichTextEditor';
+export { RichTextView } from './RichTextView';
 export { default as DatePicker } from './DatePicker';
 export type { DatePickerProps } from './DatePicker';
 

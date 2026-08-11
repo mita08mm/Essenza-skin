@@ -101,7 +101,7 @@ interface StatProps {
 function Stat({ label, value, highlight }: StatProps) {
   return (
     <div className="min-w-0">
-      <dt className="overline">{label}</dt>
+      <dt className="text-overline">{label}</dt>
       <dd className="mt-1 truncate text-sm font-medium">
         {highlight ? (
           <Badge variant={highlight} dot>

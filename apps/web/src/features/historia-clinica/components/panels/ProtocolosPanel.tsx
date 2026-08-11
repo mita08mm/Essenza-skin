@@ -276,7 +276,7 @@ export default function ProtocolosPanel({ pacienteId }: ProtocolosPanelProps) {
 
           {/* ── LISTA DE ITEMS ── */}
           <section>
-            <p className="mb-2 overline">Items ({items.length})</p>
+            <p className="mb-2 text-overline">Items ({items.length})</p>
             {items.length === 0 ? (
               <p className="muted italic">Aún no agregaste items.</p>
             ) : (

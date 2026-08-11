@@ -6,7 +6,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { FormSection, FormField } from '@/shared/forms/FormSection';
 import { api } from '@/shared/api/client';
-import { inputBase, textareaBase, alertError, Button, LinkButton } from '@/shared/ui';
+import {
+  inputBase,
+  textareaBase,
+  alertError,
+  Button,
+  LinkButton,
+  RichTextEditor,
+} from '@/shared/ui';
 import { TimePicker, addOneHour } from '@/shared/ui/TimePicker';
 import {
   DisponibilidadTimeline,
@@ -113,12 +120,12 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
       const res = await api.post('/consultas', {
         pacienteId,
         tipoTratamiento,
-        nombreTratamiento: procedimiento.trim() || `Consulta ${tipoTratamiento.toLowerCase()}`,
+        nombreTratamiento: objetivoSesion.trim(),
         zonaTratada: zonaTratada.trim(),
         objetivo: objetivoSesion.trim(),
         evaluacionInicial: evaluacion.trim() || undefined,
-        protocolo: procedimiento.trim() || undefined,
-        observaciones: observaciones.trim() || undefined,
+        protocolo: procedimiento || undefined,
+        observaciones: observaciones || undefined,
         proximaSesion: proximaConsulta
           ? new Date(`${proximaConsulta}T00:00:00`).toISOString()
           : undefined,
@@ -228,22 +235,20 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
             />
           </FormField>
           <FormField label="Procedimiento">
-            <textarea
+            <RichTextEditor
               value={procedimiento}
-              onChange={(e) => setProcedimiento(e.target.value)}
-              rows={3}
-              className={textareaBase}
+              onChange={setProcedimiento}
               disabled={isSaving}
+              placeholder="Detalla el procedimiento realizado..."
             />
           </FormField>
 
           <FormField label="Observaciones">
-            <textarea
+            <RichTextEditor
               value={observaciones}
-              onChange={(e) => setObservaciones(e.target.value)}
-              rows={2}
-              className={textareaBase}
+              onChange={setObservaciones}
               disabled={isSaving}
+              placeholder="Observaciones adicionales..."
             />
           </FormField>
 
@@ -294,9 +299,10 @@ export function ConsultaForm({ pacienteId }: { pacienteId: string }) {
           )}
         </FormSection>
 
-        <div className="space-y-4">
-          {error && <div className={alertError}>{error}</div>}
-          <div className="flex items-center justify-end gap-3">
+        {error && <div className={alertError}>{error}</div>}
+
+        <div className="sticky bottom-0 -mx-4 border-t border-neutral-200 bg-neutral-25/95 px-4 py-3 backdrop-blur-sm md:-mx-8 md:px-8">
+          <div className="mx-auto flex max-w-4xl items-center justify-end gap-3">
             <LinkButton href={`/pacientes/${pacienteId}/historia`} variant="secondary" size="sm">
               Cancelar
             </LinkButton>

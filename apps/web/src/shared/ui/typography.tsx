@@ -75,5 +75,5 @@ export function Overline({
   className = '',
   as: As = 'p',
 }: BaseProps & { as?: ElementType }) {
-  return <As className={`overline ${className}`}>{children}</As>;
+  return <As className={`text-overline ${className}`}>{children}</As>;
 }
