@@ -334,14 +334,16 @@ enum EstadoItemPrescripcion {
 }
 
 model Documento {
-  id         String        @id @default(uuid())
+  id         String         @id @default(uuid())
   pacienteId String
   nombre     String
   tipo       TipoDocumento
   url        String
   publicId   String?
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  /// Solo aplica a fotos. null = sin clasificar (fotos subidas antes de esta función).
+  categoria  CategoriaFoto?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
 
   paciente Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
 
@@ -353,6 +355,11 @@ model Documento {
 enum TipoDocumento {
   FOTO
   DOCUMENTO
+}
+
+enum CategoriaFoto {
+  antes
+  despues
 }
 
 model ConfiguracionClinica {

@@ -15,7 +15,12 @@ export class DeleteDocumentoUseCase {
     if (!documento) throw new Error('Documento no encontrado');
 
     if (documento.publicId) {
-      await cloudinary.uploader.destroy(documento.publicId);
+      const resourceType = documento.url.includes('/video/upload/')
+        ? 'video'
+        : documento.url.includes('/raw/upload/')
+          ? 'raw'
+          : 'image';
+      await cloudinary.uploader.destroy(documento.publicId, { resource_type: resourceType });
     }
 
     await this.documentoRepository.delete(id);

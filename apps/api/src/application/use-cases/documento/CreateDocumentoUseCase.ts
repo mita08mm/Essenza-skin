@@ -6,4 +6,8 @@ export class CreateDocumentoUseCase {
   async execute(documento: CreateDocumentoData) {
     return this.documentoRepository.create(documento);
   }
+
+  async executeMany(documentos: CreateDocumentoData[]) {
+    return this.documentoRepository.createMany(documentos);
+  }
 }
