@@ -1,4 +1,4 @@
-import { PrismaClient, Documento, TipoDocumento } from '@clinica/database';
+import { PrismaClient, Documento, TipoDocumento, CategoriaFoto } from '@clinica/database';
 
 export interface CreateDocumentoData {
   pacienteId: string;
@@ -6,6 +6,7 @@ export interface CreateDocumentoData {
   tipo: TipoDocumento;
   url: string;
   publicId?: string;
+  categoria?: CategoriaFoto | null;
 }
 
 export class DocumentoRepository {
@@ -32,6 +33,18 @@ export class DocumentoRepository {
         },
       },
     });
+  }
+
+  async createMany(items: CreateDocumentoData[]): Promise<Documento[]> {
+    return this.prisma.$transaction(items.map((data) => this.prisma.documento.create({ data })));
+  }
+
+  async updateCategoria(ids: string[], categoria: CategoriaFoto | null): Promise<number> {
+    const result = await this.prisma.documento.updateMany({
+      where: { id: { in: ids }, tipo: 'FOTO' },
+      data: { categoria },
+    });
+    return result.count;
   }
 
   async findById(id: string): Promise<Documento | null> {

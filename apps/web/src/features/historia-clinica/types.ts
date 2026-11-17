@@ -28,11 +28,15 @@ export interface Protocolo {
   items: ItemProtocolo[];
 }
 
+export type CategoriaFoto = 'antes' | 'despues';
+
 export interface Documento {
   id: string;
   nombre: string;
   kind: 'FOTO' | 'DOCUMENTO';
   url: string;
+  /** Solo fotos. null/undefined = sin clasificar */
+  categoria?: CategoriaFoto | null;
   createdAt: string;
 }
 

@@ -58,6 +58,8 @@ export function PacienteHistoriaView({ pacienteId }: { pacienteId: string }) {
               documentos={documentos}
               pacienteId={pacienteId}
               onUploadSuccess={refresh}
+              pacienteNombre={`${historia.paciente.nombre} ${historia.paciente.apellido}`.trim()}
+              motivo={historia.paciente.objetivoEstetico ?? historia.objetivoEstetico}
             />
           </aside>
         </div>

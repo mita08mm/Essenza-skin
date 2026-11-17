@@ -8,6 +8,7 @@ router.use(authMiddleware);
 
 router.get('/', DocumentoController.list);
 router.post('/', DocumentoController.create);
+router.patch('/categoria', DocumentoController.updateCategoria);
 router.get('/:id', DocumentoController.getById);
 router.put('/:id', DocumentoController.update);
 router.delete('/:id', DocumentoController.delete);
